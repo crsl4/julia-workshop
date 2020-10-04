@@ -32,32 +32,6 @@ Taken from [DrWatson workflow tutorial](https://juliadynamics.github.io/DrWatson
 julia> using DrWatson
 
 julia> initialize_project("Example"; authors="CSL")
- Activating new environment at `~/Dropbox/Documents/teaching/julia-workshop/Example/Project.toml`
-  Resolving package versions...
-Updating `~/Dropbox/Documents/teaching/julia-workshop/Example/Project.toml`
-  [634d3b9d] + DrWatson v1.16.0
-Updating `~/Dropbox/Documents/teaching/julia-workshop/Example/Manifest.toml`
-  [634d3b9d] + DrWatson v1.16.0
-  [5789e2e9] + FileIO v1.4.3
-  [ae029012] + Requires v1.1.0
-  [3a884ed6] + UnPack v1.0.2
-  [2a0f44e3] + Base64
-  [ade2ca70] + Dates
-  [b77e0a4c] + InteractiveUtils
-  [76f85450] + LibGit2
-  [8f399da3] + Libdl
-  [56ddb016] + Logging
-  [d6f4376e] + Markdown
-  [44cfe95a] + Pkg
-  [de0858da] + Printf
-  [3fa0cd96] + REPL
-  [9a3f8284] + Random
-  [ea8e919c] + SHA
-  [9e88b42a] + Serialization
-  [6462fe0b] + Sockets
-  [cf7118a7] + UUIDs
-  [4ec0a83e] + Unicode
-"Example"
 
 shell> ls
 Example        julia-workshop
@@ -95,13 +69,15 @@ Status `~/Dropbox/Documents/teaching/julia-workshop/Example/Project.toml`
   [ff71e718] MixedModels v2.4.0
 ```
 
-5. Write scripts in the `scripts` folder
+#### Let's talk about simulations
 
-6. Prepare simulations. Stop parsing parameters in filenames to keep track of simulations: `savename = "w=$w_f=$f_x=$x.txt"`. Use `savename` and `@tagsave`.
+Stop parsing parameters in filenames to keep track of simulations: `savename = "w=$w_f=$f_x=$x.txt"`. Use `savename` and `@tagsave`.
 
-A simple simulations workflow:
-6.1) You have your simulation function that runs one job: `fakesim(a, b, v, method = "linear")`
-6.2) You decide all the parameters that you want to try on the simulations:
+A simple simulations workflow: 
+
+1. You have your simulation function that runs one job: `fakesim(a, b, v, method = "linear")`
+
+2. You decide all the parameters that you want to try on the simulations:
 ```julia
 allparams = Dict(
     :a => [1, 2], # it is inside vector. It is expanded.
@@ -120,7 +96,8 @@ You get all the parameter combinations:
  Dict(:a => 1,:b => 4,:method => "linear",:v => [0.9726901391682818, 0.22300183839741217, 0.9093285153487787, 0.5280066726357, 0.7686151029111623])
  Dict(:a => 2,:b => 4,:method => "linear",:v => [0.9726901391682818, 0.22300183839741217, 0.9093285153487787, 0.5280066726357, 0.7686151029111623])
  ```
-6.3) You create your function that runs the simulation and takes a Dictionary as input:
+
+3. You create your function that runs the simulation and takes a Dictionary as input:
 ```julia
 function makesim(d::Dict)
     @unpack a, b, v, method = d
@@ -132,7 +109,7 @@ function makesim(d::Dict)
 end
 ```
 
-6.4) Run your simulations:
+4. Run your simulations:
 ```julia
 for (i, d) in enumerate(dicts)
     f = makesim(d)
@@ -140,7 +117,7 @@ for (i, d) in enumerate(dicts)
 end
 ```
 
-7. Analyze results
+5. Analyze results
 ```julia
 using DataFrames
 
@@ -148,7 +125,9 @@ df = collect_results(datadir("simulations"))
 ```
 This will provide you a summary of the simulations you have run already.
 
-8. Share your project to colleagues: send your entire project folder to your colleague, and all they need to do is:
+#### Easy share with collaborators!
+
+Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:
 ```julia
 julia> cd("path/to/project")
 pkg> activate .
@@ -177,11 +156,11 @@ julia> datadir("mydata","tmp.txt")
 
 - Keep track of the simulations you have done, and never again overwrite files!
 
-DrWatson Workflow in a nutshell:
+DrWatson Workflow in a nutshell (copied from DrWatson tutorial):
 ![](https://juliadynamics.github.io/DrWatson.jl/dev/workflow.png)
 
 
 ## Post-workshop learning
 
-- Checkout [this youtube](https://www.youtube.com/watch?v=jKATlEAu8eE&feature=youtu.be) video about DrWatson. Kudos George for package branding!
-- Read DrWatson [documentation](https://juliadynamics.github.io/DrWatson.jl/dev/). What is shown here was only the tip of the iceberg!
+- Checkout [this youtube](https://www.youtube.com/watch?v=jKATlEAu8eE&feature=youtu.be) video about DrWatson. Kudos to George for package branding!
+- Read DrWatson [documentation](https://juliadynamics.github.io/DrWatson.jl/dev/). What is shown here is only the tip of the iceberg!
