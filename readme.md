@@ -1,6 +1,6 @@
 # Julia workshop for Data Science
 
-This repository contains the notes of the julia workshop taught at CIMAT in October 26-27, 2020.
+This repository contains the notes of the Julia workshop taught at CIMAT in October 26-27, 2020.
 
 
 ## In preparation for the course
