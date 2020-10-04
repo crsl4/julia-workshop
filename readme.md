@@ -19,10 +19,10 @@ git clone https://github.com/crsl4/julia-workshop.git
 
 | Session     | Topics | In preparation     | At the end of the session |
 | :---        |    :---  |  :--- | :--- |
-| 1:00-1:10pm | Introduction  | Clone and browse the [github repo](https://github.com/crsl4/julia-workshop.git)      | You will know the plan for the workshop |
-| 1:10-1:30pm | Why to use Julia? | Browse the main [julia page](https://julialang.org/) and read [news1](https://www.zdnet.com/article/programming-language-julia-version-1-5-is-out-lots-of-new-features-better-performance/) and [news2](https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/)  | You will be motivated to learn julia |
-| 1:30-2:15pm | Getting started in julia | Read the basics of julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything setup to do data analysis in julia |
-| 2:30-3:15pm | Introduction to MixedModels.jl | And more      | xxx |
+| 1:00-1:10 pm | Introduction  | Clone and browse the [github repo](https://github.com/crsl4/julia-workshop.git)      | You will know the plan for the workshop |
+| 1:10-1:30 pm | Why to use Julia? | Browse the main [julia page](https://julialang.org/) and read [news1](https://www.zdnet.com/article/programming-language-julia-version-1-5-is-out-lots-of-new-features-better-performance/) and [news2](https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/)  | You will be motivated to learn julia |
+| 1:30-2:15 pm | Getting started in julia | Read the basics of julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything setup to do data analysis in julia |
+| 2:30-3:15 pm | Introduction to MixedModels.jl | And more      | xxx |
 
 
 
@@ -30,8 +30,8 @@ git clone https://github.com/crsl4/julia-workshop.git
 
 | Session     | Topics | In preparation     | At the end of the session |
 | :---        |    :---  |  :--- | :--- |
-| 1:00-2:30pm | Breakout groups to work in data analyses in julia | Bring your data and R/python script | Your own Julia code for data analysis |
-| 2:30-3:00pm | Final comments/remarks  |      |   |
+| 1:00-2:30 pm | Breakout groups to work in data analyses in julia | Bring your data and R/python script | You will have your own Julia code for data analysis |
+| 2:30-3:00 pm | Final comments/remarks  |      |   |
 
 
 ## Continuous learning
