@@ -34,6 +34,6 @@ git clone https://github.com/crsl4/julia-workshop.git
 | 2:30-3:00 pm | Final comments/remarks  |      |   |
 
 
-## Continuous learning
+## Want to learn more?
 
-Checkout the great resources of [Julia learning](https://julialang.org/learning/)
+Checkout the great resources in [Julia learning](https://julialang.org/learning/).
