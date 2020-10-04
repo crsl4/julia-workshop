@@ -1,0 +1,8 @@
+# Get started in julia
+
+Let's start by looking at the REPL and try:
+- `;` to open shell
+- `$` to open R (after `using RCall`)
+- `]` to open package management: try `status`
+- `?` to open help
+- `\beta` for math symbols
