@@ -47,6 +47,32 @@ Two files are noteworthy:
 - `Project.toml`: Defines project
 - `Manifest.toml`: Contains exact list of project dependencies
 
+```
+shell> head Project.toml
+name = "Example"
+authors = ["CSL"]
+
+[deps]
+DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+
+[compat]
+julia = "1.5.1"
+
+
+shell> head Manifest.toml
+# This file is machine-generated - editing it directly is not advised
+
+[[Base64]]
+ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+
+[[DrWatson]]
+ deps = ["Dates", "FileIO", "LibGit2", "Pkg", "Random", "Requires", "UnPack"]
+ git-tree-sha1 = "2a022d640d242c7f54e1cf5f8f126604e02ae452"
+@@ -19,10 +107,54 @@ git-tree-sha1 = "992b4aeb62f99b69fcf0cb2085094494cc05dfb3"
+ uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+ version = "1.4.3"
+```
+
 3. Whenever you want to start working on your project, you type:
 ```julia
 julia> using DrWatson
@@ -120,10 +146,21 @@ end
 5. Analyze results
 ```julia
 using DataFrames
-
 df = collect_results(datadir("simulations"))
 ```
-This will provide you a summary of the simulations you have run already.
+
+This will provide you a summary of the simulations you have run already:
+```
+4×7 DataFrame. Omitted printing of 2 columns
+│ Row │ a      │ b      │ method  │ y        │ v                                                 │
+│     │ Int64? │ Int64? │ String? │ Float64? │ Union{Missing, Array{Float64,1}}                  │
+├─────┼────────┼────────┼─────────┼──────────┼───────────────────────────────────────────────────┤
+│ 1   │ 1      │ 3      │ linear  │ 1.73205  │ [0.322487, 0.916779, 0.228918, 0.13816, 0.813318] │
+│ 2   │ 1      │ 4      │ linear  │ 2.0      │ [0.322487, 0.916779, 0.228918, 0.13816, 0.813318] │
+│ 3   │ 2      │ 3      │ linear  │ 1.73205  │ [0.322487, 0.916779, 0.228918, 0.13816, 0.813318] │
+│ 4   │ 2      │ 4      │ linear  │ 2.0      │ [0.322487, 0.916779, 0.228918, 0.13816, 0.813318] │
+```
+
 
 #### Easy share with collaborators!
 
@@ -159,6 +196,62 @@ julia> datadir("mydata","tmp.txt")
 DrWatson Workflow in a nutshell (copied from DrWatson tutorial):
 ![](https://juliadynamics.github.io/DrWatson.jl/dev/workflow.png)
 
+## Exercise
+
+Follow the steps from above to run toy simulations in your project. You can design a simulation based on your own research, or you can use the same example above with the following function:
+```julia
+function fakesim(a, b, v, method = "linear")
+    if method == "linear"
+        r = @. a + b * v
+    elseif method == "cubic"
+        r = @. a*b*v^3
+    end
+    y = sqrt(b)
+    return r, y
+end
+```
+
+**Warning:** You will need to install the package `BSON` if you are following the example above:
+```julia
+(Example) pkg> add BSON
+```
+You also need to add the package `DataFrames`.
+
+**Tip:** Check that the simulations produced the files in shell mode:
+```julia
+shell> ls data/simulations/
+a=1_b=3_method=linear.bson a=1_b=4_method=linear.bson a=2_b=3_method=linear.bson a=2_b=4_method=linear.bson
+```
+
+## Final thoughts
+- Look at your `Project.toml` and `Manifest.toml` files:
+```
+shell> head -n11 Project.toml
+name = "Example"
+authors = ["CSL"]
+
+[deps]
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
+
+[compat]
+julia = "1.5.1"
+
+
+shell> head Manifest.toml
+# This file is machine-generated - editing it directly is not advised
+
+[[ArrayLayouts]]
+deps = ["FillArrays", "LinearAlgebra"]
+git-tree-sha1 = "951c3fc1ff93497c88fb1dfa893f4de55d0b38e3"
+uuid = "4c555306-a7a7-4459-81d9-ec55ddd5c99a"
+version = "0.3.8"
+
+[[BSON]]
+git-tree-sha1 = "dd36d7cf3d185eeaaf64db902c15174b22f5dafb"
+```
 
 ## Post-workshop learning
 
