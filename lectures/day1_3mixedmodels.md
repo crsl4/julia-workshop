@@ -424,7 +424,7 @@ julia> m1.objective
 1751.9393444647123
 ```
 
-## Creating an lmer model from a `LinearMixedModel`
+## Creating an `lmer` model from a `LinearMixedModel`
 
 Phillip Alday has created the `JellyMe4` package to allow you to create an `lmer` model from a `LinearMixedModel`.
 Because the `lme4` package stores a `model.frame` as part of a linear mixed-effects model object, a Tuple of the model and the data frame must be passed to R.
