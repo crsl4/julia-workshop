@@ -224,7 +224,7 @@ a=1_b=3_method=linear.bson a=1_b=4_method=linear.bson a=2_b=3_method=linear.bson
 ```
 
 ## Final thoughts
-- Look at your `Project.toml` and `Manifest.toml` files:
+Look at your `Project.toml` and `Manifest.toml` files now. They have all necessary information about your session.
 ```
 shell> head -n11 Project.toml
 name = "Example"
