@@ -76,7 +76,7 @@ The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_iden
 
 More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
 
-3. Whenever you want to start working on your project, you type:
+3. Whenever you want to start working on your project, you need to be in your `Example` folder, and type:
 ```julia
 julia> using DrWatson
 
