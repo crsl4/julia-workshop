@@ -78,7 +78,9 @@ Transfer the Julia `DataFrame` to an R `data.frame` with the same name
 @rput sleepstudy;
 ```
 
-and produce the plot
+More on Julia macros [here](https://docs.julialang.org/en/v1/manual/metaprogramming/#man-macros).
+
+We then produce the plot
 
 ```julia
 R"""
