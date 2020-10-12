@@ -1,0 +1,68 @@
+# Running LMM in Julia
+
+You can weave this document as html or pdf:
+```{julia; eval=false}
+using Weave
+weave("day1_3mixedmodels.jmd")        # for an html output
+weave("day1_3mixedmodels.jmd",
+      doctype="pandoc2pdf", fig_ext=".pdf")  # for a pdf output
+```
+
+Setting up the project:
+```julia
+using DrWatson
+@quickactivate
+using DataFrames, JellyMe4, MixedModels, RCall
+```
+
+### Data from a study on sleep deprivation
+
+Belenky et al. (2003) conducted an experiment to measure the 
+effect of sleep deprivation on cognitive performance.
+There were 18 subjects, chosen from the population of interest
+(long-distance truck drivers), in the 10 day trial. These subjects were  restricted to 3 hours sleep per night during the trial.
+
+On each day of the trial each subject's reaction time was measured.
+The reaction time shown here is the average of several measurements.
+
+These data are *balanced* in that each subject is measured the same number of times and on the same occasions.
+
+Load the data:
+
+```julia
+sleepstudy = DataFrame(MixedModels.dataset(:sleepstudy));
+describe(sleepstudy)
+```
+
+and plot the data using the _lattice_ package in R
+
+Load the `lattice` package in `R` and set the graphics device to SVG (scalable vector graphics).
+
+```julia
+R"""
+require("ggplot2", quietly=TRUE)
+require("lattice", quietly=TRUE)
+require("lme4", quietly=TRUE)
+""";
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=6, height=3.5)
+```
+
+Transfer the Julia `DataFrame` to an R `data.frame` with the same name
+
+```julia
+@rput sleepstudy;
+```
+
+and produce the plot
+
+```julia
+R"""
+xy <- xyplot(
+    reaction ~ days | subj, sleepstudy, aspect = "xy",
+    layout = c(9,2), type = c("g", "p", "r"),
+    index.cond = function(x,y) coef(lm(y ~ x))[1],
+    xlab = "Days of sleep deprivation",
+    ylab = "Average reaction time (ms)"
+)
+"""
+```
