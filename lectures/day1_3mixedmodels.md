@@ -486,13 +486,14 @@ R"qqmath(ranef(m1))[['subj']]"
 
 ## Exercise
 
-- Clone the `toy-lmm` repo: `git clone https://github.com/crsl4/toy-lmm.git`
-- Open the `day1_3mixedmodels.jmd` or the `day1_3mixedmodels.jl` file with your favorite editor (e.g. [Visual Studio Code](https://code.visualstudio.com/))
-- Shift-cmd-P to open the commands window and search for `Julia: Start REPL`
-- Type `]` in the Terminal window in VSCode to get the pkg prompt
-- `pkg> activate .`
-- Use backspace to get back to the julia prompt
-- Try to run the commands with Ctrl+return
+1. Install [Visual Studio Code](https://code.visualstudio.com/) with Julia extension
+2. Clone the `toy-lmm` repo: `git clone https://github.com/crsl4/toy-lmm.git`
+3. Open the `day1_3mixedmodels.jmd` or the `day1_3mixedmodels.jl` file in VSCode
+4. Shift-cmd-P to open the commands window and search for `Julia: Start REPL`
+5. Type `]` in the Terminal window in VSCode to get the pkg prompt
+6. `pkg> activate .`
+7. Use backspace to get back to the julia prompt
+8. Try to run the commands with Ctrl+return
 
 Note that this exercise might take longer if you have not installed VSCode or the julia extension in VSCode.
 
