@@ -207,7 +207,7 @@ julia> datadir("mydata","tmp.txt")
 DrWatson Workflow in a nutshell (copied from DrWatson [tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/)):
 ![](https://juliadynamics.github.io/DrWatson.jl/dev/workflow.png)
 
-## Exercise
+## Exercise (10 minutes)
 
 Follow the steps from above to run toy simulations in your project. You can design a simulation based on your own research, or you can use the same example above with the following function:
 ```julia
