@@ -5,7 +5,7 @@ Let's start by looking at the REPL and try:
 - `$` to open R mode (after `using RCall`)
 - `]` to open package mode: try `status`
 - `?` to open help mode
-- `\beta` for math symbols
+- `\beta+TAB` for math symbols
 - `<backspace>` return to Julia mode
 
 
@@ -72,6 +72,9 @@ shell> head Manifest.toml
  uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
  version = "1.4.3"
 ```
+The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) string which is the universally unique identifier.
+
+More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
 
 3. Whenever you want to start working on your project, you type:
 ```julia
