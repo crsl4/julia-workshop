@@ -26,7 +26,7 @@ Status `~/Dropbox/Documents/teaching/julia-workshop/toy-lmm/Project.toml`
 ## Running LMM in Julia
 
 The code below is also contained in the `day1_3mixedmodels.jmd` Julia Markdown file which can be weaved into a PDF or HTML file. More details below. This md version is used mostly because it is easy to render in github.
-You can also write the commands in a `.jl` file in the `scripts` subfolder.
+You can also write the commands in a `.jl` file in the `scripts` subfolder. More in the Exercise below.
 
 ```julia
 using DataFrames, JellyMe4, MixedModels, RCall
@@ -483,6 +483,18 @@ For this plot the order of the groups is determined separately for each panel.
 R"qqmath(ranef(m1))[['subj']]"
 ```
 ![](../figures/qqmath.png)
+
+## Exercise
+
+- Clone the `toy-lmm` repo: `git clone https://github.com/crsl4/toy-lmm.git`
+- Open the `day1_3mixedmodels.jmd` or the `day1_3mixedmodels.jl` file with your favorite editor (e.g. [Visual Studio Code](https://code.visualstudio.com/))
+- Shift-cmd-P to open the commands window and search for `Julia: Start REPL`
+- Type `]` in the Terminal window in VSCode to get the pkg prompt
+- `pkg> activate .`
+- Use backspace to get back to the julia prompt
+- Try to run the commands with Ctrl+return
+
+Note that this exercise might take longer if you have not installed VSCode or the julia extension in VSCode.
 
 # Post-workshop learning
 - RePsychLing [tutorial](https://repsychling.github.io/tutorial.html)
