@@ -100,7 +100,7 @@ Status `~/Dropbox/Documents/teaching/julia-workshop/Example/Project.toml`
 
 #### Let's talk about simulations
 
-Stop parsing parameters in filenames to keep track of simulations: `savename = "w=$w_f=$f_x=$x.txt"`. Use `savename` and `@tagsave`.
+Stop parsing parameters in filenames to keep track of simulations: `savename = "w=$w_f=$f_x=$x.txt"`. Instead use `savename` and `@tagsave` as described below.
 
 A simple simulations workflow: 
 
