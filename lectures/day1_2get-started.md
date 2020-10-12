@@ -204,7 +204,7 @@ julia> datadir("mydata","tmp.txt")
 
 - Keep track of the simulations you have done, and never again overwrite files!
 
-DrWatson Workflow in a nutshell (copied from DrWatson [tutorial]((https://juliadynamics.github.io/DrWatson.jl/dev/workflow/))):
+DrWatson Workflow in a nutshell (copied from DrWatson [tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/)):
 ![](https://juliadynamics.github.io/DrWatson.jl/dev/workflow.png)
 
 ## Exercise
