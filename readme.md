@@ -24,7 +24,7 @@ git clone https://github.com/crsl4/julia-workshop.git
 | 1:30-2:15 pm | Getting started in Julia | Read the basics of Julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything setup to do data science in Julia |
 | 2:15-2:25 pm | Coffee Break  |       |   |
 | 2:25-2:30 pm | Questions check-in |       |   |
-| 2:30-3:30 pm | Introduction to [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) | Browse the [MixedModels docs](https://juliastats.org/MixedModels.jl/stable/) and if possible, install [VSCode](https://code.visualstudio.com/) with Julia extension     | You will know the main functions to run LMM in Julia |
+| 2:30-3:15 pm | Introduction to [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) | Browse the [MixedModels docs](https://juliastats.org/MixedModels.jl/stable/) and if possible, install [VSCode](https://code.visualstudio.com/) with Julia extension     | You will know the main functions to run LMM in Julia |
 
 
 

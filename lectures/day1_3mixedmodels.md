@@ -484,7 +484,7 @@ R"qqmath(ranef(m1))[['subj']]"
 ```
 ![](../figures/qqmath.png)
 
-## Exercise
+## Exercise (15 minutes)
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/) with Julia extension
 2. Clone the `toy-lmm` repo: `git clone https://github.com/crsl4/toy-lmm.git`
@@ -495,7 +495,6 @@ R"qqmath(ranef(m1))[['subj']]"
 7. Use backspace to get back to the julia prompt
 8. Try to run the commands with Ctrl+return
 
-Note that this exercise might take longer if you have not installed VSCode or the julia extension in VSCode.
 
 # Post-workshop learning
 - RePsychLing [tutorial](https://repsychling.github.io/tutorial.html)
