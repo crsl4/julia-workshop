@@ -22,7 +22,7 @@ git clone https://github.com/crsl4/julia-workshop.git
 | 1:00-1:10 pm | Introduction  | Clone and browse the [github repo](https://github.com/crsl4/julia-workshop.git)      | You will know the plan for the workshop |
 | 1:10-1:30 pm | Why to use Julia? | Browse the main [Julia page](https://julialang.org/) and read [news1](https://www.zdnet.com/article/programming-language-julia-version-1-5-is-out-lots-of-new-features-better-performance/) and [news2](https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/)  | You will be motivated to learn Julia |
 | 1:30-2:15 pm | Getting started in Julia | Read the basics of Julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything setup to do data science in Julia |
-| 2:15-2:25 pm | Break  |       |   |
+| 2:15-2:25 pm | Coffee Break  |       |   |
 | 2:25-2:30 pm | Office hours |       |   |
 | 2:30-3:15 pm | Introduction to MixedModels.jl | And more      | xxx |
 
