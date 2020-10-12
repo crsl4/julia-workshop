@@ -26,6 +26,7 @@ Status `~/Dropbox/Documents/teaching/julia-workshop/toy-lmm/Project.toml`
 ## Running LMM in Julia
 
 The code below is also contained in the `day1_3mixedmodels.jmd` Julia Markdown file which can be weaved into a PDF or HTML file. More details below. This md version is used mostly because it is easy to render in github.
+You can also write the commands in a `.jl` file in the `scripts` subfolder.
 
 ```julia
 using DataFrames, JellyMe4, MixedModels, RCall

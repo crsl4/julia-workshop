@@ -4,7 +4,7 @@ This repository contains the notes of the Julia workshop taught at CIMAT in Octo
 
 
 ## In preparation for the course
-- Bring a small dataset that you can analyze in class
+- Bring a small dataset that you can analyze in class (preferably LMM-related, but not exclusively)
 - Bring an R (or python) script with the code that you would normally use to analyze the dataset
 - Read the syllabus below and checkout the resources in the "In preparation" column
 - [Download](https://julialang.org/) julia in your computer
