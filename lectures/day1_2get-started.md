@@ -146,6 +146,14 @@ for (i, d) in enumerate(dicts)
 end
 ```
 
+See your files:
+```shell
+$ cd data/simulations/
+$ ls
+a=1_b=3_method=linear.bson a=2_b=3_method=linear.bson
+a=1_b=4_method=linear.bson a=2_b=4_method=linear.bson
+```
+
 5. Analyze results
 ```julia
 using DataFrames
