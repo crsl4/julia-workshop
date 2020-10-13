@@ -14,4 +14,4 @@ Steps:
 3. Put your R/python code in the `scripts` folder
 4. Create a jl file with the same name as your R/python code in the `scripts` folder. For example, if your R code is called `my-scripts.r`, you will create a `my-scripts.jl` file
 5. Open the jl file in VSCode (or any editor you like), and translate the R/python code into Julia
-6. If you are able to share your code, fork the `julia-workshop` repository, put your `my-scripts.R` and `my-scripts.jl` in the `scripts` folder, push to your fork and then do a pull request
+6. We will share the code with others at the end of the session
