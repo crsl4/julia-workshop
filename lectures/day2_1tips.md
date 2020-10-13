@@ -1,6 +1,6 @@
 # Tips on general Julia questions
 
-- **Pre-compilation time is killing me.** Check out the `Revise.jl` package that allows you to modify code and use the changes without restarting a Julia session. This can save you the overhead of restarting Julia, loading packages, and waiting for code to JIT-compile. See [Revise github repo](https://github.com/timholy/Revise.jl).
+- **Pre-compilation time is killing me.** Check out the `Revise.jl` package that allows you to modify code and use the changes without restarting a Julia session. This can save you the overhead of restarting Julia, loading packages, and waiting for code to JIT-compile. See [Revise github repo](https://github.com/timholy/Revise.jl). Also, look out for Julia version 1.6.0 where developers have done massive amount of work to reduce pre-compilation time.
 
 - **DataFrames.jl seems complex to me.** Check out [this cheat sheet](https://ahsmart.com/assets/pages/data-wrangling-with-data-frames-jl-cheat-sheet/DataFramesCheatSheet_v0.21_rev3.pdf) with the main functions in DataFrames. Also, check out the use of `=>` in DataFrames [here](https://www.juliabloggers.com/how-is-used-in-dataframes-jl/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost). Finally, check the comparisons with pandas and dplyr [here](https://juliadata.github.io/DataFrames.jl/latest/man/comparisons/).
 

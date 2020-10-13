@@ -95,7 +95,7 @@ When we add packages, we are adding them for the project.
 (Example) pkg> status
 Status `~/Dropbox/Documents/teaching/julia-workshop/Example/Project.toml`
   [634d3b9d] DrWatson v1.16.0
-  [ff71e718] MixedModels v2.4.0
+  [ff71e718] MixedModels v3.0.0
 ```
 
 #### Let's talk about simulations
