@@ -6,7 +6,7 @@
 
 - **How about piping?** Julia supports piping via `|`, but check out `Pipe.jl` for advanced piping functionalities. See [Pipe github repo](https://github.com/oxinabox/Pipe.jl).
 
-- **I want to learn more about Statistical computing.** [This blog](https://github.com/johnmyleswhite/julia_tutorials/blob/master/Statistics%20in%20Julia%20-%20Maximum%20Likelihood%20Estimation.ipynb) is a good place to start. In particular, check out how the principles on mutating functions, and using `@view` instead of data copies.
+- **I want to learn more about Statistical computing.** [This blog](https://github.com/johnmyleswhite/julia_tutorials/blob/master/Statistics%20in%20Julia%20-%20Maximum%20Likelihood%20Estimation.ipynb) is a good place to start. In particular, check out how the principles on mutating functions, and using `@view` instead of data copies. Also, check out [JuMP](https://jump.dev/) for more on Julia Optimization.
 
 - **I want to learn more about macros for meta-programming.** [This blog](https://github.com/johnmyleswhite/julia_tutorials/blob/master/From%20Macros%20to%20DSLs%20in%20Julia%20-%20Part%201%20-%20Macros.ipynb) is a good place to read after the standard Julia documentation on [meta-programming](https://docs.julialang.org/en/v1/manual/metaprogramming/).
 
