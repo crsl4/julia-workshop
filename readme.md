@@ -25,6 +25,7 @@ git clone https://github.com/crsl4/julia-workshop.git
 | 2:15-2:25 pm | Coffee Break  |       |   |
 | 2:25-2:30 pm | Questions check-in |       |   |
 | 2:30-3:15 pm | Introduction to [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) | Browse the [MixedModels docs](https://juliastats.org/MixedModels.jl/stable/) and if possible, install [VSCode](https://code.visualstudio.com/) with Julia extension     | You will know the main functions to run LMM in Julia |
+| 3:15-3:30 pm | Final comments/remarks |       |   |
 
 
 
