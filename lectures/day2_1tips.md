@@ -4,7 +4,7 @@
 
 - **DataFrames.jl seems complex to me.** Check out [this cheat sheet](https://ahsmart.com/assets/pages/data-wrangling-with-data-frames-jl-cheat-sheet/DataFramesCheatSheet_v0.21_rev3.pdf) with the main functions in DataFrames. Also, check out the use of `=>` in DataFrames [here](https://www.juliabloggers.com/how-is-used-in-dataframes-jl/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost). Finally, check the comparisons with pandas and dplyr [here](https://juliadata.github.io/DataFrames.jl/latest/man/comparisons/).
 
-- **How about piping?** Julia supports piping via `|`, but check out `Pipe.jl` for advanced piping functionalities. See [Pipe github repo](https://github.com/oxinabox/Pipe.jl).
+- **How about piping?** Julia supports piping via `|>`, but check out `Pipe.jl` for advanced piping functionalities. See [Pipe github repo](https://github.com/oxinabox/Pipe.jl).
 
 - **I want to learn more about Statistical computing.** [This blog](https://github.com/johnmyleswhite/julia_tutorials/blob/master/Statistics%20in%20Julia%20-%20Maximum%20Likelihood%20Estimation.ipynb) is a good place to start. In particular, check out how the principles on mutating functions, and using `@view` instead of data copies. Also, check out [JuMP](https://jump.dev/) for more on Julia Optimization.
 
