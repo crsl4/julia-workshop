@@ -33,8 +33,10 @@ git clone https://github.com/crsl4/julia-workshop.git
 
 | Session     | Topics | In preparation     | At the end of the session |
 | :---        |    :---  |  :--- | :--- |
-| 1:00-2:30 pm | Breakout groups to work in data analyses in Julia | Bring your data and R/python script | You will have your own Julia code for data analysis |
-| 2:30-3:00 pm | Final comments/remarks  |      |   |
+| 1:00-1:30 pm |  General tips for FAQ  |      | You will have a list of Julia resources to check out |
+| 1:30-2:30 pm | Breakout groups to work in data analyses in Julia | Bring your data and R/python script | You will have your own Julia code for data analysis |
+| 2:30-2:45 pm | Coffee break and exit feedback survey  |      |   |
+| 2:45-3:00 pm | Final comments/remarks  |      |   |
 
 
 ## Want to learn more?
