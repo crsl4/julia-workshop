@@ -1,4 +1,4 @@
-# Exercise in breakout rooms
+# Exercise in breakout rooms (1 hour)
 
 Now you will put together everything you have learned until now.
 
