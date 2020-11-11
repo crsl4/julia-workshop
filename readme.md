@@ -2,9 +2,6 @@
 
 This repository contains the notes of the Julia workshop taught at the xxx.
 
-The folder `2day-workshop` contains the notes of the Julia workshop taught at CIMAT in October 26-27, 2020.
-
-
 ## In preparation for the course
 - Read the syllabus below and checkout the resources in the "In preparation" column
 - [Download](https://julialang.org/) julia in your computer
@@ -24,3 +21,7 @@ git clone https://github.com/crsl4/julia-workshop.git
 ## Want to learn more?
 
 Checkout the great resources in [Julia learning](https://julialang.org/learning/).
+
+## Previous versions of workshops
+
+- The folder `2day-workshop` (and "CIMAT workshop" release) contains the notes of the Julia workshop taught at CIMAT in October 26-27, 2020
