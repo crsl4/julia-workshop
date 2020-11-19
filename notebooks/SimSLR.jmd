@@ -1,3 +1,7 @@
+---
+weave_options:
+  line_width: 92
+---
 
 ## Simulation of simple linear regression estimates
 
@@ -5,13 +9,22 @@ To illustrate some of the capabilities of `DrWatson`for simulations we consider 
 
 In the second part of the workshop we will consider data from an experiment on the effects of sleep deprivation on reaction time.
 For each subject in the study we will assume a simple linear regression model, 
-$$y_i = a*x_i + b + \epsilon_i,\; i = 1,\dots,10$$
+$$y_i = a*x_i + b + \epsilon_i,\; i = 1,\dots,10,\;\epsilon_i\sim\mathcal{N}(0,\sigma^2)$$
 for their $i$th reaction time, $y_i$, as a function of the number of days of sleep deprivation, $x_i$.
 
 For subject `S334` the estimates of $a$ and $b$ are approximately $a=12.25$ ms/day and $b=240.16$ ms.
 An estimate of the residual standard deviation is $s=8.55$ ms, which we will use as the value of $\sigma$ in our simulation.
 
 For all the subjects, the days of sleep deprivation are from 0 to 9.
+
+First establish the `DrWatson` environment
+```julia
+using DrWatson
+```
+and attach other packages to be used
+```julia
+using Arrow, LinearAlgebra, Random, PrettyTables
+```
 
 ## Parameter tuples
 
@@ -28,10 +41,6 @@ typeof(pars)
 A Julia `NamedTuple` is similar to a named list in R except that the names are _symbols_ (the symbol 'a' is written ':a') and the types of the values are part of the tuple type itself.
 In `DrWatson` a simulation function typically takes a parameter tuple which is immediately _unpacked_ by calling the `@unpack` macro.
 A parameter tuple can also be used to generate a meaningful file name under which to save the results of a simulation.
-
-```julia
-using DrWatson, LinearAlgebra, Random, PrettyTables
-```
 
 ```julia
 savename(pars, "arrow")  # file name for an Arrow file of results from these parameters
@@ -52,10 +61,10 @@ end
 oneresp(pars)
 ```
 
-A call to `randn(n)` generates an i.i.d. sample of size `n` from a standard normal distribution.
+A call to `randn(n)` generates an independent sample of size `n` from a standard normal distribution.
 We scale these values by σ and add this "noise" to the assumed "true" response, `a * x + b`.
 
-In Julia the "dots" ('.') before an operator like '+' or '\*' cause it to be broadcast over arrays.
+In Julia the "dots" ('.') before an operator like '+' or '\*' cause the operation to be broadcast over arrays.
 
 ### Reproducible "random" responses
 
@@ -120,12 +129,14 @@ end
 onepars(MersenneTwister(42), pars)
 ```
 
-To generate a sample of these parameter estimates we first initialize a random number generator
+To generate a sample of these parameter estimates we first initialize a random number generator then create a vector of evaluations of `onepars`.
 
 ```julia
 rng = MersenneTwister(6354789);
 samp = [onepars(rng, pars) for i in 1:100]
 ```
+
+(The construction with the `for` specification within the brackets is called a _comprehension_. It also exists in Python.)
 
 It may seem like a waste to repeat the names for each result but, in fact, the names are only stored once for this vector.
 
@@ -158,21 +169,21 @@ An optimized version of a simulation function could look like
 ```julia
 function simslr(rng::AbstractRNG, pars, N)
     @unpack a, b, σ, x = pars
-    n = length(x)
     qrfac = qr!(hcat(ones(length(x)), x))
+    n, p = size(qrfac)
     Qt = qrfac.Q'
     R = UpperTriangular(qrfac.R)
     y₀ = convert(Vector{eltype(qrfac)}, a .* x .+ b)
     y = similar(y₀)
-    cv = view(y, 1:2)   # view of the part of Q'y defining the coefficients
-    rv = view(y, 3:n)   # view of the part of Q'y defining the residuals
+    cv = view(y, 1:p)   # view of the part of Q'y defining the coefficients
+    rv = view(y, (p+1):n)   # view of the part of Q'y defining the residuals
     map(1:N) do i
         for j in axes(y, 1)
             y[j] = y₀[j] + σ * randn(rng)
         end
         lmul!(Qt, y)
         ldiv!(R, cv)
-        (slope = y[2], intercept = y[1], s² = sum(abs2, rv)/(n - 2))
+        (slope = y[2], intercept = y[1], s² = sum(abs2, rv)/(n - p))
     end
 end
 ```
@@ -191,12 +202,12 @@ A more detailed comparison, say by converting each of them to `DataFrame`s and u
 However, their execution times and the amount of storage used when generating, say, 10,000 samples are very different.
 
 ```julia
-rng = MersenneTwister(6354789)
+rng = MersenneTwister(6354789);
 @time [onepars(rng, pars) for i in 1:10_000];
 ```
 
 ```julia
-rng = MersenneTwister(6354789)
+rng = MersenneTwister(6354789);
 @time simslr(rng, pars, 10_000);
 ```
 
@@ -209,3 +220,46 @@ It is customary to append "!" to the names of such _mutating_ functions, like `l
 Also, in the simulation loop itself, the vector `y` is filled in with the fixed part of the response plus the random noise in an inner loop.
 This is the exact opposite of the programming style favored in R and Python where loops are avoided at all cost.
 In Julia a loop is a perfectly fine way of programming an iterative operation; there is no need to perform contorsions to "vectorize" operations.
+
+## Saving results
+
+A common workflow is to perform a simulation saving the results so they can be analyzed separately.
+Typically (though not in this example) the simulation can take a long time and may be done unattended whereas the analysis requires interaction with the data.
+
+The Apache Arrow format, which can be written and read using the [`Arrow.jl` package](https://github.com/JuliaData/Arrow.jl), is a versatile, efficient, and cross-platform format for storing tabular data.
+Arrow files written with the `arrow` package for R or with the `pyarrow` package for Python can be read by `Arrow.jl`.
+(Going the other direction can be problematic with R as not all the number types used in Julia can be represented in R.)
+
+```julia
+nrg = MersenneTwister(42);
+mkpath(datadir("simulations"));  # in case the directory does not exist
+fnm = Arrow.write(datadir("simulations", savename(pars, "arrow")), simslr(rng, pars, 50_000))
+```
+
+The process of writing the Arrow file converts the data to a column-oriented table,
+```julia
+tbl = Arrow.Table(fnm)
+```
+which is similar to a `DataFrame`.
+```julia
+using DataFrames
+describe(DataFrame(tbl))
+```
+
+Because the columns are all stored as 64-bit floating-point numbers, this arrow file can be read in R
+
+```
+> library(arrow)
+
+Attaching package: ‘arrow’
+
+The following object is masked from ‘package:utils’:
+
+    timestamp
+> simdat = read_feather("a=12.25_b=240.16_σ=8.55.arrow")
+> str(simdat)
+Classes ‘tbl_df’, ‘tbl’ and 'data.frame':       50000 obs. of  3 variables:
+ $ slope    : num  11.1 11.9 12.2 11.5 12.4 ...
+ $ intercept: num  248 242 243 242 238 ...
+ $ s²       : num  90.2 180.6 115.6 88 64 ...
+```
