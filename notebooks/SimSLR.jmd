@@ -1,6 +1,7 @@
 ---
 weave_options:
   line_width: 92
+  term: true
 ---
 
 ## Simulation of simple linear regression estimates
@@ -256,10 +257,13 @@ Attaching package: ‘arrow’
 The following object is masked from ‘package:utils’:
 
     timestamp
-> simdat = read_feather("a=12.25_b=240.16_σ=8.55.arrow")
-> str(simdat)
-Classes ‘tbl_df’, ‘tbl’ and 'data.frame':       50000 obs. of  3 variables:
- $ slope    : num  11.1 11.9 12.2 11.5 12.4 ...
- $ intercept: num  248 242 243 242 238 ...
- $ s²       : num  90.2 180.6 115.6 88 64 ...
+
+> simdat <- read_feather("./data/simulations/a=12.25_b=240.16_σ=8.55.arrow")
+> library(tibble)
+> glimpse(simdat)
+Rows: 50,000
+Columns: 3
+$ slope     <dbl> 12.38975, 12.29462, 12.76479, 12.30775, 13.51588, 11.22870,…
+$ intercept <dbl> 235.6208, 242.3419, 238.2172, 240.5549, 239.7041, 240.9386,…
+$ `s²`      <dbl> 116.64295, 20.87278, 94.90334, 60.11505, 70.39227, 65.19233…
 ```
