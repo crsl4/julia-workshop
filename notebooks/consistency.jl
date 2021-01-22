@@ -44,7 +44,7 @@ f = CSV.File(datanm, missingstrings = ["NA"],
 
 # ╔═╡ e456acf6-5bfb-11eb-3d7c-57cfd802112e
 md"""
-An advantage of downloading (or cloning) and reading the local version is that `CSV.File` defaults to using memory-mapping and multiple threads on a local file.
+An advantage of downloading (or cloning) and reading the local version is that `CSV.File` defaults to using memory-mapping on a local file (using the direct HTTP response body or local file will both use multiple threads to parse if the amount of data is large enough).
 """
 
 # ╔═╡ e43d5458-5b4d-11eb-1952-c5026070a8b1
@@ -53,7 +53,7 @@ md"""
 
 The packages developed by the [JuliaData group](https://github.com/JuliaData/) provide both column-oriented tables, similar to `data.frame` or `tibble` in `R` or `pandas` data frame in `Python`, or row-oriented tables, such as returned from queries to relational database systems.  The [Tables package](https://github.com/JuliaData/Tables.jl) provides the glue between the two representations.
 
-The value returned by `CSV,File` is an iterable row-oriented table.
+The value returned by `CSV.File` iterates efficient row "views", but stores the data internally in columns.
 """
 
 # ╔═╡ 84a6ada2-5b55-11eb-3136-31be42dd14d2
