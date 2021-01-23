@@ -1,6 +1,6 @@
 # Julia workshop for Data Science
 
-This repository contains the notes of the Julia workshop taught at the xxx.
+This repository contains the notes of the Julia workshop taught at the WID Data Science Research Bazaar on February 10th, 2021.
 
 ## In preparation for the course
 - Read the syllabus below and checkout the resources in the "In preparation" column
@@ -14,8 +14,12 @@ git clone https://github.com/crsl4/julia-workshop.git
 
 | Session     | Topics | In preparation     | At the end of the session |
 | :---        |    :---  |  :--- | :--- |
-| 1 (60 min) | Getting started in Julia | Read the basics of Julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything setup to do data science in Julia |
-| 2 (60 min) | Introduction to [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) | Browse the [MixedModels docs](https://juliastats.org/MixedModels.jl/stable/) and if possible, install [VSCode](https://code.visualstudio.com/) with Julia extension | You will know the main functions to run LMM in Julia |
+| 1 (15 min) | Getting started in Julia | Read the basics of Julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything set up to do Data Science in Julia |
+| 2 (30 min) | Description of data tools | Read about [Arrow.jl](https://github.com/JuliaData/Arrow.jl) and [Tables.jl](https://github.com/JuliaData/Tables.jl) | You will understand the main features of data storing and manipulation |
+| 3 (30 min) | Model fitting | Read about [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl)  | You will learn the main functions to run LMM in Julia |
+| 4 (30 min) | Brief illustration of other Data Science tools | Read about [RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)  | You will learn about the communication between Julia and R/python, the package system and tuning performance |
+| 5 (15 min) | Conclusions and questions |   |  |
+
 
 
 ## Want to learn more?
