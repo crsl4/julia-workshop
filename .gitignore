@@ -133,7 +133,6 @@ Backup[ ]of[ ]*.numbers/
 *.nosex
 
 ## html
-*.html
 *.css
 *.js
 *.ttf

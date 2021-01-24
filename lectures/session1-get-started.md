@@ -246,30 +246,6 @@ All required packages and dependencies will be installed. Scripts that run in yo
 ---
 class: left, top
 
-### Other cool things about DrWatson
-
-- `projectdir()` will always point at the project directory regardless of where you are
-- `datadir()` will always point at the data folder in the project directory
-
-```julia
-julia> projectdir()
-"/Users/Clauberry/Desktop/Example"
-
-julia> datadir()
-"/Users/Clauberry/Desktop/Example/data"
-```
-
-- Easy to point at files and subfolders too:
-
-```julia
-julia> datadir("mydata","tmp.txt")
-"/Users/Clauberry/Desktop/Example/data/mydata/tmp.txt"
-```
-
-- Keep track of the simulations you have done, and never again overwrite files!
-
----
-class: left, top
 
 DrWatson Workflow in a nutshell (copied from DrWatson [tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/)):
 
@@ -281,6 +257,8 @@ class: left, top
 ## Exercise
 
 **Instructions:** Create your own project folder with `DrWatson` to follow along with the julia code in the next sessions.
+
+**Time:** 1-2 minutes.
 
 Recall
 

@@ -14,11 +14,11 @@ git clone https://github.com/crsl4/julia-workshop.git
 
 | Session     | Topics | In preparation     | At the end of the session |
 | :---        |    :---  |  :--- | :--- |
-| 1 (15 min) | Getting started in Julia | Read the basics of Julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything set up to do Data Science in Julia |
+| 1 (20 min) | Getting started in Julia | Read the basics of Julia [here](https://learnxinyminutes.com/docs/julia/) | You will have everything set up to do Data Science in Julia |
 | 2 (30 min) | Description of data tools | Read about [Arrow.jl](https://github.com/JuliaData/Arrow.jl) and [Tables.jl](https://github.com/JuliaData/Tables.jl) | You will understand the main features of data storing and manipulation |
 | 3 (30 min) | Model fitting | Read about [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl)  | You will learn the main functions to run LMM in Julia |
 | 4 (30 min) | Brief illustration of other Data Science tools | Read about [RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)  | You will learn about the communication between Julia and R/python, the package system and tuning performance |
-| 5 (15 min) | Conclusions and questions |   |  |
+| 5 (10 min) | Conclusions and questions |   |  |
 
 
 

@@ -21,7 +21,7 @@ class: left, top
 - The goal for the workshop is to highlight the main features that make Julia an attractive option for data science programmers
 - Workshop materials in the github repository [julia-workshop](https://github.com/crsl4/julia-workshop)
 
-Schedule
+### Schedule
 
 - Session 1: Getting started with Julia
 - Session 2: Data tools
