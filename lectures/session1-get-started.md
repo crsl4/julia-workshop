@@ -148,7 +148,7 @@ shell> head Project.toml
 name = "Example"
 authors = ["CSL"]
 [compat]
-julia = "1.5.1"
+julia = "1.6.0"
 [deps]
 DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 
@@ -156,14 +156,14 @@ DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 shell> head Manifest.toml
 # This file is machine-generated - editing it directly is not advised
 
+[[ArgTools]]
+uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+
+[[Artifacts]]
+uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
-
-[[Dates]]
-deps = ["Printf"]
-uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
-
-[[DrWatson]]
 ```
 
 The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) string which is the universally unique identifier.
@@ -178,7 +178,6 @@ class: left, top
 julia> using DrWatson
 
 julia> @quickactivate
- Activating environment at `~/Dropbox/Documents/teaching/julia-workshop/Example/Project.toml`
 
 (Example) pkg> 
 ```
@@ -192,7 +191,7 @@ When we add packages, we are adding them for the project.
 (Example) pkg> add MixedModels
 
 (Example) pkg> status
-Status `~/Desktop/Example/Project.toml`
+Status `~/Documents/Example/Project.toml`
   [634d3b9d] DrWatson v1.16.6
   [ff71e718] MixedModels v3.1.4
 ```
@@ -212,20 +211,20 @@ DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
 
 [compat]
-julia = "1.5.1"
+julia = "1.6.0"
 
 
 shell> head Manifest.toml
 # This file is machine-generated - editing it directly is not advised
+
+[[ArgTools]]
+uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
 
 [[ArrayLayouts]]
 deps = ["Compat", "FillArrays", "LinearAlgebra", "SparseArrays"]
 git-tree-sha1 = "a577e27915fdcb3f6b96118b56655b38e3b466f2"
 uuid = "4c555306-a7a7-4459-81d9-ec55ddd5c99a"
 version = "0.4.12"
-
-[[Arrow]]
-deps = ["BitIntegers", "CodecLz4", "CodecZstd", "DataAPI", "Dates", "Mmap", "PooledArrays", "SentinelArrays", "Tables", "TimeZones", "UUIDs"]
 ```
 
 ---
