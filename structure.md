@@ -25,8 +25,8 @@ Among the main Julia tools, we will highlight five:
     - [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl): 100% julia package
 
 3. Communications with other systems:
-    - [RCall.jl](https://github.com/JuliaInterop/RCall.jl)
-    - [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)
+    - [RCall.jl](https://github.com/JuliaInterop/RCall.jl): 100% julia package
+    - [PyCall.jl](https://github.com/JuliaPy/PyCall.jl): 100% julia package
 
 4. Package system
     - With Julia 1.6, precompilation is done when the package is added

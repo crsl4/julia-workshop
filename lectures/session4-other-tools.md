@@ -15,9 +15,14 @@ output:
 ---
 class: left, top
 
+# So far you have learned
+
+- Data tools with `Arrow.jl` and `Tables.jl`
+- Model fitting with `MixedModels.jl`
+
 # Other Data Science tools in Julia
 
-- Communication with other systems
+- Communication with other systems: R and python
 - Package system
 - Tuning performance 
 
@@ -315,20 +320,20 @@ class: left, top
 Compare to
 
 ```julia
-julia> f(x::Number, y::Number) = 2x - y
+julia> f(x::Number, y::Number) = 2x + y
 f (generic function with 2 methods)
 
 julia> f(2.0, 3.0)
 7.0
 
 julia> f(2, 3.0)
-1.0
+7.0
 
 julia> f(2.0, 3)
-1.0
+7.0
 
 julia> f(2, 3)
-1
+7
 ```
 
 ---
@@ -362,3 +367,14 @@ class: left, top
 
 - [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl): performance tracking of Julia code
 - [Traceur.jl](https://github.com/JunoLab/Traceur.jl): You run your code, it tells you about any obvious performance traps
+
+---
+class: left, top
+
+# Exercise
+
+**Instructions:** Choose one function that was defined in the previous sessions and test its performance with `@time`, `@allocated` or whatever profiling tools you choose
+
+**Time:** 5 minutes
+
+_Optional:_ Re-write the function in R or python and run it through julia with `RCall` or `PyCall`. Compare the performance with the julia implementation.
