@@ -12,8 +12,8 @@ git clone https://github.com/crsl4/julia-workshop.git
 
 ## Syllabus
 
-| Session     | Time | Topics | Relevant files     | At the end of the session |
-| :---        |    :---  |  :--- | :--- |
+| Session     | Time | Topics | Relevant files  | At the end of the session |
+| :---        |    :---:  |    :---  |  :--- | :--- |
 | 1 | 20 min | Getting started in Julia | [Session 0 notes](https://github.com/crsl4/julia-workshop/blob/main/lectures/session0-housekeeping.md) and [Session 1 notes](https://github.com/crsl4/julia-workshop/blob/main/lectures/session1-get-started.md) | You will have everything set up to do Data Science in Julia |
 | 2 | 30 min | Description of data tools |  | You will understand the main features of data storing and manipulation |
 | 3 | 30 min | Model fitting |   | You will learn the main functions to run LMM in Julia |
