@@ -5,7 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 146dfffc-5f58-11eb-3053-d31ada3a5428
-using Arrow, DataFrames, RCall
+using Arrow, DataFrames, PooledArrays, PyCall, RCall
 
 # ╔═╡ 6d417df8-5f48-11eb-1afa-4f148f2f3121
 md"""
@@ -66,7 +66,9 @@ R"""write_feather(palmerpenguins::penguins, "penguins.arrow")"""
 # ╔═╡ 7813ebb6-5f58-11eb-3d10-affbe5c1c60b
 md"""
 The [`palmerpenguins` package](https://allisonhorst.github.io/palmerpenguins/) contains this table.
-Somewhat confusingly the function to write an arrow file in R's `arrow` package is named `write_feather`.
+The `arrow` package for R and the `pyarrow` Python package both refer to the arrow file format as `feather`.
+Feather was an earlier file format and the arrow format is now considered version 2 of Feather.
+This is just to explain why these packages use names like `write_feather`.
 
 Now read this file as a table in Julia.
 """
@@ -79,17 +81,43 @@ describe(penguins)
 
 # ╔═╡ 022743a2-5f5e-11eb-0477-cf77576fdc77
 md"""
-Notice that all the columns allow for missing data, even if there are no missing values in the column.
+Notice that all the columns allow for missing data, even when there are no missing values in the column.
 This is always the case in `R`.
 
 Also, the numeric types will always be `Int32` or `Float64` and most data tables will contain only these types plus `String`.
 
+
 That is not a problem coming from R to Julia - at most it is an inconvenience.
-However, going the other way - trying to read in R a file written from a Julia table will often fail because the data types are not available in R.
+
+To read this in Python we use the `pyarrow` package through the already loaded `PyCall` package for Julia
 """
 
-# ╔═╡ 3ff343ba-5f5f-11eb-3280-21d09b101ae8
-R"""mb1 <- read_feather("02_validated_output.arrow")"""
+# ╔═╡ 344e105a-6011-11eb-1247-c79e874ad0e6
+feather = pyimport("pyarrow.feather");
+
+# ╔═╡ 4c560c66-6011-11eb-23dd-e575a7449301
+fr = feather.read_feather("penguins.arrow")
+
+# ╔═╡ 75bb7640-6011-11eb-10f5-29b200a6eb39
+typeof(fr)
+
+# ╔═╡ 8e975c6a-6011-11eb-2843-d5991dabe7c1
+feather.read_table("penguins.arrow")   # produces a pyarrow.Table
+
+# ╔═╡ e934fc9a-6011-11eb-1f93-a37558c1d2a9
+md"""
+## Reading an Arrow file from Julia in R or Python
+
+There is currently one hitch in reading an Arrow file from Julia in R or Python, related to the indices type in a dictionary-encoded column like `species` or `island` in the `penguins` data set.
+
+These are `factor`s in R.
+In Julia the corresponding types are `PooledArray` or `CategoricalArray`.
+By default the type of the index is an unsigned integer which is a problem for R and
+for Pandas, but not for a `pyarrow.Table`.
+"""
+
+# ╔═╡ ccd2caee-6013-11eb-3514-211c3a140eec
+feather.read_table("02_validated_output.arrow")
 
 # ╔═╡ Cell order:
 # ╟─6d417df8-5f48-11eb-1afa-4f148f2f3121
@@ -107,4 +135,9 @@ R"""mb1 <- read_feather("02_validated_output.arrow")"""
 # ╠═2c82a0c6-5f5a-11eb-0132-f7584460d831
 # ╠═6e08e19a-5f5a-11eb-33aa-21a284ece05b
 # ╟─022743a2-5f5e-11eb-0477-cf77576fdc77
-# ╠═3ff343ba-5f5f-11eb-3280-21d09b101ae8
+# ╠═344e105a-6011-11eb-1247-c79e874ad0e6
+# ╠═4c560c66-6011-11eb-23dd-e575a7449301
+# ╠═75bb7640-6011-11eb-10f5-29b200a6eb39
+# ╠═8e975c6a-6011-11eb-2843-d5991dabe7c1
+# ╟─e934fc9a-6011-11eb-1f93-a37558c1d2a9
+# ╠═ccd2caee-6013-11eb-3514-211c3a140eec
