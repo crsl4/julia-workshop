@@ -41,6 +41,15 @@ class: left, top
 
 # Why Julia?
 
+- [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
+
+- [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
+
+---
+class: left, top
+
+# Why Julia?
+
 Julia adoption accelerated at a rapid pace in 2020:
 
 <div style="text-align:center"><img src="pics/julia-adoption.png" width="350"/></div>
@@ -63,7 +72,7 @@ class: left, top
 
 # Why Julia?
 
-Julia offers many advantages to data science programmers. In particular, you avoid the two-language problem and are able to easily write good performance code.
+Julia offers many advantages to data science programmers. In particular, you avoid the two-language problem and are able to easily write good performant code.
 
 In this workshop, we will focus on five topics:
 

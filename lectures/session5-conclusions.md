@@ -18,7 +18,7 @@ class: left, top
 # Today you have learned
 
 - Julia provides many advantages to data science programmers especially those creating programs that need to be efficient and that will be shared with the scientific community
-- Julia allows programmers to easily write good performance code and avoid the two language problem
+- Julia allows programmers to easily write good performant code and avoid the two language problem
 
 Among the main Julia tools, we focused on five:
 1. Data tools:

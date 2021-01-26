@@ -115,11 +115,16 @@ class: left, top
 Simulate data
 
 ```julia
+julia> using Random
+
+julia> Random.seed!(1234)
+MersenneTwister(1234)
+
 julia> X = randn(3,2)
 3×2 Matrix{Float64}:
- -0.725185    0.846219
- -0.728208    1.60921
- -0.0794319  -2.40224
+  0.867347  -0.902914
+ -0.901744   0.864401
+ -0.494479   2.21188
 
 julia> b = reshape([2.0, 3.0], 2,1)
 2×1 Matrix{Float64}:
@@ -128,9 +133,9 @@ julia> b = reshape([2.0, 3.0], 2,1)
 
 julia> y = X * b + randn(3,1)
 3×1 Matrix{Float64}:
-  0.6774855529396128
-  2.017857432615875
- -8.315442461888098
+ -0.4412351955236954
+  0.5179809120122916
+  6.149009488103242
 ```
 
 ---
@@ -141,15 +146,15 @@ Fit a model
 ```julia
 julia> @rput y
 3×1 Matrix{Float64}:
-  0.6774855529396128
-  2.017857432615875
- -8.315442461888098
+ -0.4412351955236954
+  0.5179809120122916
+  6.149009488103242
 
 julia> @rput X
 3×2 Matrix{Float64}:
- -0.725185    0.846219
- -0.728208    1.60921
- -0.0794319  -2.40224
+  0.867347  -0.902914
+ -0.901744   0.864401
+ -0.494479   2.21188
 
 julia> R"mod <- lm(y ~ X-1)"
 RObject{VecSxp}
@@ -159,7 +164,7 @@ lm(formula = y ~ X - 1)
 
 Coefficients:
    X1     X2  
-3.682  3.269  
+2.867  3.418 
 ```
 
 ---
@@ -173,19 +178,19 @@ Call:
 lm(formula = y ~ X - 1)
 
 Residuals:
-      1       2       3 
- 0.5818 -0.5607 -0.1707 
+       1        2        3 
+0.158301 0.148692 0.006511 
 
 Coefficients:
    Estimate Std. Error t value Pr(>|t|)  
-X1   3.6823     0.9337   3.944    0.158  
-X2   3.2687     0.3195  10.232    0.062 .
+X1   2.8669     0.2566   11.17   0.0568 .
+X2   3.4180     0.1359   25.15   0.0253 *
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Residual standard error: 0.8258 on 1 degrees of freedom
-Multiple R-squared:  0.9907,	Adjusted R-squared:  0.9722 
-F-statistic: 53.51 on 2 and 1 DF,  p-value: 0.09621
+Residual standard error: 0.2173 on 1 degrees of freedom
+Multiple R-squared:  0.9988,	Adjusted R-squared:  0.9963 
+F-statistic: 404.8 on 2 and 1 DF,  p-value: 0.03512
 
 julia> R"plot(X[,1],y)"
 ```
@@ -232,6 +237,8 @@ class: left, top
 
 # Package system
 
+- Starting on Julia 1.6, precompilation is much faster
+- Many changes under the hood that allow things to work faster and more smoothly
 
 ---
 class: left, top
