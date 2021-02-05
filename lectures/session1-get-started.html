@@ -69,7 +69,7 @@ The five stages of programming:
 2. Realize that you are repeating many operations, so you decide to write some functions
 3. To organize all your functions, you begin scripting
 4. You want to share your code with others and thus, you want to write a package
-5. Your package is actually used by others and thus, it should be optimized and have a good performance
+5. Your package is actually used by others and thus, it should be optimized and have good performance
 
 ---
 class: left, top
@@ -137,17 +137,88 @@ Taken from [DrWatson workflow tutorial](https://juliadynamics.github.io/DrWatson
 ```julia
 julia&gt; using DrWatson
 
-julia&gt; initialize_project("Example"; authors="CSL")
+julia&gt; initialize_project("DataScienceWorkshop"; authors="CSL")
 
 shell&gt; ls
-Example        julia-workshop
+DataScienceWorkshop        julia-workshop
 
-shell&gt; cd Example/
+shell&gt; cd DataScienceWorkshop/
 
 shell&gt; ls
 Manifest.toml Project.toml  README.md     _research     data          notebooks     papers        plots         scripts       src
 ```
-Note that `Example` is a git repository!
+Note that `DataScienceWorkshop` is a git repository!
+
+---
+class: left, top
+
+3. Whenever you want to start working on your project, you need to be in your `DataScienceWorkshop` folder, and type:
+
+```julia
+julia&gt; using DrWatson
+
+julia&gt; @quickactivate
+
+(DataScienceWorkshop) pkg&gt; 
+```
+
+When we add packages, we are adding them for the project.
+
+
+4. Add the necessary packages. Let's add `MixedModels`:
+
+```julia
+(DataScienceWorkshop) pkg&gt; add MixedModels
+
+(DataScienceWorkshop) pkg&gt; status
+Status `~/Documents/DataScienceWorkshop/Project.toml`
+  [634d3b9d] DrWatson v1.16.6
+  [ff71e718] MixedModels v3.1.4
+```
+
+---
+class: left, top
+
+## Exercise: Part 1
+
+**Instructions:** Create your own project folder with `DrWatson` to follow along with the julia code in the next sessions.
+
+**Time:** 1-2 minutes.
+
+Setting up the project folder:
+```julia
+(@v1.6) pkg&gt; add DrWatson
+
+julia&gt; using DrWatson
+
+julia&gt; initialize_project("DataScienceWorkshop"; authors="YOU")
+
+julia&gt; cd("DataScienceWorkshop")
+
+julia&gt; @quickactivate
+```
+
+---
+class: left, top
+
+## Exercise: Part 2
+
+Installing julia packages to use later:
+```julia
+(DataScienceWorkshop) pkg&gt; add CSV DataFrames Arrow Tables
+
+julia&gt; ENV["PYTHON"] = ""
+
+(DataScienceWorkshop) pkg&gt; add PyCall
+
+julia&gt; using PyCall
+
+julia&gt; feather = pyimport_conda("pyarrow.feather","pyarrow", "conda-forge")
+
+(DataScienceWorkshop) pkg&gt; add Weave IJulia
+
+(DataScienceWorkshop) pkg&gt; build IJulia
+```
 
 ---
 class: left, top
@@ -158,7 +229,7 @@ Two files are noteworthy:
 
 ```julia
 shell&gt; head Project.toml
-name = "Example"
+name = "DataScienceWorkshop"
 authors = ["CSL"]
 [compat]
 julia = "1.6.0"
@@ -182,41 +253,16 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) string which is the universally unique identifier.
 More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
 
----
-class: left, top
 
-3. Whenever you want to start working on your project, you need to be in your `Example` folder, and type:
-
-```julia
-julia&gt; using DrWatson
-
-julia&gt; @quickactivate
-
-(Example) pkg&gt; 
-```
-
-When we add packages, we are adding them for the project.
-
-
-4. Add the necessary packages. Let's add `MixedModels`:
-
-```julia
-(Example) pkg&gt; add MixedModels
-
-(Example) pkg&gt; status
-Status `~/Documents/Example/Project.toml`
-  [634d3b9d] DrWatson v1.16.6
-  [ff71e718] MixedModels v3.1.4
-```
 
 ---
 class: left, top
 
-Look at your `Project.toml` and `Manifest.toml` files now. They have all necessary information about your session.
+Look at your `Project.toml` and `Manifest.toml` files after installation. They have all the necessary information about your session.
 
 ```julia
 shell&gt; head Project.toml
-name = "Example"
+name = "DataScienceWorkshop"
 authors = ["CSL"]
 
 [deps]
@@ -266,29 +312,10 @@ DrWatson Workflow in a nutshell (copied from DrWatson [tutorial](https://juliady
 ---
 class: left, top
 
-## Exercise
-
-**Instructions:** Create your own project folder with `DrWatson` to follow along with the julia code in the next sessions.
-
-**Time:** 1-2 minutes.
-
-Recall
-
-```julia
-julia&gt; using DrWatson
-
-julia&gt; initialize_project("Example"; authors="CSL")
-
-julia&gt; cd("Example")
-
-julia&gt; @quickactivate
-```
-
-
 ## Post-workshop learning
 
-- Checkout [this youtube](https://www.youtube.com/watch?v=jKATlEAu8eE&amp;feature=youtu.be) video about DrWatson
-- Read DrWatson [documentation](https://juliadynamics.github.io/DrWatson.jl/dev/). What is shown here is only the tip of the iceberg!
+- Checkout [this youtube](https://www.youtube.com/watch?v=jKATlEAu8eE&amp;feature=youtu.be) video about `DrWatson`
+- Read `DrWatson` [documentation](https://juliadynamics.github.io/DrWatson.jl/dev/). What is shown here is only the tip of the iceberg!
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
