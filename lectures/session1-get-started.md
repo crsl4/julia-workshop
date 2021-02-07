@@ -201,7 +201,7 @@ class: left, top
 
 Installing julia packages to use later:
 ```julia
-(DataScienceWorkshop) pkg> add CSV DataFrames Arrow Tables
+(DataScienceWorkshop) pkg> add CSV DataFrames Arrow Tables HTTP
 
 julia> ENV["PYTHON"] = ""
 
