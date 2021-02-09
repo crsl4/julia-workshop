@@ -93,7 +93,7 @@ feather = pyimport("pyarrow.feather");
 ```
 
 ```julia
-fr = feather.read_feather("penguins.arrow")
+fr = feather.read_feather("penguins.arrow")  # returns a pandas dataframe
 ```
 
 A more basic method, `feather.read_table`, produces a `pyarrow.Table`.
@@ -209,18 +209,11 @@ for pr in conv
 end
 ```
 
-```julia
-Tables.schema(df)
-```
-
-Finally we write a new Arrow file.
+There are two columns, `bilingual_parenta_nae` and `bilingual_parentb_nae`, that only contain missing values.
+We can safely drop these when we write a new Arrow file.
 
 ```julia
-describe(df, :eltype)
-```
-
-```julia
-Arrow.write("02.arrow", df)
+Arrow.write("02.arrow", select(df, Not(startswith("bilingual_parent").(names(df)))), compress=:zstd)
 ```
 
 ```julia
@@ -229,7 +222,4 @@ filesize("02.arrow")
 
 ```julia
 feather.read_table("02.arrow")
-```
-
-```julia
 ```
