@@ -1,0 +1,36 @@
+# Exercise
+
+Download the file processed_data/03_data_trial_main.csv from the 
+[mb1-analysis-public]((https://github.com/manybabies/mb1-analysis-public/) repository on github (or clone the repository). 
+Read the file using Julia's CSV package and convert the table to a DataFrame. 
+Use describe to summarize the data frame. Can you detect any problems with the data set?
+
+Loading packages:
+```julia
+cd("Documents/DataScienceWorkshop")
+using DrWatson
+@quickactivate
+using Arrow, CSV, DataFrames, HTTP, Tables
+
+Reading data:
+```julia
+f = CSV.File(
+    HTTP.get("https://github.com/manybabies/mb1-analysis-public/raw/master/processed_data/03_data_trial_main.csv").body,
+    missingstrings = ["NA"],
+	truestrings = ["TRUE"],
+	falsestrings = ["FALSE"],
+);
+```
+
+```julia
+length(f)
+schem = Tables.schema(f)
+ct = Tables.columntable(f)
+typeof(ct)
+```
+
+Convert to DataFrame and describe:
+```julia
+df = DataFrame(ct);
+describe(df)
+```
