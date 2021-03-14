@@ -2,6 +2,7 @@
 figures/*
 logistics.md
 resources/*
+*.arrow
 
 # Compiled source #
 ###################
