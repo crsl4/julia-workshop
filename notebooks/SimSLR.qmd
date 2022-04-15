@@ -1,7 +1,10 @@
 ---
-weave_options:
-  line_width: 92
-  term: true
+title: "Simple linear regression simulation"
+author: "Douglas Bates and Claudia Solis-Lemus"
+format:
+  html:
+    toc: true
+jupyter: julia-1.7
 ---
 
 ## Simulation of simple linear regression estimates
@@ -10,7 +13,9 @@ To illustrate some of the capabilities of `DrWatson`for simulations we consider 
 
 In the second part of the workshop we will consider data from an experiment on the effects of sleep deprivation on reaction time.
 For each subject in the study we will assume a simple linear regression model, 
-$$y_i = a*x_i + b + \epsilon_i,\; i = 1,\dots,10,\;\epsilon_i\sim\mathcal{N}(0,\sigma^2)$$
+$$
+y_i = a*x_i + b + \epsilon_i,\; i = 1,\dots,10,\;\epsilon_i\sim\mathcal{N}(0,\sigma^2)
+$$
 for their $i$th reaction time, $y_i$, as a function of the number of days of sleep deprivation, $x_i$.
 
 For subject `S334` the estimates of $a$ and $b$ are approximately $a=12.25$ ms/day and $b=240.16$ ms.
@@ -19,23 +24,28 @@ An estimate of the residual standard deviation is $s=8.55$ ms, which we will use
 For all the subjects, the days of sleep deprivation are from 0 to 9.
 
 First establish the `DrWatson` environment
-```julia
+```{julia}
+#| output: false
+using Pkg
+Pkg.activate(@__DIR__)
+
 using DrWatson
 ```
 and attach other packages to be used
-```julia
-using Arrow, LinearAlgebra, Random, PrettyTables
+```{julia}
+using Arrow, DataFrames, LinearAlgebra, Random, PrettyTables, RCall
 ```
 
 ## Parameter tuples
 
 These parameter values are incorporated into a _named tuple_
 
-```julia
-pars = (a = 12.25, b = 240.16, σ = 8.55, x = 0:9)
+```{julia}
+#| output: false
+pars = (; a = 12.25, b = 240.16, σ = 8.55, x = 0:9)
 ```
 
-```julia
+```{julia}
 typeof(pars)
 ```
 
@@ -43,7 +53,7 @@ A Julia `NamedTuple` is similar to a named list in R except that the names are _
 In `DrWatson` a simulation function typically takes a parameter tuple which is immediately _unpacked_ by calling the `@unpack` macro.
 A parameter tuple can also be used to generate a meaningful file name under which to save the results of a simulation.
 
-```julia
+```{julia}
 savename(pars, "arrow")  # file name for an Arrow file of results from these parameters
 ```
 
@@ -51,14 +61,14 @@ savename(pars, "arrow")  # file name for an Arrow file of results from these par
 
 A simple function to generate a response is
 
-```julia
+```{julia}
 function oneresp(pars)
-    @unpack a, b, σ, x = pars  # expand the name/value pairs
+    a, b, σ, x = pars  # expand the name/value pairs
     a .* x .+ b .+ σ * randn(length(x))
 end
 ```
 
-```julia
+```{julia}
 oneresp(pars)
 ```
 
@@ -72,40 +82,40 @@ In Julia the "dots" ('.') before an operator like '+' or '\*' cause the operatio
 It is often convenient (like when you are debugging) to be able to reproduce the "random" numbers that were generated.
 To allow for this we will define another `oneresp` method that allows for a random number generator to be passed to it. 
 
-```julia
+```{julia}
 function oneresp(rng::AbstractRNG, pars::NamedTuple)
-    @unpack a, b, σ, x = pars
+    a, b, σ, x = pars
     a .* x .+ b .+ σ .* randn(rng, length(x))
 end
 ```
 
-```julia
-rng = MersenneTwister(42);   # initialize a random number generator
+```{julia}
+rng = Random.seed!(42);   # initialize a random number generator
 ```
 
-```julia
+```{julia}
 oneresp(rng, pars)
 ```
 
-```julia
-y = oneresp(MersenneTwister(42), pars)  # reproduce those results
+```{julia}
+y = oneresp(Random.seed!(42), pars)  # reproduce those results
 ```
 
 ### Estimates from a single sample
 
 The easiest way to obtain the least squares estimates is by building the model matrix and using the "backslash" operator, '\'.
 
-```julia
+```{julia}
 X = hcat(ones(10), 0:9)
 ```
 
-```julia
+```{julia}
 coef = X \ y
 ```
 
 And $s^2$, the estimated residual variance, is
 
-```julia
+```{julia}
 s² = sum(abs2, y .- X * coef) / (size(X, 1) - size(X, 2))
 ```
 
@@ -115,9 +125,9 @@ s² = sum(abs2, y .- X * coef) / (size(X, 1) - size(X, 2))
 
 At this point we can extend `oneresp` to do the calculations and return a NamedTuple
 
-```julia
+```{julia}
 function onepars(rng::AbstractRNG, pars::NamedTuple)
-    @unpack a, b, σ, x = pars
+    a, b, σ, x = pars
     X = hcat(ones(length(x)), x)
     n, p = size(X)
     y = a .* x .+ b .+ σ .* randn(rng, n)
@@ -126,14 +136,14 @@ function onepars(rng::AbstractRNG, pars::NamedTuple)
 end
 ```
 
-```julia
-onepars(MersenneTwister(42), pars)
+```{julia}
+onepars(Random.seed!(42), pars)
 ```
 
 To generate a sample of these parameter estimates we first initialize a random number generator then create a vector of evaluations of `onepars`.
 
-```julia
-rng = MersenneTwister(6354789);
+```{julia}
+rng = Random.seed!(6354789);
 samp = [onepars(rng, pars) for i in 1:100]
 ```
 
@@ -141,7 +151,7 @@ samp = [onepars(rng, pars) for i in 1:100]
 
 It may seem like a waste to repeat the names for each result but, in fact, the names are only stored once for this vector.
 
-```julia
+```{julia}
 typeof(samp)
 ```
 
@@ -149,7 +159,7 @@ A vector of `NamedTuple`s is a row-oriented `Table`, as defined inthe `Tables` p
 A column-oriented table, such as a `DataFrame`, could be a `NamedTuple` of vectors.
 Both types can be shown with `pretty_table` from the `PrettyTables` package.
 
-```julia
+```{julia}
 pretty_table(samp)
 ```
 
@@ -167,9 +177,9 @@ The magic of Julia is that the language offers you such a wide range of capabili
 
 An optimized version of a simulation function could look like
 
-```julia
+```{julia}
 function simslr(rng::AbstractRNG, pars, N)
-    @unpack a, b, σ, x = pars
+    a, b, σ, x = pars
     qrfac = qr!(hcat(ones(length(x)), x))
     n, p = size(qrfac)
     Qt = qrfac.Q'
@@ -191,8 +201,8 @@ end
 
 To ensure that it works
 
-```julia
-rng = MersenneTwister(6354789);
+```{julia}
+rng = Random.seed!(6354789);
 samp2 = simslr(rng, pars, 100);
 pretty_table(samp2)
 ```
@@ -202,13 +212,13 @@ A more detailed comparison, say by converting each of them to `DataFrame`s and u
 
 However, their execution times and the amount of storage used when generating, say, 10,000 samples are very different.
 
-```julia
-rng = MersenneTwister(6354789);
+```{julia}
+rng = Random.seed!(6354789);
 @time [onepars(rng, pars) for i in 1:10_000];
 ```
 
-```julia
-rng = MersenneTwister(6354789);
+```{julia}
+rng = Random.seed!(6354789);
 @time simslr(rng, pars, 10_000);
 ```
 
@@ -231,39 +241,29 @@ The Apache Arrow format, which can be written and read using the [`Arrow.jl` pac
 Arrow files written with the `arrow` package for R or with the `pyarrow` package for Python can be read by `Arrow.jl`.
 (Going the other direction can be problematic with R as not all the number types used in Julia can be represented in R.)
 
-```julia
-nrg = MersenneTwister(42);
+```{julia}
+nrg = Random.seed!(42);
 mkpath(datadir("simulations"));  # in case the directory does not exist
 fnm = Arrow.write(datadir("simulations", savename(pars, "arrow")), simslr(rng, pars, 50_000))
 ```
 
 The process of writing the Arrow file converts the data to a column-oriented table,
-```julia
+```{julia}
 tbl = Arrow.Table(fnm)
 ```
 which is similar to a `DataFrame`.
-```julia
+```{julia}
 using DataFrames
 describe(DataFrame(tbl))
 ```
 
 Because the columns are all stored as 64-bit floating-point numbers, this arrow file can be read in R
 
-```
-> library(arrow)
-
-Attaching package: ‘arrow’
-
-The following object is masked from ‘package:utils’:
-
-    timestamp
-
-> simdat <- read_feather("./data/simulations/a=12.25_b=240.16_σ=8.55.arrow")
-> library(tibble)
-> glimpse(simdat)
-Rows: 50,000
-Columns: 3
-$ slope     <dbl> 12.38975, 12.29462, 12.76479, 12.30775, 13.51588, 11.22870,…
-$ intercept <dbl> 235.6208, 242.3419, 238.2172, 240.5549, 239.7041, 240.9386,…
-$ `s²`      <dbl> 116.64295, 20.87278, 94.90334, 60.11505, 70.39227, 65.19233…
+```{julia}
+R"""
+suppressWarnings(library(arrow))
+simdat <- read_feather("./data/simulations/a=12.2_b=240.0_σ=8.55.arrow")
+library(tibble)
+glimpse(simdat)
+""";
 ```
