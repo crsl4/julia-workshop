@@ -1,7 +1,8 @@
 ---
-title: "Julia workshop for Data Science"
+title: "Julia Workshop"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
+jupyter: julia-1.8
 ---
 
 # Welcome
@@ -12,10 +13,8 @@ subtitle: "ISMB 2022 Madison"
 
 # Schedule
 
-::: {.incremental}
 - Session 1: Getting started with Julia
 - Session 2: Data tools
 - Session 3: Model fitting
 - Session 4: Other important tools
 - Session 5: Conclusions and questions
-:::

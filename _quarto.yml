@@ -7,6 +7,7 @@ project:
       - index.qmd
       - about.qmd
       - session0-housekeeping.qmd
+      - session1-get-started.qmd
 
 website:
   title: "Julia Workshop"
@@ -30,7 +31,7 @@ format:
     css: styles.css
     toc: true
 
-date: today
+date: 2022-07-10
 date-format: iso
 
 jupyter: julia-1.8

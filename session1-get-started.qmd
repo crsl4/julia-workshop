@@ -1,15 +1,9 @@
 ---
 title: "Session 1: Getting started with Julia"
-author: "Claudia Solis-Lemus and Douglas Bates"
-subtitle: "ISMB 2022 Madison"
-format:
-  revealjs:
-    incremental: true
-    scrollable: true
-    theme: sky
+jupyter: julia-1.8
 ---
 
-# Why Julia? {.smaller}
+# Why Julia? 
 
 From the creators: We want a language that is
 
@@ -23,33 +17,25 @@ From the creators: We want a language that is
 - as good at gluing programs together as the shell
 - dirt simple to learn, yet keeps the most serious hackers happy
 
-# Why Julia?
+![](lectures/pics/julia-headline.png)
 
-![](pics/julia-headline.png)
-
-# Why Julia?
+### Used for large-scale projects
 
 - [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
 
 - [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
 
-# Why Julia?
-
 Julia adoption accelerated at a rapid pace in 2020:
 
-<div style="text-align:center"><img src="pics/julia-adoption.png" width="350"/></div>
+![](lectures/pics/julia-adoption.png)
 
-# Why Julia?
-
-The five stages of programming:
+### The five stages of programming:
 
 1. Use the REPL as a sophisticated calculator
 2. Realize that you are repeating many operations, so you decide to write some functions
 3. To organize all your functions, you begin scripting
 4. You want to share your code with others and thus, you want to write a package
 5. Your package is actually used by others and thus, it should be optimized and have good performance
-
-# Why Julia?
 
 Julia offers many advantages to data science programmers - avoiding the two-language problem
 
@@ -61,13 +47,10 @@ In this workshop, we will focus on five topics:
 4. Package system
 5. Profiling
 
----
-
 ## How do I write code?
 
-<div style="text-align:center"><img src="pics/julia-editors.png" width="700"/></div>
 
----
+![](lectures/pics/julia-editors.png)
 
 Let's start by looking at the REPL and try:
 
@@ -79,19 +62,19 @@ Let's start by looking at the REPL and try:
 - `<backspace>` return to Julia mode
 
 
-# Setting up your project
+### Setting up your project
 
 - You want to set up your project to guarantee reproducibility (for you and your collaborators)
 - We will focus on project management with [DrWatson.jl](https://juliadynamics.github.io/DrWatson.jl/dev/), but you can also check out the standard Julia [way](https://julialang.github.io/Pkg.jl/v1/environments/#**4.**-Working-with-Environments-1)
 
-# Why DrWatson.jl?
+### Why DrWatson.jl?
 
 To avoid:
 
 - "I got your scripts, but none of them work on my computer"
 - "Ugh these scripts worked last month, what happened?"
 
-# Project setup workflow
+### Project setup workflow
 
 Taken from [DrWatson workflow tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/).
 
@@ -99,24 +82,20 @@ Taken from [DrWatson workflow tutorial](https://juliadynamics.github.io/DrWatson
 
 2. In julia:
 
-```julia
-using Pkg
-Pkg.activate(".")
+```{julia}
+#| eval: false
 using DrWatson
-#initialize_project("DataScienceWorkshop"; authors="CSL")
+initialize_project("DataScienceWorkshop"; authors="CSL")
 ```
 Note that `DataScienceWorkshop` is a git repository!
 
----
-
 3. Whenever you want to start working on your project, you need to be in your `DataScienceWorkshop` folder, and type:
 
-```julia
-julia> using DrWatson
+```{julia}
+#| eval: false
+using DrWatson
 
-julia> @quickactivate
-
-(DataScienceWorkshop) pkg> 
+@quickactivate
 ```
 
 When we add packages, we are adding them for the project.
@@ -124,13 +103,10 @@ When we add packages, we are adding them for the project.
 
 4. Add the necessary packages. Let's add `MixedModels`:
 
-```julia
-(DataScienceWorkshop) pkg> add MixedModels
-
-(DataScienceWorkshop) pkg> status
-Status `~/Documents/DataScienceWorkshop/Project.toml`
-  [634d3b9d] DrWatson v1.16.6
-  [ff71e718] MixedModels v3.1.4
+```{julia}
+using Pkg
+Pkg.add("MixedModels")
+Pkg.status()
 ```
 
 ---
