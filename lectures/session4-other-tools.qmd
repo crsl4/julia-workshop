@@ -1,19 +1,13 @@
 ---
 title: "Session 4: Other tools for Data Science"
 author: "Claudia Solis-Lemus and Douglas Bates"
-subtitle: "WID Data Science Research Bazaar 2021"
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    nature:
-      ratio: '16:9'
-      highlightStyle: github
-      highlightLines: yes
-      countIncrementalSlides: no
-  html_document:
-    df_print: paged
+subtitle: "ISMB 2022 Madison"
+format:
+  revealjs:
+    incremental: true
+    scrollable: true
+    theme: sky
 ---
-class: left, top
 
 # So far you have learned
 
@@ -26,9 +20,6 @@ class: left, top
 - Package system
 - Tuning performance 
 
----
-class: left, top
-
 # Communication with other systems: Julia interoperability
 
 [JuliaInterop](https://github.com/JuliaInterop)
@@ -38,7 +29,6 @@ class: left, top
 **Note:** Both `RCall` and `PyCall` are written 100% julia
 
 ---
-class: left, top
 
 ## RCall
 
@@ -58,7 +48,7 @@ R> x
 ```
 
 ---
-class: left, top
+
 
 `@rget` and `@rput` macros:
 
@@ -82,7 +72,7 @@ julia> r
 ```
 
 ---
-class: left, top
+
 
 `R""` string macro
 
@@ -108,7 +98,7 @@ RObject{RealSxp}
 ```
 
 ---
-class: left, top
+
 
 ## A small example from [this blog](http://luiarthur.github.io/usingrcall)
 
@@ -139,7 +129,7 @@ julia> y = X * b + randn(3,1)
 ```
 
 ---
-class: left, top
+
 
 Fit a model
 
@@ -168,7 +158,7 @@ Coefficients:
 ```
 
 ---
-class: left, top
+
 
 ```julia
 julia> R"summary(mod)"
@@ -196,7 +186,7 @@ julia> R"plot(X[,1],y)"
 ```
 
 ---
-class: left, top
+
 
 ## PyCall
 
@@ -213,7 +203,7 @@ math.sin(math.pi / 4)
 ```
 
 ---
-class: left, top
+
 
 `py"..."` evaluates `"..."` as Python code:
 
@@ -232,8 +222,6 @@ py"sinpi"(1)
 - The [pyjulia](https://github.com/JuliaPy/pyjulia) module allows you to call Julia directly from Python
 - Check out the packages in [JuliaPy](https://github.com/JuliaPy)
 
----
-class: left, top
 
 # Package system
 
@@ -242,14 +230,11 @@ class: left, top
 - A local environment can be established and preserved with `Project.toml` and `Manifest.toml` files.
 - Use of `Artifacts.toml` allows for binary dependencies
 
----
-class: left, top
-
 # Performance tips
 
 See more in [Julia docs](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
-#### `@time` to measure performance
+## `@time` to measure performance
 
 ```julia
 julia> x = rand(1000);
@@ -271,10 +256,7 @@ julia> @time sum_global()
 496.84883432553846
 ```
 
----
-class: left, top
-
-#### Break functions into multiple definitions
+## Break functions into multiple definitions
 
 The function
 
@@ -301,7 +283,7 @@ norm(A::Matrix) = maximum(svdvals(A))
 to allow the compiler to directly call the most applicable code.
 
 ---
-class: left, top
+
 
 #### Multiple dispatch
 
@@ -324,7 +306,7 @@ Closest candidates are:
 ```
 
 ---
-class: left, top
+
 
 Compare to
 
@@ -346,7 +328,7 @@ julia> f(2, 3)
 ```
 
 ---
-class: left, top
+
 
 #### Profiling
 
@@ -370,15 +352,12 @@ julia> Profile.print()
 To see the profiling results, there are several graphical browsers (see [Julia docs](https://docs.julialang.org/en/v1/manual/profile/#Profiling)).
 
 ---
-class: left, top
+
 
 ### Other packages for performance
 
 - [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl): performance tracking of Julia code
 - [Traceur.jl](https://github.com/JunoLab/Traceur.jl): You run your code, it tells you about any obvious performance traps
-
----
-class: left, top
 
 # Exercise
 

@@ -1,0 +1,36 @@
+project:
+  type: website
+  title: "Julia Workshop, SMLP2022, Madison"
+  execute-dir: project
+  output-dir: _site
+  render: 
+      - index.qmd
+      - about.qmd
+      - session0-housekeeping.qmd
+
+website:
+  title: "Julia Workshop"
+  subtitle: "SMLP2022 Madison"
+  site-url: https://crsl4.github.io/julia-workshop
+  repo-url: https://github.com/crsl4/julia-workshop
+  repo-actions: [issue]
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+    right:
+      - icon: github
+        href: https://github.com/crsl4/julia-workshop
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+date: today
+date-format: iso
+
+jupyter: julia-1.8

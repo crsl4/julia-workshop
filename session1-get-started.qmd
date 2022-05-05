@@ -1,6 +1,12 @@
 ---
 title: "Session 1: Getting started with Julia"
+author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
+format:
+  revealjs:
+    incremental: true
+    scrollable: true
+    theme: sky
 ---
 
 # Why Julia? {.smaller}
@@ -19,9 +25,19 @@ From the creators: We want a language that is
 
 # Why Julia?
 
+![](pics/julia-headline.png)
+
+# Why Julia?
+
 - [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
 
 - [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
+
+# Why Julia?
+
+Julia adoption accelerated at a rapid pace in 2020:
+
+<div style="text-align:center"><img src="pics/julia-adoption.png" width="350"/></div>
 
 # Why Julia?
 
@@ -44,6 +60,12 @@ In this workshop, we will focus on five topics:
 3. Communications with other systems: `RCall.jl` and `PyCall.jl`
 4. Package system
 5. Profiling
+
+---
+
+## How do I write code?
+
+<div style="text-align:center"><img src="pics/julia-editors.png" width="700"/></div>
 
 ---
 

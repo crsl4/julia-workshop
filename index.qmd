@@ -1,0 +1,10 @@
+---
+title: "Julia Workshop"
+subtitle: "SMLP2022 Madison"
+date: 2022-07-10
+---
+
+## Notebooks for the course
+
+  - [Housekeeping](session0-housekeeping.qmd)
+

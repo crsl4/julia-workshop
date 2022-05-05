@@ -1,21 +1,15 @@
 ---
 title: "Session 2: Data Tables and Arrow files"
 author: "Claudia Solis-Lemus and Douglas Bates"
-subtitle: "WID Data Science Research Bazaar 2021"
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    nature:
-      ratio: '16:9'
-      highlightStyle: github
-      highlightLines: yes
-      countIncrementalSlides: no
-  html_document:
-    df_print: paged
+subtitle: "ISMB 2022 Madison"
+format:
+  revealjs:
+    incremental: true
+    scrollable: true
+    theme: sky
 ---
-class: left, top
 
-# Exploring Julia packages
+# Exploring Julia packages {.smaller}
 
 - [JuliaHub](https://juliahub.com) provides a [package explorer](https://juliahub.com/ui/Packages)
 - You can search by topic or a fuzzy search on names
@@ -25,19 +19,60 @@ class: left, top
 - Various github groups manage packages for specific fields, such as `JuliaData` for Data Science packages
 - If you check the source repository for many packages, even advanced packages, you will often see that they are 100% Julia code
 
----
-class: left, top
+# Using quarto
+
+- These slides were created using [quarto.org](https://quarto.org)
+    + an Open-Source technical writing system based on `pandoc`
+    + from RStudio but not dependent on R or RStudio
+    + uses [Jupyter](https://jupyter.org) kernels for evaluation of Python or Julia code
+
+::: {.nonincremental}
+## Installing packages
+```{julia}
+#| echo: true
+#| output: false
+using Pkg
+Pkg.activate(joinpath("..", @__DIR__)) # use ../Project.toml
+Pkg.add("Tables")     # row- or column-oriented tables
+Pkg.add("Arrow")      # read and write https://arrow.apache.org format
+Pkg.add("CSV")       
+Pkg.add("HTTP")
+Pkg.add("DataFrames") 
+Pkg.add("DataFrameMacros") # elegant DataFrame manipulation
+Pkg.add("Chain")      # sophisticated pipes
+```
+
+- Adding packages need only be done once per project.
+- Periodically executing `using Pkg; Pkg.update()` keeps them up-to-date
+:::
+## Activating packages
+```{julia}
+#| echo: true
+using Arrow, Chain, CSV, DataFrameMacros, DataFrames, HTTP, Tables
+```
+
+- We use `HTTP` and `CSV` to load data from the [ManyBabies study](https://github.com/manybabies/mb1-analysis-public/)
+```{julia}
+f = let
+  url = "https://github.com/manybabies/mb1-analysis-public/raw/master/processed_data/02_validated_output.csv"
+  CSV.File(
+    HTTP.get(url).body,
+    missingstring = ["NA"],
+	  truestrings = ["TRUE"],
+	  falsestrings = ["FALSE"],
+  )
+end
+Tables.schema(f)
+```
 
 # Data tables in Julia
+
 
 - Both `R` and `Python` (through `pandas`) use column-oriented data frames for data tables.
 - Relational data bases tend to be row-oriented based on a row schema
 - Of course, most data is stored in CSV files or spreadsheets
 - It helps to be able to switch back and forth between these views
 - The `JuliaData` group produces and maintains several packages built around a `Tables` interface
-
----
-class: left, top
 
 # Notebook on checking consistency
 
@@ -58,8 +93,6 @@ julia> using Weave
 julia> convert_doc("consistency.jmd", "consistency.ipynb")
 "consistency.ipynb"
 ```
----
-class: left, top
 
 # Running the Jupyter notebooks
 
@@ -72,9 +105,6 @@ julia> using IJulia
 
 julia> jupyterlab(dir = ".")
 ```
-
----
-class: left, top
 
 ## Exercise: Part 1
 
@@ -91,16 +121,12 @@ julia> @quickactivate
 julia> using CSV, DataFrames
 ```
 
----
-class: left, top
-
 # The Arrow notebook
 
 - `Arrow.jmd` uses the Julia `Arrow` package and Python's `pyarrow` and the `arrow` package for R.
 - If you are fluent in only one of `R` or `Python` you may want to skip the parts for the other language.
 
 ---
-class: left, top
 
 ## Exercise: Part 2
 

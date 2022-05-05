@@ -1,0 +1,12 @@
+[deps]
+Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
+DataFrameMacros = "75880514-38bc-4a95-a458-c2aea5a3a702"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+MKL = "33e6dc65-8f57-5167-99aa-e5a354878fb2"
+MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+RCall = "6f49c342-dc21-5d91-9882-a32aef131414"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
