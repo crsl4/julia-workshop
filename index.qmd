@@ -7,4 +7,4 @@ date: 2022-07-10
 ## Notebooks for the course
 
   - [Housekeeping](session0-housekeeping.qmd)
-
+  - [Get Started](session1-get-started.qmd)
