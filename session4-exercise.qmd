@@ -1,0 +1,19 @@
+---
+title: "Hands-on exercise"
+author: "Claudia Solis-Lemus and Douglas Bates"
+subtitle: "ISMB 2022 Madison"
+jupyter: julia-1.8
+---
+
+**Time:** 60 minutes
+
+**Instructions:** Participants will translate their R/python script to Julia with assistance from the workshop presenters and TAs. After the 60 minutes, one or two volunteers will share their script to the group.
+
+# Checklist
+
+- Do you have Julia installed? If not, go to the [housekeeping notes](session0-housekeeping.qmd)
+- Do you have your project folder and installed dependencies? If not, go to the [getting started nodes](session1-get-started.qmd)
+- Do you have your data in your project folder?
+- Have you selected an editor to use (VSCode, Emacs, Jupyter notebooks,...)? Check out the available options in the [Julia website](https://julialang.org/)
+
+You are ready to start writing Julia code! You can start with a simple `.jl` file, or you could try with a jupyter notebook or a `.qmd` file.

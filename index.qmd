@@ -27,4 +27,5 @@ The tutorial is intended for any data scientist with experience in R and/or pyth
 
   - [Session 0: Housekeeping](session0-housekeeping.qmd)
   - [Session 1: Get Started](session1-get-started.qmd)
+  - [Session 4: Hands-on exercise](session4-exercise.qmd)
   - [Session 6: Conclusions](session6-conclusions.qmd)

@@ -8,6 +8,7 @@ project:
       - about.qmd
       - session0-housekeeping.qmd
       - session1-get-started.qmd
+      - session4-exercise.qmd
       - session6-conclusions.qmd
 
 website:

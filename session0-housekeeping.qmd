@@ -21,7 +21,7 @@ jupyter: julia-1.8
 | 12:45 - 1:00 | Q&A | | |
 | 1:00 - 2:00 | Lunch break | | |
 | 2:00 - 3:00 | Session 3: Model fitting | | Doug Bates |
-| 3:00 - 3:15 | Session 4: Description of hands-on exercise | | |
+| 3:00 - 3:15 | Session 4: Description of hands-on exercise | [Notes](session4-exercise.qmd) | |
 | 3:15 - 3:30 | Coffee break | | |
 | 3:30 - 4:30 | Hands-on exercise | | Sam Ozminkowski and Bella Wu |
 | 4:30 - 4:45 | Presentation of selected participants' scripts | | |
