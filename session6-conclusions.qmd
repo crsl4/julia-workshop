@@ -39,7 +39,8 @@ Among the main Julia tools, we focused on five:
 
 ## 6. Plotting
 
-- xxx
+- [Makie ecosystem](https://makie.juliaplots.org/stable/)
+- [Plots.jl](https://docs.juliaplots.org/latest/)
 
 ## 7. Literate programming
 

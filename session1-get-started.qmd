@@ -1,11 +1,15 @@
 ---
 title: "Session 1: Getting started with Julia"
+author: "Claudia Solis-Lemus and Douglas Bates"
+subtitle: "ISMB 2022 Madison"
 jupyter: julia-1.8
 ---
 
 # Why Julia? 
 
-From the creators: We want a language that is
+## From the creators of Julia
+
+"We want a language that is
 
 - open source 
 - with the speed of C 
@@ -15,21 +19,19 @@ From the creators: We want a language that is
 - as natural for string processing as Perl
 - as powerful for linear algebra as Matlab
 - as good at gluing programs together as the shell
-- dirt simple to learn, yet keeps the most serious hackers happy
+- dirt simple to learn, yet keeps the most serious hackers happy"
 
-![](lectures/pics/julia-headline.png)
+## Reasons to check out Julia
 
-### Used for large-scale projects
+- Comparison with other languages: [Julia touts its speed edge over Python and R](https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/)
+- Used for large-scale projects like [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
+    - [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
+- Julia adoption accelerated at a rapid pace in 2020:
 
-- [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
+<div style="text-align:center"><img src="lectures/pics/julia-adoption.png" width="450"/></div>
 
-- [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
 
-Julia adoption accelerated at a rapid pace in 2020:
-
-![](lectures/pics/julia-adoption.png)
-
-### The five stages of programming:
+## The five stages of programming
 
 1. Use the REPL as a sophisticated calculator
 2. Realize that you are repeating many operations, so you decide to write some functions
@@ -37,20 +39,19 @@ Julia adoption accelerated at a rapid pace in 2020:
 4. You want to share your code with others and thus, you want to write a package
 5. Your package is actually used by others and thus, it should be optimized and have good performance
 
-Julia offers many advantages to data science programmers - avoiding the two-language problem
+Julia offers many advantages to data science programmers: avoiding the two-language problem
 
-In this workshop, we will focus on five topics:
+# Workshop topics
+
+In this workshop, we will focus on three main topics:
 
 1. Data tools: `Arrow.jl`, `Tables.jl`
 2. Model fitting: `MixedModels.jl`
-3. Communications with other systems: `RCall.jl` and `PyCall.jl`
-4. Package system
-5. Profiling
+3. Package system and important packages for Data Science: interoperability with R and python ([RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)), literate programming ([quarto.org](https://quarto.org/) and [Pluto.jl](https://github.com/fonsp/Pluto.jl)), plotting ([Makie ecosystem](https://makie.juliaplots.org/stable/))
 
-## How do I write code?
+In addition, we will have an hands-on exercise in which participants will bring a dataset of their choice along with an existing script in another language like R or python with a specific data analysis. Assisted by the presenters, they will work during the tutorial to convert the code to Julia language.
 
-
-![](lectures/pics/julia-editors.png)
+# The Julia REPL
 
 Let's start by looking at the REPL and try:
 
@@ -61,163 +62,76 @@ Let's start by looking at the REPL and try:
 - `\beta+TAB` for math symbols
 - `<backspace>` return to Julia mode
 
+# Setting up your project folder
 
-### Setting up your project
+## How do I write code?
 
-- You want to set up your project to guarantee reproducibility (for you and your collaborators)
-- We will focus on project management with [DrWatson.jl](https://juliadynamics.github.io/DrWatson.jl/dev/), but you can also check out the standard Julia [way](https://julialang.github.io/Pkg.jl/v1/environments/#**4.**-Working-with-Environments-1)
+![](lectures/pics/julia-editors.png)
 
-### Why DrWatson.jl?
 
-To avoid:
+## Installing dependencies in a project environment
 
-- "I got your scripts, but none of them work on my computer"
-- "Ugh these scripts worked last month, what happened?"
-
-### Project setup workflow
-
-Taken from [DrWatson workflow tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/).
-
-1. Go to the working directory where you want to create the project folder (not inside the current github repo)
-
-2. In julia:
-
-```{julia}
-#| eval: false
-using DrWatson
-initialize_project("DataScienceWorkshop"; authors="CSL")
-```
-Note that `DataScienceWorkshop` is a git repository!
-
-3. Whenever you want to start working on your project, you need to be in your `DataScienceWorkshop` folder, and type:
-
-```{julia}
-#| eval: false
-using DrWatson
-
-@quickactivate
+Create a folder in the terminal:
+```shell
+mkdir myProject
+cd myProject
 ```
 
-When we add packages, we are adding them for the project.
-
-
-4. Add the necessary packages. Let's add `MixedModels`:
-
-```{julia}
-using Pkg
-Pkg.add("MixedModels")
-Pkg.status()
-```
-
----
-
-## Exercise: Part 1
-
-**Instructions:** Create your own project folder with `DrWatson` to follow along with the julia code in the next sessions.
-
-**Time:** 1-2 minutes.
-
-Setting up the project folder:
+Open Julia inside your folder, and activate your environment with:
 ```julia
-(@v1.6) pkg> add DrWatson
-
-julia> using DrWatson
-
-julia> initialize_project("DataScienceWorkshop"; authors="YOU")
-
-julia> cd("DataScienceWorkshop")
-
-julia> @quickactivate
+(@v1.8) pkg> activate .
 ```
 
----
-
-## Exercise: Part 2
-
-Installing julia packages to use later:
+Install the packages that we need for today's workshop:
 ```julia
-(DataScienceWorkshop) pkg> add CSV DataFrames Arrow Tables HTTP
-
 julia> ENV["PYTHON"] = ""
-
-(DataScienceWorkshop) pkg> add PyCall
-
-julia> using PyCall
-
-julia> feather = pyimport_conda("pyarrow.feather","pyarrow", "conda-forge")
-
-(DataScienceWorkshop) pkg> add Weave IJulia
-
-(DataScienceWorkshop) pkg> build IJulia
+(myproject) pkg> add PyCall
+(myproject) pkg> add IJulia
+(myproject) pkg> build IJulia
+(myproject) pkg> add MixedModels
+(myproject) pkg> add RCall
+(myproject) pkg> add Arrow
+(myproject) pkg> add DataFrames
+(myproject) pkg> add Tables
 ```
 
----
 
 Two files are noteworthy:
+
 - `Project.toml`: Defines project
 - `Manifest.toml`: Contains exact list of project dependencies
 
 ```julia
 shell> head Project.toml
-name = "DataScienceWorkshop"
-authors = ["CSL"]
-[compat]
-julia = "1.6.0"
 [deps]
-DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+RCall = "6f49c342-dc21-5d91-9882-a32aef131414"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
 
 
 shell> head Manifest.toml
 # This file is machine-generated - editing it directly is not advised
 
-[[ArgTools]]
+julia_version = "1.8.0-beta3"
+manifest_format = "2.0"
+project_hash = "01baf737705b090869a607b779c699f83bbeb154"
+
+[[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
-
-[[Artifacts]]
-uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
-
-[[Base64]]
-uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+version = "1.1.1"
 ```
+
+Look at your `Project.toml` and `Manifest.toml` files after installation. They have all the necessary information about your session.
 
 The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) string which is the universally unique identifier.
 More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
 
 
-
----
-
-Look at your `Project.toml` and `Manifest.toml` files after installation. They have all the necessary information about your session.
-
-```julia
-shell> head Project.toml
-name = "DataScienceWorkshop"
-authors = ["CSL"]
-
-[deps]
-DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
-MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
-
-[compat]
-julia = "1.6.0"
-
-
-shell> head Manifest.toml
-# This file is machine-generated - editing it directly is not advised
-
-[[ArgTools]]
-uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
-
-[[ArrayLayouts]]
-deps = ["Compat", "FillArrays", "LinearAlgebra", "SparseArrays"]
-git-tree-sha1 = "a577e27915fdcb3f6b96118b56655b38e3b466f2"
-uuid = "4c555306-a7a7-4459-81d9-ec55ddd5c99a"
-version = "0.4.12"
-```
-
----
-
-#### Easy share with collaborators!
+## Easy share with collaborators
 
 Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:
 
@@ -228,16 +142,3 @@ pkg> instantiate
 ```
 
 All required packages and dependencies will be installed. Scripts that run in your computer will also run in their computer.
-
----
-
-DrWatson Workflow in a nutshell (copied from DrWatson [tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/)):
-
-<div style="text-align:center"><img src="https://juliadynamics.github.io/DrWatson.jl/dev/workflow.png" width="700"/></div>
-
----
-
-## Post-workshop learning
-
-- Checkout [this youtube](https://www.youtube.com/watch?v=jKATlEAu8eE&feature=youtu.be) video about `DrWatson`
-- Read `DrWatson` [documentation](https://juliadynamics.github.io/DrWatson.jl/dev/). What is shown here is only the tip of the iceberg!
