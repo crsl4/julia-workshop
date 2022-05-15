@@ -5,12 +5,11 @@ subtitle: "ISMB 2022 Madison"
 jupyter: julia-1.8
 ---
 
-### Today you have learned
+## Today we learned
 
 - Julia provides many advantages to data science programmers especially those creating programs that need to be efficient and that will be shared with the scientific community
 - Julia allows programmers to easily write good performant code and avoid the two language problem
 
----
 
 Among the main Julia tools, we focused on five:
 
@@ -18,13 +17,11 @@ Among the main Julia tools, we focused on five:
 
   -  [Arrow.jl](https://github.com/JuliaData/Arrow.jl): memory, layout, data frame, binary form. The binary form allows for cross-platform use (julia, R, python). Need to be careful going from Julia to R
   - [Tables.jl](https://github.com/JuliaData/Tables.jl): generic idea of data table; row oriented (vector of named tuples) or column oriented (named tuple of vectors)
-  - [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl): [ideas](https://ahsmart.com/assets/pages/data-wrangling-with-data-frames-jl-cheat-sheet/DataFramesCheatSheet_v0.22_rev1.pdf) similar to `tidyverse`; split-apply-combine
+  - [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl): [cheatsheet](https://ahsmart.com/assets/pages/data-wrangling-with-data-frames-jl-cheat-sheet/DataFramesCheatSheet_v0.22_rev1.pdf) similar to `tidyverse`; split-apply-combine
 
 2. Model fitting:
 
   - [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl): 100% julia package
-
-### Today you have learned
 
 3. Communications with other systems:
 
@@ -33,7 +30,7 @@ Among the main Julia tools, we focused on five:
 
 4. Package system
 
-  - With Julia 1.7, precompilation is done when the package is added
+  - With Julia 1.7+, precompilation is done when the package is added
 
 5. Tuning performance
 
@@ -43,7 +40,9 @@ Among the main Julia tools, we focused on five:
 ### What are Julia's disadvantages?
 
 - Data visualization: no `ggplot2` yet
-- Literate programming: no `knitr` yet, but quarto.org handles Julia well
+  - [add reference here to the other tools section on Plots]
+- Literate programming: no `knitr` yet, but [quarto.org](https://quarto.org/) handles Julia well
+  - This notes were rendered with quarto!
 - Notebook systems like [Jupyter](https://jupyter.org) and [Pluto.jl](https://github.com/fonsp/Pluto.jl) can be used.  Pluto is different from Jupyter in that these are julia scripts with structured comments; no heavy metadata and no out of sequence evaluations
   
 ---
