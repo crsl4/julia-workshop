@@ -8,7 +8,7 @@ project:
       - about.qmd
       - session0-housekeeping.qmd
       - session1-get-started.qmd
-      - lectures/session6-conclusions.qmd
+      - session6-conclusions.qmd
 
 website:
   title: "Julia Workshop"
