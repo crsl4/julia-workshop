@@ -48,4 +48,4 @@ Among the main Julia tools, we focused on five:
 - [Pluto.jl](https://github.com/fonsp/Pluto.jl)
 
 
-<div style="text-align:center"><img src="pics/julia-logo.png" width="350"/></div>
+<div style="text-align:center"><img src="lectures/pics/julia-logo.png" width="350"/></div>
