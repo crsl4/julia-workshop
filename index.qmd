@@ -8,3 +8,4 @@ date: 2022-07-10
 
   - [Housekeeping](session0-housekeeping.qmd)
   - [Get Started](session1-get-started.qmd)
+  - [Session 6: Conclusions](lectures/session6-conclusions.qmd)

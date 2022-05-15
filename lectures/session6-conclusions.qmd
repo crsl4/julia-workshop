@@ -1,15 +1,11 @@
 ---
-title: "Session 5: Conclusions"
+title: "Session 6: Conclusions"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
-format:
-  revealjs:
-    incremental: true
-    scrollable: true
-    theme: sky
+jupyter: julia-1.8
 ---
 
-# Today you have learned
+### Today you have learned
 
 - Julia provides many advantages to data science programmers especially those creating programs that need to be efficient and that will be shared with the scientific community
 - Julia allows programmers to easily write good performant code and avoid the two language problem
@@ -28,7 +24,7 @@ Among the main Julia tools, we focused on five:
 
   - [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl): 100% julia package
 
-# Today you have learned
+### Today you have learned
 
 3. Communications with other systems:
 
@@ -44,7 +40,7 @@ Among the main Julia tools, we focused on five:
   - [Performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
   - [Profiling](https://docs.julialang.org/en/v1/manual/profile/)
 
-# What are Julia's disadvantages?
+### What are Julia's disadvantages?
 
 - Data visualization: no `ggplot2` yet
 - Literate programming: no `knitr` yet, but quarto.org handles Julia well
@@ -56,7 +52,7 @@ Among the main Julia tools, we focused on five:
 <div style="text-align:center"><img src="pics/julia-logo.png" width="350"/></div>
 
 
-# Take home message!
+### Take home message!
 
 A programming language has tools for a programmer like a kitchen has tools for a cook.
 
