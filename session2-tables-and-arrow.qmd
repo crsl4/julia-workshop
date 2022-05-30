@@ -8,6 +8,7 @@ Load packages to be used
 #| code-fold: show
 using Arrow
 using CSV
+using DataFrameMacros
 using DataFrames
 using PyCall
 using RCall
@@ -16,7 +17,7 @@ using Tables
 
 ## An example task
 
-- [This repository](https://github.com/lh3/biofast) contains yet another benchmark for comparing programming languages - in this case on two "typical" Bioinformatics tasks.
+- The [lh3/biofast](https://github.com/lh3/biofast) repository on github contains yet another benchmark for comparing programming languages - in this case on two "typical" Bioinformatics tasks.
 - One of these tasks, an "interval query", takes two `.bed` files to compare and should return output comparable to that created by [bedtools coverage](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html)
 - The approach taken in each of the target languages is modeled on that in the C/C++ library
 - Each language implementation requires code to parse the .bed files. In this case, they are simple tab-separated-value files.
@@ -39,7 +40,7 @@ total 1.6G
 ## Initial processing
 
 - Each of the language implementations in the benchmark contains code to parse lines of the `.bed` files producing a `String` and two `Int32` values.
-- Parsing a CSV or TSV file can be tedious and error prone.
+- Writing code to parse a CSV or TSV file is tedious and error prone.
 - But skilled people have put a lot of work into creating packages to do just that.
 - More importantly they have tested, debugged, and documented their packages.
 - `CSV.File` parses CSV and related file types returning a "row table".
@@ -59,7 +60,7 @@ anno = CSV.File(
 Tables.schema(anno)
 ```
 
-- We can see that the table is row-oriented but we can save it to a Arrow, column-oriented file directly because both the `Arrow` and `CSV` packages implement the `Tables` interface.
+- We can see that the table is row-oriented but we can save it to an Arrow file, which is column-oriented, directly because both the `Arrow` and `CSV` packages implement the `Tables` interface.
 
 ```{julia}
 Arrow.write(
@@ -180,7 +181,7 @@ typeof(annotbl.chromo)
 
 - The next step is, for each chromosome, to create an array of intervals from the start and stop positions.
 - The authors of the benchmark code created their own Julia data structure for this but there is no need - a unit range of integers works.
-- The interval represented on a row is, in 0-based positions, `start:(stop -1)`.
+- The interval represented on a row is, in 0-based positions, `start:(stop - 1)`.
 - We could equally well use 1-based positions `(start + 1):stop` as long as we are consistent.
 - There is a small advantage in incrementing `start` rather than decrementing `stop` if the integer type happens to be unsigned.
 - We define methods for an `asrange` function that returns the range from a `start/stop` pair.
@@ -219,14 +220,32 @@ annodict = chromodict(annotbl)
 rnadict = chromodict(Arrow.Table(rnaarrownm))
 ```
 
+- The number of features per chromosome in the two .bed files can be calculated as
+
+```{julia}
+featurefrm = @transform!(
+  DataFrame(chromo = collect(keys(annodict))),
+  :annolen = length(annodict[:chromo]),
+  :rnalen = length(rnadict[:chromo]),
+)
+```
+
 - The `coverage` function returns a `NamedTuple`, corresponding to a row in a row-table.
 ```{julia}
 function coverage(needle::UnitRange{T}, haystack::Vector{UnitRange{T}}) where {T}
-  s = filter(!isempty, intersect.(Ref(needle), haystack))
+  n = 0
+  overlap = BitSet()
+  for h in haystack
+    i = intersect(needle, h)
+    if !isempty(i)
+      n += 1
+      union!(overlap, i)
+    end
+  end
   start = first(needle) - oneunit(T)
   stop = last(needle)
-  nover = T(length(s))
-  noverbp = T(length(mapreduce(BitSet, union, s; init=BitSet())))
+  nover = T(n)
+  noverbp = T(length(overlap))
   flen = T(length(needle))
   return (; start, stop, nover, noverbp, flen)
 end
@@ -239,71 +258,26 @@ coverage(rnadict["chr5"][2], annodict["chr5"])
 function chromooverlap(needledict, haystackdict, nm)
   hs = haystackdict[nm]
   nvec = needledict[nm]
-  return DataFrame([coverage(f, hs) for f in nvec])
+  result = similar(nvec, typeof(coverage(first(nvec), hs)))
+  Threads.@threads for i in eachindex(nvec, result)
+    result[i] = coverage(nvec[i], hs)
+  end
+  return result
 end
 ```
-
-- this method works but is slow because of memory allocations and garbage collection
 
 ```{julia}
 chromooverlap(rnadict, annodict, "chr21")
 ```
 
+- this version of `chromooverlap` takes advantage of multiple threads if available.
+
 ```{julia}
 @time chromooverlap(rnadict, annodict, "chr21");
 ```
 
-- much of the memory allocation can be eliminated if a vector for the results of the intersection is passed to `coverage`
+## Configuration
 
 ```{julia}
-function coverage!(
-  intsect::Vector{UnitRange{T}},
-  s::Vector{UnitRange{T}},
-  needle::UnitRange{T},
-  haystack::Vector{UnitRange{T}}
-) where {T}
-  empty!(s)    # resets length to 0 but does not release storage
-  map!(h -> intersect(needle, h), intsect, haystack)
-  for isect in intsect
-    isempty(isect) || push!(s, isect)
-  end
-  start = first(needle) - oneunit(T)
-  stop = last(needle)
-  nover = T(length(s))
-  noverbp = T(length(mapreduce(BitSet, union, s; init=BitSet())))
-  flen = T(length(needle))
-  return (; start, stop, nover, noverbp, flen)
-end
-```
-
-```{julia}
-let 
-  needle = rnadict["chr5"][2]
-  haystack = annodict["chr5"]
-  intsect = similar(haystack)
-  s = similar(haystack)
-  coverage!(intsect, s, needle, haystack)
-end
-```
-
-- Redefine `chromooverlap` to use `coverage!` instead of `coverage`.
-
-```{julia}
-function chromover(needledict, haystackdict, nm)
-  hs = haystackdict[nm]
-  nvec = needledict[nm]
-  ivec = similar(hs)
-  s = similar(hs)
-  return DataFrame([coverage!(ivec, s, f, hs) for f in nvec],)
-end
-```
-
-```{julia}
-chr21tbl = chromover(rnadict, annodict, "chr21")
-```
-
-- But the performance is not very good
-
-```{julia}
-@time chromover(rnadict, annodict, "chr21");
+versioninfo()
 ```
