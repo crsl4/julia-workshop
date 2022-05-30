@@ -1,6 +1,6 @@
 project:
   type: website
-  title: "Julia Workshop, SMLP2022, Madison"
+  title: "Julia Workshop, ISCB 2022, Madison"
   execute-dir: project
   output-dir: _site
   render: 
@@ -8,12 +8,13 @@ project:
       - about.qmd
       - session0-housekeeping.qmd
       - session1-get-started.qmd
+      - session2-tables-and-arrow.qmd
       - session4-exercise.qmd
       - session6-conclusions.qmd
 
 website:
   title: "Julia Workshop"
-  subtitle: "SMLP2022 Madison"
+  subtitle: "ISCB 2022, Madison"
   site-url: https://crsl4.github.io/julia-workshop
   repo-url: https://github.com/crsl4/julia-workshop
   repo-actions: [issue]

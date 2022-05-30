@@ -1,0 +1,309 @@
+---
+title: "Session 2: Data Tables and Arrow files"
+jupyter: julia-1.8
+---
+Load packages to be used
+
+```{julia}
+#| code-fold: show
+using Arrow
+using CSV
+using DataFrames
+using PyCall
+using RCall
+using Tables
+```
+
+## An example task
+
+- [This repository](https://github.com/lh3/biofast) contains yet another benchmark for comparing programming languages - in this case on two "typical" Bioinformatics tasks.
+- One of these tasks, an "interval query", takes two `.bed` files to compare and should return output comparable to that created by [bedtools coverage](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html)
+- The approach taken in each of the target languages is modeled on that in the C/C++ library
+- Each language implementation requires code to parse the .bed files. In this case, they are simple tab-separated-value files.
+- Why go through this parsing of text files to create a numeric representation in each language and then store the results again as text files?
+- There are very good cross-language packages for working with tables, including [Arrow](http://arrow.apache.org) for storing and manipulating column-oriented, static, tables (i.e. like data frames in R, Python/Pandas, and Julia)
+
+## Sample data
+
+- the data sets for the benchmark are available as `biofast-data-v1.tar.gz` at [biofast-data-v1](https://github.com/lh3/biofast/releases/tag/biofast-data-v1)
+- the `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
+- the operations of downloading the tar file, and extracting the files could be done within Julia (see the [Downloads](https://github.com/JuliaLang/Downloads.jl) and [Tar](https://github.com/JuliaIO/Tar.jl) packages) but it is easier to just click on the link and extract the files from the downloaded archive.
+```
+$ ls -lh biofast-data-v1/
+total 1.6G
+-rw------- 1 bates bates  28M May 11  2020 ex-anno.bed
+-rw------- 1 bates bates 203M May 11  2020 ex-rna.bed
+-rw------- 1 bates bates 1.4G May  3  2020 M_abscessus_HiSeq.fq
+```
+
+## Initial processing
+
+- Each of the language implementations in the benchmark contains code to parse lines of the `.bed` files producing a `String` and two `Int32` values.
+- Parsing a CSV or TSV file can be tedious and error prone.
+- But skilled people have put a lot of work into creating packages to do just that.
+- More importantly they have tested, debugged, and documented their packages.
+- `CSV.File` parses CSV and related file types returning a "row table".
+- As is common for such functions, there is a huge number of optional (i.e. named) arguments
+- We could call it as
+
+```{julia}
+anno = CSV.File(
+  "./biofast-data-v1/ex-anno.bed";
+  header=["chromo", "start", "stop"],
+  delim='\t',
+  types=[String, Int32, Int32],
+)
+```
+
+```{julia}
+Tables.schema(anno)
+```
+
+- We can see that the table is row-oriented but we can save it to a Arrow, column-oriented file directly because both the `Arrow` and `CSV` packages implement the `Tables` interface.
+
+```{julia}
+Arrow.write(
+  "./biofast-data-v1/ex-anno.arrow",
+  anno;
+  compress=:lz4,
+  metadata=[
+    "url" =>
+    "https://github.com/lh3/biofast/releases/tag/biofast-data-v1",
+  ],
+)
+```
+
+::: {.callout-note}
+In the calls to `CSV.File` and `Arrow.write` the positional arguments and the named arguments are separated with `;` rather than `,`.
+Doing so is optional in these calls.
+However, this convention can be used to indicate a named argument value is the same name as an object in an active namespace.
+:::
+
+```{julia}
+rnaarrownm = let
+  bednm = "./biofast-data-v1/ex-rna.bed"
+  header = ["chromo", "start", "stop"]
+  delim = '\t'
+  types = [String, Int32, Int32]
+  compress = :lz4
+  metadata = [
+    "url" => 
+    "https://github.com/lh3/biofast/releases/tag/biofast-data-v1",
+  ]
+  Arrow.write(
+    first(splitext(bednm)) * ".arrow",
+    CSV.File(bednm; header, delim, types,);
+    compress, metadata,
+  )
+end
+```
+
+```
+$ ls -lh biofast-data-v1/
+total 1.6G
+-rw-rw-r-- 1 bates bates 4.2M May 29 10:15 ex-anno.arrow
+-rw------- 1 bates bates  28M May 11  2020 ex-anno.bed
+-rw-rw-r-- 1 bates bates  68M May 29 10:33 ex-rna.arrow
+-rw------- 1 bates bates 203M May 11  2020 ex-rna.bed
+-rw------- 1 bates bates 1.4G May  3  2020 M_abscessus_HiSeq.fq
+```
+
+## Reading Arrow files in Python and R
+
+- In Python and R the Arrow file format is confounded with an earlier file format called Feather and referred to as `Feather V2`.
+
+### Python
+
+- I like the concise description of the contents of an Arrow file provided by `pyarrow.feather.read_table`
+- The `PyCall` package for `Julia` starts a Python process and allows communication with it, including data transfer.
+- I use this instead of the Python REPL when working with both Julia and Python
+
+```{julia}
+feather = pyimport("pyarrow.feather")
+feather.read_table(rnaarrownm)
+```
+
+- Notice that the `chromo` column has been converted from strings to a dictionary encoding of the unique values of the strings and 8-bit integer indices into this dictionary.
+- This was done in the call to `CSV.File` in the Julia session.
+- The `pyarrow.feather.read_feather` function reads the table and converts the result to a Pandas dataframe
+
+```{julia}
+feather.read_feather(rnaarrownm)
+```
+
+### R
+
+- In R the `arrow::read_feather` function returns a tibble.  In an R session it looks like
+```r
+> library(tibble)
+> arrow::read_feather("./biofast-data-v1/ex-rna.arrow")
+# A tibble: 8,942,869 × 3
+   chromo     start      stop
+   <fct>      <int>     <int>
+ 1 chr2   216499331 216501458
+ 2 chr7   101239611 101245071
+ 3 chr19   49487626  49491841
+ 4 chr10   80155590  80169336
+ 5 chr17   76270411  76271290
+ 6 chr6    31268756  31272069
+ 7 chr5   170083214 170083368
+ 8 chr19   51989731  51989996
+ 9 chr18   55225980  55226732
+10 chr16   84565611  84566066
+# … with 8,942,859 more rows
+```
+
+- The `RCall` package in Julia allows for running an R process within a Julia session
+
+```{julia}
+R"""
+library(tibble)
+glimpse(rnatbl <- arrow::read_feather($rnaarrownm))
+""";
+```
+
+
+### Julia
+
+```{julia}
+annotbl = Arrow.Table("./biofast-data-v1/ex-anno.arrow")
+```
+
+- Although the schema describes the `chromo` column as `String`s they are dictionary encoded
+
+```{julia}
+typeof(annotbl.chromo)
+```
+
+
+## Secondary processing steps
+
+- The next step is, for each chromosome, to create an array of intervals from the start and stop positions.
+- The authors of the benchmark code created their own Julia data structure for this but there is no need - a unit range of integers works.
+- The interval represented on a row is, in 0-based positions, `start:(stop -1)`.
+- We could equally well use 1-based positions `(start + 1):stop` as long as we are consistent.
+- There is a small advantage in incrementing `start` rather than decrementing `stop` if the integer type happens to be unsigned.
+- We define methods for an `asrange` function that returns the range from a `start/stop` pair.
+- Methods are defined for two integers or for a `NamedTuple`, which is what a row of a rowtable is.
+- `oneunit(x)` returns the multiplicative identity for `typeof(x)`.  It differs from `one(x)` if the type of `x` is dimensionful (e.g. a `Day`).  
+
+```{julia}
+asrange(start, stop) = (start + oneunit(start)):stop
+asrange(r::NamedTuple) = asrange(r.start, r.stop)
+```
+
+- These method definitions use the compact "one-liner" syntax.
+
+- The split by chromosome is implemented as a dictionary (`Dict`)
+
+```{julia}
+function chromodict(tbl)
+  rtbl = Tables.rowtable(tbl)
+  valtyp = Vector{typeof(asrange(first(rtbl)))}
+  result = Dict{String,valtyp}()
+  for r in rtbl
+    push!(get!(result, r.chromo, valtyp()), asrange(r))
+  end
+  return result
+end
+annodict = chromodict(annotbl)
+```
+
+### Counting overlapping sequences
+
+- The first task is to take a feature (the `needle`) from one `.bed` file and determine the number of sequence alignments for that chromosome in the other `.bed` file, the `haystack`, that have a nonempty intersection.
+- We also want to know the number of base pairs in the intersection (the coverage) compared to the size of the `needle` feature.
+- For convenience we will represent the contents of both `.bed` files as `Dict{String,Vector{UnitRange{Int32}}}`
+
+```{julia}
+rnadict = chromodict(Arrow.Table(rnaarrownm))
+```
+
+- The `coverage` function returns a `NamedTuple`, corresponding to a row in a row-table.
+```{julia}
+function coverage(needle::UnitRange{T}, haystack::Vector{UnitRange{T}}) where {T}
+  s = filter(!isempty, intersect.(Ref(needle), haystack))
+  start = first(needle) - oneunit(T)
+  stop = last(needle)
+  nover = T(length(s))
+  noverbp = T(length(mapreduce(BitSet, union, s; init=BitSet())))
+  flen = T(length(needle))
+  return (; start, stop, nover, noverbp, flen)
+end
+coverage(rnadict["chr5"][2], annodict["chr5"])
+```
+
+- the final stage is performing the overlap calculation for the entire vector of features on a particular chromosome
+
+```{julia}
+function chromooverlap(needledict, haystackdict, nm)
+  hs = haystackdict[nm]
+  nvec = needledict[nm]
+  return DataFrame([coverage(f, hs) for f in nvec])
+end
+```
+
+- this method works but is slow because of memory allocations and garbage collection
+
+```{julia}
+chromooverlap(rnadict, annodict, "chr21")
+```
+
+```{julia}
+@time chromooverlap(rnadict, annodict, "chr21");
+```
+
+- much of the memory allocation can be eliminated if a vector for the results of the intersection is passed to `coverage`
+
+```{julia}
+function coverage!(
+  intsect::Vector{UnitRange{T}},
+  s::Vector{UnitRange{T}},
+  needle::UnitRange{T},
+  haystack::Vector{UnitRange{T}}
+) where {T}
+  empty!(s)    # resets length to 0 but does not release storage
+  map!(h -> intersect(needle, h), intsect, haystack)
+  for isect in intsect
+    isempty(isect) || push!(s, isect)
+  end
+  start = first(needle) - oneunit(T)
+  stop = last(needle)
+  nover = T(length(s))
+  noverbp = T(length(mapreduce(BitSet, union, s; init=BitSet())))
+  flen = T(length(needle))
+  return (; start, stop, nover, noverbp, flen)
+end
+```
+
+```{julia}
+let 
+  needle = rnadict["chr5"][2]
+  haystack = annodict["chr5"]
+  intsect = similar(haystack)
+  s = similar(haystack)
+  coverage!(intsect, s, needle, haystack)
+end
+```
+
+- Redefine `chromooverlap` to use `coverage!` instead of `coverage`.
+
+```{julia}
+function chromover(needledict, haystackdict, nm)
+  hs = haystackdict[nm]
+  nvec = needledict[nm]
+  ivec = similar(hs)
+  s = similar(hs)
+  return DataFrame([coverage!(ivec, s, f, hs) for f in nvec],)
+end
+```
+
+```{julia}
+chr21tbl = chromover(rnadict, annodict, "chr21")
+```
+
+- But the performance is not very good
+
+```{julia}
+@time chromover(rnadict, annodict, "chr21");
+```

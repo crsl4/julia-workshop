@@ -1,7 +1,7 @@
 ---
 title: "Session 1: Getting started with Julia"
 author: "Claudia Solis-Lemus and Douglas Bates"
-subtitle: "ISMB 2022 Madison"
+subtitle: "ISCB 2022 Madison"
 jupyter: julia-1.8
 ---
 
