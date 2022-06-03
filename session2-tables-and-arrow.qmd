@@ -8,27 +8,39 @@ Load packages to be used
 #| code-fold: show
 using Arrow
 using CSV
-using DataFrameMacros
 using DataFrames
+using IntervalTrees
+using PooledArrays
 using PyCall
 using RCall
 using Tables
 ```
 
-## An example task
+## Objectives
 
-- The [lh3/biofast](https://github.com/lh3/biofast) repository on github contains yet another benchmark for comparing programming languages - in this case on two "typical" Bioinformatics tasks.
-- One of these tasks, an "interval query", takes two `.bed` files to compare and should return output comparable to that created by [bedtools coverage](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html)
-- The approach taken in each of the target languages is modeled on that in the C/C++ library
-- Each language implementation requires code to parse the .bed files. In this case, they are simple tab-separated-value files.
-- Why go through this parsing of text files to create a numeric representation in each language and then store the results again as text files?
-- There are very good cross-language packages for working with tables, including [Arrow](http://arrow.apache.org) for storing and manipulating column-oriented, static, tables (i.e. like data frames in R, Python/Pandas, and Julia)
+- Use an example of computing interval overlaps to introduce Julia facilities for working with tabular data.
+- Introduce the Arrow format for tabular data and demonstrate its use in Julia, Python/Pandas and R.
+- Show a naive approach to computing overlaps
+- Modify the approach to use [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl)
+- (Time permitting) An approach based on [cgranges](https://github.com/lh3/cgranges).
+
+## Task and sample data
+
+- [lh3/biofast](https://github.com/lh3/biofast) provides benchmark code for comparing programming languages on Bioinformatics tasks.
+- One of these tasks, an "interval query", takes two [.bed files](https://en.wikipedia.org/wiki/BED_(file_format)) to compare.
+- One file contains a reference set of intervals, the other contains target intervals.
+- For each target interval, determine which reference intervals overlap with it.
+- In the benchmark both the number of reference intervals that overlap with a target and the proportion of the target covered by the overlap are computed.
+- It appears that the calculation of the proportion of overlap assumes that the reference intervals are disjoint.  We will not make that assumption.
 
 ## Sample data
 
+- In the benchmark each language implementation requires code to parse the .bed files. In this case, they are simple tab-separated-value files.
+- Why go through this parsing of text files to create a numeric representation in each language and then store the results again as text files?
 - the data sets for the benchmark are available as `biofast-data-v1.tar.gz` at [biofast-data-v1](https://github.com/lh3/biofast/releases/tag/biofast-data-v1)
 - the `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
 - the operations of downloading the tar file, and extracting the files could be done within Julia (see the [Downloads](https://github.com/JuliaLang/Downloads.jl) and [Tar](https://github.com/JuliaIO/Tar.jl) packages) but it is easier to just click on the link and extract the files from the downloaded archive.
+
 ```
 $ ls -lh biofast-data-v1/
 total 1.6G
@@ -43,29 +55,64 @@ total 1.6G
 - Writing code to parse a CSV or TSV file is tedious and error prone.
 - But skilled people have put a lot of work into creating packages to do just that.
 - More importantly they have tested, debugged, and documented their packages.
-- `CSV.File` parses CSV and related file types returning a "row table".
+- The `CSV.read` function reads and parses a file and converts it to a type specified by the second argument.
 - As is common for such functions, there is a huge number of optional (i.e. named) arguments
 - We could call it as
 
 ```{julia}
-anno = CSV.File(
-  "./biofast-data-v1/ex-anno.bed";
+annodf = CSV.read(
+  "./biofast-data-v1/ex-anno.bed",
+  DataFrame;
   header=["chromo", "start", "stop"],
   delim='\t',
   types=[String, Int32, Int32],
 )
 ```
 
+- It turns out that both of the `.bed` files contain many duplicate rows.
+- As row order is not important, we first sort the `DataFrame` then iterate over rows skipping any that are equal to the previous rows.
+- Before sorting I will change strings like `"chr1"` to `"chr01"` so that sorting the strings also orders by chromosome number.
+
 ```{julia}
-Tables.schema(anno)
+replacements =  ["chr$i" => "chr0$i" for i in 1:9]
 ```
 
-- We can see that the table is row-oriented but we can save it to an Arrow file, which is column-oriented, directly because both the `Arrow` and `CSV` packages implement the `Tables` interface.
+```{julia}
+replace!(annodf[!, :chromo], replacements...)
+```
+
+
+## Row tables and column tables
+
+- [Tables.jl](https://github.com/JuliaData/Tables.jl) provides an interface between row-oriented tables, such as that produced by `CSV.File` and column-oriented tables, such as stored by `Arrow.write`.
+- In general a row-oriented table looks like a `Vector{NamedTuple}` and a column-oriented table looks like a `NamedTuple` of `Vector`s.
+- Methods can be written for general "table-like" arguments and the interface takes care of the mapping details.
+- Row tables allow efficient iteration over rows; column tables allow for operations on entire columns.
+
+```{julia}
+function dropdups(df::DataFrame)
+  rtbl = rowtable(sort!(df))  # prepare to iterate over rows
+  prev = last(rtbl) # any row that is != first(rtbl)
+  result = sizehint!(typeof(prev)[], length(rtbl) ÷ 4)
+  for r in rtbl
+    r == prev || push!(result, r)
+    prev = r
+  end
+  return DataFrame(result)
+end
+annordf = dropdups(annodf,)
+```
+
+## Arrow file format
+
+- The [Arrow project](https://arrow.apache.org) defines a memory and file format for storing and manipulating column-oriented, static, tables (i.e. like data frames in R, Python/Pandas, and Julia)
+- When writing to a file either 'lz4' or 'zstd' compression can be used.
+- Metadata on the names and types of columns is automatically stored.  Additional column or table metadata can be specified.
 
 ```{julia}
 Arrow.write(
   "./biofast-data-v1/ex-anno.arrow",
-  anno;
+  transform(annordf, :chromo => PooledArray => :chromo);
   compress=:lz4,
   metadata=[
     "url" =>
@@ -75,47 +122,99 @@ Arrow.write(
 ```
 
 ::: {.callout-note}
-In the calls to `CSV.File` and `Arrow.write` the positional arguments and the named arguments are separated with `;` rather than `,`.
-Doing so is optional in these calls.
+In the call to `Arrow.write` the positional arguments and the named arguments are separated with `;` rather than `,`.
+This is optional in these calls.
 However, this convention can be used to indicate a named argument value is the same name as an object in an active namespace.
 :::
 
 ```{julia}
 rnaarrownm = let
   bednm = "./biofast-data-v1/ex-rna.bed"
-  header = ["chromo", "start", "stop"]
+  header = [:chromo, :start, :stop]
   delim = '\t'
   types = [String, Int32, Int32]
+  rnadf = CSV.read(bednm, DataFrame; header, delim, types)
+  replace!(rnadf[!, :chromo], replacements...)
   compress = :lz4
   metadata = [
     "url" => 
     "https://github.com/lh3/biofast/releases/tag/biofast-data-v1",
   ]
   Arrow.write(
-    first(splitext(bednm)) * ".arrow",
-    CSV.File(bednm; header, delim, types,);
-    compress, metadata,
+    string(first(splitext(bednm)), ".arrow"),
+    transform!(dropdups(rnadf), :chromo => PooledArray => :chromo);
+    compress,
+    metadata,
   )
 end
 ```
 
-```
-$ ls -lh biofast-data-v1/
-total 1.6G
--rw-rw-r-- 1 bates bates 4.2M May 29 10:15 ex-anno.arrow
--rw------- 1 bates bates  28M May 11  2020 ex-anno.bed
--rw-rw-r-- 1 bates bates  68M May 29 10:33 ex-rna.arrow
--rw------- 1 bates bates 203M May 11  2020 ex-rna.bed
--rw------- 1 bates bates 1.4G May  3  2020 M_abscessus_HiSeq.fq
+```{julia}
+run(`ls -lh ./biofast-data-v1`);
 ```
 
-## Reading Arrow files in Python and R
+## Reading Arrow files in Julia
 
-- In Python and R the Arrow file format is confounded with an earlier file format called Feather and referred to as `Feather V2`.
+```{julia}
+annotbl = Arrow.Table("./biofast-data-v1/ex-anno.arrow")
+```
 
-### Python
+- Although the schema describes the `chromo` column as `String`s the values are dictionary encoded such that each value is represented by one byte.
 
-- I like the concise description of the contents of an Arrow file provided by `pyarrow.feather.read_table`
+```{julia}
+typeof(annotbl.chromo)
+```
+
+```{julia}
+rnatbl = Arrow.Table(rnaarrownm)
+```
+
+- We can use operations like split-apply-combine on these tables to summarize properties
+
+```{julia}
+innerjoin(
+  combine(groupby(DataFrame(rnatbl), :chromo), nrow => :nrna),
+  combine(groupby(DataFrame(annotbl), :chromo), nrow => :nanno);
+  on=:chromo,
+)  
+```
+
+## Reading Arrow files in Python
+
+- In Python (and in R) the Arrow file format is confounded with an earlier file format called Feather and referred to as `Feather V2`.
+- The `pyarrow` package includes `pyarrow.feather`.  Its use in a Python session looks like
+
+```python
+>>> import pyarrow.feather as fea
+>>> fea.read_table('./biofast-data-v1/ex-rna.arrow')
+pyarrow.Table
+chromo: dictionary<values=string, indices=int8, ordered=0> not null
+start: int32 not null
+stop: int32 not null
+----
+chromo: [  -- dictionary:
+["chr01","chr02","chr03","chr04","chr05",...,"chr20","chr21","chr22","chrX","chrY"]  -- indices:
+[0,0,0,0,0,...,23,23,23,23,23]]
+start: [[14354,14359,14361,14361,14366,...,18992169,18992297,24362035,24362037,25307904]]
+stop: [[24892,24855,14672,16878,24894,...,18992298,18992676,24362135,24362201,25308109]]
+>>> fea.read_feather('./biofast-data-v1/ex-rna.arrow')
+        chromo     start      stop
+0        chr01     14354     24892
+1        chr01     14359     24855
+2        chr01     14361     14672
+3        chr01     14361     16878
+4        chr01     14366     24894
+...        ...       ...       ...
+4685075   chrY  18992169  18992298
+4685076   chrY  18992297  18992676
+4685077   chrY  24362035  24362135
+4685078   chrY  24362037  24362201
+4685079   chrY  25307904  25308109
+
+[4685080 rows x 3 columns]
+```
+- `read_table` returns a `Table` object, `read_feather` returns a Pandas dataframe.
+
 - The `PyCall` package for `Julia` starts a Python process and allows communication with it, including data transfer.
 - I use this instead of the Python REPL when working with both Julia and Python
 
@@ -125,33 +224,28 @@ feather.read_table(rnaarrownm)
 ```
 
 - Notice that the `chromo` column has been converted from strings to a dictionary encoding of the unique values of the strings and 8-bit integer indices into this dictionary.
-- This was done in the call to `CSV.File` in the Julia session.
-- The `pyarrow.feather.read_feather` function reads the table and converts the result to a Pandas dataframe
 
-```{julia}
-feather.read_feather(rnaarrownm)
-```
-
-### R
+## Reading Arrow files in R
 
 - In R the `arrow::read_feather` function returns a tibble.  In an R session it looks like
+
 ```r
 > library(tibble)
 > arrow::read_feather("./biofast-data-v1/ex-rna.arrow")
-# A tibble: 8,942,869 × 3
-   chromo     start      stop
-   <fct>      <int>     <int>
- 1 chr2   216499331 216501458
- 2 chr7   101239611 101245071
- 3 chr19   49487626  49491841
- 4 chr10   80155590  80169336
- 5 chr17   76270411  76271290
- 6 chr6    31268756  31272069
- 7 chr5   170083214 170083368
- 8 chr19   51989731  51989996
- 9 chr18   55225980  55226732
-10 chr16   84565611  84566066
-# … with 8,942,859 more rows
+# A tibble: 4,685,080 × 3
+   chromo start  stop
+   <fct>  <int> <int>
+ 1 chr01  14354 24892
+ 2 chr01  14359 24855
+ 3 chr01  14361 14672
+ 4 chr01  14361 16878
+ 5 chr01  14366 24894
+ 6 chr01  14370 14989
+ 7 chr01  14396 24894
+ 8 chr01  14397 17733
+ 9 chr01  14398 24894
+10 chr01  14399 15977
+# … with 4,685,070 more rows
 ```
 
 - The `RCall` package in Julia allows for running an R process within a Julia session
@@ -163,117 +257,103 @@ glimpse(rnatbl <- arrow::read_feather($rnaarrownm))
 """;
 ```
 
-
-### Julia
-
-```{julia}
-annotbl = Arrow.Table("./biofast-data-v1/ex-anno.arrow")
-```
-
-- Although the schema describes the `chromo` column as `String`s they are dictionary encoded
-
-```{julia}
-typeof(annotbl.chromo)
-```
-
-
 ## Secondary processing steps
 
-- The next step is, for each chromosome, to create an array of intervals from the start and stop positions.
-- The authors of the benchmark code created their own Julia data structure for this but there is no need - a unit range of integers works.
+- The next step is, for each chromosome, to create an array of the reference intervals from the start and stop positions.
+- [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl) defines an `Interval` type but we will start just using ranges to represent an interval.
 - The interval represented on a row is, in 0-based positions, `start:(stop - 1)`.
 - We could equally well use 1-based positions `(start + 1):stop` as long as we are consistent.
 - There is a small advantage in incrementing `start` rather than decrementing `stop` if the integer type happens to be unsigned.
 - We define methods for an `asrange` function that returns the range from a `start/stop` pair.
 - Methods are defined for two integers or for a `NamedTuple`, which is what a row of a rowtable is.
-- `oneunit(x)` returns the multiplicative identity for `typeof(x)`.  It differs from `one(x)` if the type of `x` is dimensionful (e.g. a `Day`).  
-
+- `one(x)` is used instead of the literal `1` to preserve types (see also `?oneunit`, which is slighly more general).
 ```{julia}
-asrange(start, stop) = (start + oneunit(start)):stop
+asrange(start, stop) = (start + one(start)):stop
 asrange(r::NamedTuple) = asrange(r.start, r.stop)
 ```
 
-- These method definitions use the compact "one-liner" syntax.
+::: {.callout-note}
+These method definitions use the compact "one-liner" syntax.
+:::
 
-- The split by chromosome is implemented as a dictionary (`Dict`)
+### Create a dictionary of (sorted) vectors of ranges
+
+- The split by chromosome is implemented as a dictionary (`Dict`).
+- For convenience we convert the `chromo` value from `String` to `Symbol`, which is easier to type.
 
 ```{julia}
 function chromodict(tbl)
   rtbl = Tables.rowtable(tbl)
   valtyp = Vector{typeof(asrange(first(rtbl)))}
-  result = Dict{String,valtyp}()
+  result = Dict{Symbol,valtyp}()
   for r in rtbl
-    push!(get!(result, r.chromo, valtyp()), asrange(r))
+    push!(get!(result, Symbol(r.chromo), valtyp()), asrange(r))
   end
   return result
 end
 annodict = chromodict(annotbl)
 ```
 
+- Also, the intervals are not disjoint, which will throw off the calculation of proportion overlap as implemented in the code in the biofast repository.
+
+```{julia}
+first(annodict[:chr05], 7)
+```
+
+- For convenience we also convert `rnatbl` to dictionary of unique, sorted `Vector{UnitRange{Int32}}`.
+
+```{julia}
+rnadict = chromodict(rnatbl)
+```
+
 ### Counting overlapping sequences
 
-- The first task is to take a feature (the `needle`) from one `.bed` file and determine the number of sequence alignments for that chromosome in the other `.bed` file, the `haystack`, that have a nonempty intersection.
-- We also want to know the number of base pairs in the intersection (the coverage) compared to the size of the `needle` feature.
-- For convenience we will represent the contents of both `.bed` files as `Dict{String,Vector{UnitRange{Int32}}}`
-
-```{julia}
-rnadict = chromodict(Arrow.Table(rnaarrownm))
-```
-
-- The number of features per chromosome in the two .bed files can be calculated as
-
-```{julia}
-featurefrm = @transform!(
-  DataFrame(chromo = collect(keys(annodict))),
-  :annolen = length(annodict[:chromo]),
-  :rnalen = length(rnadict[:chromo]),
-)
-```
-
+- The first task is to take a `target` interval from the `rna` table and determine the number of `anno` intervals for that chromosome that have a nonempty intersection.
+- We also want to know the number of elements in the intersection (the coverage) compared to the size of the `target`.
 - The `coverage` function returns a `NamedTuple`, corresponding to a row in a row-table.
 ```{julia}
-function coverage(needle::UnitRange{T}, haystack::Vector{UnitRange{T}}) where {T}
+function coverage(target::UnitRange{T}, reference::Vector{UnitRange{T}}) where {T}
   n = 0
   overlap = BitSet()
-  for h in haystack
-    i = intersect(needle, h)
+  for h in reference
+    i = intersect(target, h)
     if !isempty(i)
       n += 1
       union!(overlap, i)
     end
   end
-  start = first(needle) - oneunit(T)
-  stop = last(needle)
+  start = first(target) - one(T)
+  stop = last(target)
   nover = T(n)
   noverbp = T(length(overlap))
-  flen = T(length(needle))
+  flen = T(length(target))
   return (; start, stop, nover, noverbp, flen)
 end
-coverage(rnadict["chr5"][2], annodict["chr5"])
+coverage(rnadict[:chr05][2], annodict[:chr05])
 ```
 
 - the final stage is performing the overlap calculation for the entire vector of features on a particular chromosome
 
 ```{julia}
-function chromooverlap(needledict, haystackdict, nm)
-  hs = haystackdict[nm]
-  nvec = needledict[nm]
-  result = similar(nvec, typeof(coverage(first(nvec), hs)))
-  Threads.@threads for i in eachindex(nvec, result)
-    result[i] = coverage(nvec[i], hs)
+function chromooverlap(targetdict, refdict, nm)
+  refs = refdict[nm]
+  targets = targetdict[nm]
+  result = similar(targets, typeof(coverage(first(targets), refs)))
+  Threads.@threads for i in eachindex(targets, result)
+    result[i] = coverage(targets[i], refs)
   end
   return result
 end
 ```
 
 ```{julia}
-chromooverlap(rnadict, annodict, "chr21")
+chromooverlap(rnadict, annodict, :chr21)
 ```
 
 - this version of `chromooverlap` takes advantage of multiple threads if available.
 
 ```{julia}
-@time chromooverlap(rnadict, annodict, "chr21");
+@time chromooverlap(rnadict, annodict, :chr21);
 ```
 
 ## Configuration
