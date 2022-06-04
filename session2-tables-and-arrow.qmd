@@ -38,7 +38,7 @@ using Tar               # tar archive utilities
 ## Sample data
 
 - The data sets for the benchmark are available as `biofast-data-v1.tar.gz` at [biofast-data-v1](https://github.com/lh3/biofast/releases/tag/biofast-data-v1)
-- This code chunk downloads the tarball, if necessary, and extracts the two bedfiles to a directory `biofast-data-v1`, if necessary.
+- The following code chunks download the tarball, if necessary, and extract the two bedfiles to a directory `biofast-data-v1`, if necessary.
 (Alternatively, you can just click on the link to the tarball in the github tag page and extract the files by hand.)
 
 ```{julia}
@@ -52,6 +52,12 @@ if !isfile(tarball)
   )
   Downloads.download(dataurl, tarball)
 end
+run(`ls -lh $tarball`);
+```
+
+- the `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
+
+```{julia}
 isdir(datadir) || mkdir(datadir)
 bedfilenames = ["ex-anno.bed", "ex-rna.bed"]
 if !all(nm -> isfile(joinpath(datadir, nm)), bedfilenames)
@@ -60,12 +66,6 @@ if !all(nm -> isfile(joinpath(datadir, nm)), bedfilenames)
     mv(joinpath(tmpdir, datadir, nm), datadir)
   end
 end
-run(`ls -lh $tarball`);
-```
-
-- the `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
-
-```{julia}
 run(`ls -lh $datadir`);
 ```
 
@@ -126,7 +126,7 @@ annodf
 ```{julia}
 Arrow.write(
   "./biofast-data-v1/ex-anno.arrow",
-  annodf,
+  annodf;
   compress=:lz4,
   metadata=[
     "url" =>
@@ -312,7 +312,7 @@ annodict = chromodict(annotbl)
 first(annodict[:chr05], 7)
 ```
 
-- For convenience we also convert `rnatbl` to dictionary of unique, sorted `Vector{UnitRange{Int32}}`.
+- For convenience we also convert `rnatbl` to a similar dictionary.
 
 ```{julia}
 rnadict = chromodict(rnatbl)
@@ -357,31 +357,18 @@ coverage(rnadict[:chr05][2], annodict[:chr05])
 ::: {.callout-note}
 - While creating these notes we discovered a [bug](https://github.com/JuliaLang/julia/pull/45574) in the `union!` method called here.
 - There was a [PR](https://github.com/JuliaLang/julia/pull/45578) to fix it the next morning.
-- Versions of Julia prior to 1.8.0-rc2 will give incorrect results on the coverage.
+- Versions of Julia prior to 1.8.0-rc2 can (and probably will) return an incorrect value of `noverbp`.
 :::
 
 - The final stage is performing the overlap calculation for the entire vector of target features on a particular chromosome
+- This can be written as a comprehension
 
 ```{julia}
 function chromooverlap(targetdict, refdict, sym)
-  refs = refdict[sym]
-  targets = targetdict[sym]
-  result = similar(targets, typeof(coverage(first(targets), refs)))
-  Threads.@threads for i in eachindex(targets, result)
-    result[i] = coverage(targets[i], refs)
-  end
-  return result
+  return [coverage(t, refdict[sym]) for t in targetdict[sym]]
 end
 ```
 
-- This version of `chromooverlap` takes advantage of multiple threads if available.
-- If we were not allowing for multiple threads it would be more idiomatic to write the loop as
-```julia
-result = sizehint!(typeof(coverage(first(targets), refs))[], length(targets))
-for t in targets
-  push!(result, coverage(t, refs))
-end
-```
 ```{julia}
 chr21over = DataFrame(chromooverlap(rnadict, annodict, :chr21))
 ```
@@ -392,6 +379,20 @@ extrema(chr21over.nover)
 
 ```{julia}
 @time chromooverlap(rnadict, annodict, :chr21);
+```
+
+- A slightly wordier version can take advantage of multiple threads, if available.
+
+```julia
+function chromooverlap(targetdict, refdict, sym)
+  refs = refdict[sym]
+  targets = targetdict[sym]
+  result = similar(targets, typeof(coverage(first(targets), refs)))
+  Threads.@threads for i in eachindex(targets, result)
+    result[i] = coverage(targets[i], refs)
+  end
+  return result
+end
 ```
 
 ## Using IntervalTrees.jl
@@ -453,7 +454,24 @@ chr21over == DataFrame(chromooverlap(rnadict, annoitrdict, :chr21))
 
 - The timings were done with `:chr21` because the number of intervals is small.  Repeat with `:chr01` for more realistic timings.
 
-## Configuration
+## Conclusions
+
+- Julia provides an impressive array of tools for Bioinformatics and similar tasks
+- We have shown the use of
+[Arrow.jl](https://github.com/apache/arrow-julia),
+[CategoricalArrays.jl](https://github.com/JuliaData/CategoricalArrays.jl)
+[CSV.jl](https://github.com/JuliaData/CSV.jl),
+[DataFrames](https://github.com/JuliaData/DataFrames.jl),
+and
+[Tables.jl](https://github.com/JuliaData/Tables.jl) for data input, storage and manipulation.
+- Although not shown here [DataFrameMacros.jl](https://github.com/jkrumbiegel/DataFrameMacros.jl) or ([DataFramesMeta.jl](https://github.com/JuliaData/DataFramesMeta.jl)) and [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) are worth considering if you start working with DataFrames.
+- We have also shown the use of
+[PyCall.jl](https://github.com/JuliaPy/PyCall.jl) and
+[RCall.jl](https://github.com/JuliaInterop/RCall.jl) for running and communicating with other language systems within Julia.
+- We also showed the use of utility packages [Downloads.jl](https://JuliaLang/Downloads.jl) and [Tar.jl](https://github.com/JuliaIO/Tar.jl) for scripting, say within [Quarto](https://quarto.org) documents like these.
+- Take a moment to look at the repositories for many of these Julia packages.  Most (all?) of them are 100% Julia code.
+
+## Version information
 
 ```{julia}
 versioninfo()
