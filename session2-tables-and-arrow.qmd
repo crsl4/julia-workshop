@@ -6,16 +6,16 @@ Load packages to be used
 
 ```{julia}
 #| code-fold: show
-using Arrow           # Arrow storage and file format
-using CSV             # CSV and related files
-using Downloads       # file downloads
-using DataFrames      # versatile tabular data format
-using IntervalTrees   # interval trees implemented by BioJulia
-using PooledArrays    # compact, factor-like storage
-using PyCall          # run Python within a Julia session
-using RCall           # run R within a Julia session
-using Tables          # row- or column-oriented data tables
-using Tar             # tar archive utilities
+using Arrow             # Arrow storage and file format
+using CategoricalArrays # compact, factor-like storage
+using CSV               # CSV and related files
+using Downloads         # file downloads
+using DataFrames        # versatile tabular data format
+using IntervalTrees     # interval trees implemented by BioJulia
+using PyCall            # run Python within a Julia session
+using RCall             # run R within a Julia session
+using Tables            # row- or column-oriented data tables
+using Tar               # tar archive utilities
 ```
 
 ## Objectives
@@ -29,7 +29,7 @@ using Tar             # tar archive utilities
 ## Task and sample data
 
 - [lh3/biofast](https://github.com/lh3/biofast) provides benchmark code for comparing programming languages on Bioinformatics tasks.
-- One of these tasks, an "interval query", takes two [.bed files](https://en.wikipedia.org/wiki/BED_(file_format)) to compare.
+- One of these tasks, an [interval query](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html), takes two [.bed files](https://en.wikipedia.org/wiki/BED_(file_format)) to compare.
 - One file contains a reference set of intervals, the other contains target intervals.
 - For each target interval, determine which reference intervals overlap with it.
 - In the benchmark both the number of reference intervals that overlap with a target and the proportion of the target covered by the overlap are computed.
@@ -37,79 +37,84 @@ using Tar             # tar archive utilities
 
 ## Sample data
 
-- the data sets for the benchmark are available as `biofast-data-v1.tar.gz` at [biofast-data-v1](https://github.com/lh3/biofast/releases/tag/biofast-data-v1)
+- The data sets for the benchmark are available as `biofast-data-v1.tar.gz` at [biofast-data-v1](https://github.com/lh3/biofast/releases/tag/biofast-data-v1)
+- This code chunk downloads the tarball, if necessary, and extracts the two bedfiles to a directory `biofast-data-v1`, if necessary.
+(Alternatively, you can just click on the link to the tarball in the github tag page and extract the files by hand.)
 
 ```{julia}
 datadir = "biofast-data-v1"
-if !isdir(datadir)
-  tarball = "biofast-data-v1.tar.gz"
-  if !isfile(tarball)
-    dataurl = joinpath("https://github.com/lh3/biofast/releases/download", datadir, tarball)
-    Downloads.download(dataurl, tarball)
-  end
-  tmpdir = Tar.extract(h -> endswith(h.path, ".bed"), `zcat ./$tarball`)
-  mv(joinpath(tmpdir, datadir), datadir)
+tarball = "$datadir.tar.gz"
+if !isfile(tarball)
+  dataurl = joinpath(
+    "https://github.com/lh3/biofast/releases/download",
+    datadir,
+    tarball,
+  )
+  Downloads.download(dataurl, tarball)
 end
-run(`ls -lh $datadir`);
+isdir(datadir) || mkdir(datadir)
+bedfilenames = ["ex-anno.bed", "ex-rna.bed"]
+if !all(nm -> isfile(joinpath(datadir, nm)), bedfilenames)
+  tmpdir = Tar.extract(h -> endswith(h.path, ".bed"), `zcat ./$tarball`)
+  for nm in bedfilenames
+    mv(joinpath(tmpdir, datadir, nm), datadir)
+  end
+end
+run(`ls -lh $tarball`);
 ```
 
 - the `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
 
+```{julia}
+run(`ls -lh $datadir`);
+```
+
+::: {.callout-note}
+Because of the way Quarto documents are rendered, this listing may contain `.arrow` files that are generated later in this document.
+:::
+
 ## Initial processing
 
-
-- The `.bed` file, in this case, are simple tab-separated-value files.
+- The `.bed` files, in this case, are simple tab-separated-value files.
 - Each of the language implementations in the benchmark contains code to parse lines of the `.bed` files producing a `String` and two `Int32` values.
-- Why go through this parsing of text files to create a numeric representation in each language and then store the results again as text files?
+- Furthermore the results of these benchmarks are written out as very large text files.  I don't plan to read a several-million-line text file to check if a program is working properly.
+- Why go through this parsing of text files to create a numeric representation in each language?
 - Writing code to parse a CSV or TSV file is tedious and error prone.
 - But skilled people have put a lot of work into creating packages to do just that.
 - More importantly they have tested, debugged, and documented their packages.
-- The `CSV.read` function reads and parses a file and converts it to a type specified by the second argument.
+- Within the `CSV` package, the `CSV.read` function reads and parses a file and converts it to a type specified by the second argument.
 - As is common for such functions, there are many, many optional named arguments
-- We could call it as
+- We read `ex-anno.bed` and create a `DataFrame` as
 
 ```{julia}
 annodf = CSV.read(
   "./biofast-data-v1/ex-anno.bed",
   DataFrame;
-  header=["chromo", "start", "stop"],
   delim='\t',
   types=[String, Int32, Int32],
+  header=["chromo", "start", "stop"],
 )
 ```
 
-- It turns out that both of the `.bed` files contain many duplicate rows.
-- As row order is not important, we first sort the `DataFrame` then iterate over rows skipping any that are equal to the previous rows.
+::: {.callout-note}
+- Redundant commas are allowed at the end of the list of arguments before the `)` in a function call.
+- Positional arguments must come before named arguments. Optionally, the comma after the last positional argument can be replace by a semicolon as shown above.
+:::
+
+- It turns out that both of the `.bed` files contain many duplicate rows. Use `unique!` to eliminate the duplicates.
+- As row order is not important, we also `sort!` the `DataFrame` which has the effect of sorting the intervals within a chromosome by `start` position.
 - Before sorting I will change strings like `"chr1"` to `"chr01"` so that sorting the strings also orders by chromosome number.
+- We generate a vector of pairs of strings for replacement and "splat" them into a call to `replace`
 
 ```{julia}
 replacements =  ["chr$i" => "chr0$i" for i in 1:9]
 ```
 
 ```{julia}
-replace!(annodf[!, :chromo], replacements...)
-```
-
-
-## Row tables and column tables
-
-- [Tables.jl](https://github.com/JuliaData/Tables.jl) provides an interface between row-oriented tables and column-oriented tables.
-- In general a row-oriented table looks like a `Vector{NamedTuple}` and a column-oriented table looks like a `NamedTuple` of `Vector`s.
-- Methods can be written for general "table-like" arguments and the interface takes care of the mapping details.
-- Row tables allow efficient iteration over rows; column tables allow for operations on entire columns.
-
-```{julia}
-function dropdups(df::DataFrame)
-  rtbl = rowtable(sort!(df))  # prepare to iterate over rows
-  prev = last(rtbl)           # any row that is != first(rtbl)
-  result = sizehint!(typeof(prev)[], length(rtbl) ÷ 4)
-  for r in rtbl
-    r == prev || push!(result, r)
-    prev = r
-  end
-  return DataFrame(result)
-end
-annordf = dropdups(annodf,)
+replace!(annodf.chromo, replacements...)
+sort!(unique!(annodf))
+annodf.chromo = categorical(annodf.chromo; ordered=true)
+annodf
 ```
 
 ## Arrow file format
@@ -121,7 +126,7 @@ annordf = dropdups(annodf,)
 ```{julia}
 Arrow.write(
   "./biofast-data-v1/ex-anno.arrow",
-  transform!(annordf, :chromo => PooledArray => :chromo);
+  annodf,
   compress=:lz4,
   metadata=[
     "url" =>
@@ -143,7 +148,9 @@ rnaarrownm = let
   delim = '\t'
   types = [String, Int32, Int32]
   rnadf = CSV.read(bednm, DataFrame; header, delim, types)
-  replace!(rnadf[!, :chromo], replacements...)
+  replace!(rnadf.chromo, replacements...)
+  sort!(unique!(rnadf))
+  rnadf.chromo = categorical(rnadf.chromo; ordered=true)
   compress = :lz4
   metadata = [
     "url" => 
@@ -151,15 +158,11 @@ rnaarrownm = let
   ]
   Arrow.write(
     string(first(splitext(bednm)), ".arrow"),
-    transform!(dropdups(rnadf), :chromo => PooledArray => :chromo);
+    rnadf;
     compress,
     metadata,
   )
 end
-```
-
-```{julia}
-run(`ls -lh $datadir`);
 ```
 
 ## Reading Arrow files in Julia
@@ -269,7 +272,7 @@ glimpse(rnatbl <- arrow::read_feather($rnaarrownm))
 ## Secondary processing steps
 
 - The next step is, for each chromosome, to create an array of the reference intervals from the start and stop positions.
-- [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl) defines an `Interval` type but we will start just using ranges to represent an interval.
+- With [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl) we will use its `Interval` type, but we start just using ranges to represent an interval.
 - The interval represented on a row of a `.bed` file is, in 0-based positions, `start:(stop - 1)`.
 - We could equally well use 1-based positions `(start + 1):stop` as long as we are consistent.
 - There is a small advantage in incrementing `start` rather than decrementing `stop` if the integer type happens to be unsigned.
@@ -303,7 +306,7 @@ end
 annodict = chromodict(annotbl)
 ```
 
-- Also, the intervals are not disjoint, which will throw off the calculation of proportion overlap as implemented in the code in the biofast repository.
+- Note that the intervals are not disjoint, which will throw off the calculation of proportion overlap as implemented in the code in the biofast repository.
 
 ```{julia}
 first(annodict[:chr05], 7)
@@ -315,15 +318,24 @@ first(annodict[:chr05], 7)
 rnadict = chromodict(rnatbl)
 ```
 
+## Row tables and column tables
+
+- `DataFrame`s and `Arrow.Table`s are examples of column-oriented tables. (Another possibility is a `NamedTuple` of `Vector`s.)
+- Sometimes we want to iterate over rows of a table, as in the `chromodict` function.
+- Row-tables are convenient for iterating over rows, including constructing a table by appending rows.
+- Column-tables are convenient for operating on entire columns, as is done in the `DataFrames` package
+- The `Tables` package provides an interface for the two types, including generic functions `columntable` and `rowtable` that allow for lazy views of column or row tables as the other type.
+
 ### Counting overlapping sequences
 
 - The first task is to take a `target` interval from the `rna` table and determine the number of `anno` intervals for that chromosome that have a nonempty intersection.
 - We also want to know the number of elements in the intersection (the coverage) compared to the size of the `target`.
 - The `coverage` function returns a `NamedTuple`, corresponding to a row in a row-table.
+
 ```{julia}
 function coverage(target::UnitRange{T}, reference::Vector{UnitRange{T}}) where {T}
   n = 0
-  overlap = empty!(BitSet([]))
+  overlap = BitSet()
   for h in reference
     i = intersect(target, h)
     if !isempty(i)
@@ -331,17 +343,24 @@ function coverage(target::UnitRange{T}, reference::Vector{UnitRange{T}}) where {
       union!(overlap, i)
     end
   end
-  start = first(target) - one(T)
-  stop = last(target)
-  nover = T(n)
-  noverbp = T(length(overlap))
-  flen = T(length(target))
-  return (; start, stop, nover, noverbp, flen)
+  return (;
+    start=first(target) - one(T),
+    stop=last(target),
+    nover=T(n),
+    noverbp=T(length(overlap)),
+    flen=T(length(target)),
+  )
 end
 coverage(rnadict[:chr05][2], annodict[:chr05])
 ```
 
-- the final stage is performing the overlap calculation for the entire vector of features on a particular chromosome
+::: {.callout-note}
+- While creating these notes we discovered a [bug](https://github.com/JuliaLang/julia/pull/45574) in the `union!` method called here.
+- There was a [PR](https://github.com/JuliaLang/julia/pull/45578) to fix it the next morning.
+- Versions of Julia prior to 1.8.0-rc2 will give incorrect results on the coverage.
+:::
+
+- The final stage is performing the overlap calculation for the entire vector of target features on a particular chromosome
 
 ```{julia}
 function chromooverlap(targetdict, refdict, sym)
@@ -355,8 +374,14 @@ function chromooverlap(targetdict, refdict, sym)
 end
 ```
 
-- this version of `chromooverlap` takes advantage of multiple threads if available.
-
+- This version of `chromooverlap` takes advantage of multiple threads if available.
+- If we were not allowing for multiple threads it would be more idiomatic to write the loop as
+```julia
+result = sizehint!(typeof(coverage(first(targets), refs))[], length(targets))
+for t in targets
+  push!(result, coverage(t, refs))
+end
+```
 ```{julia}
 chr21over = DataFrame(chromooverlap(rnadict, annodict, :chr21))
 ```
@@ -372,7 +397,7 @@ extrema(chr21over.nover)
 ## Using IntervalTrees.jl
 
 - `chromooverlap` implements a naive approach that ends up intersecting every interval in the targets with every interval in the reference set.
-- Using an `IntervalTree` from [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl) this operation can be much faster
+- The intersection operation can be much faster if we create `IntervalTree`s from the reference set of intervals
 - We can use the current `chromooverlap` if we create an dictionary of `IntervalTree`s and a new method for `coverage`.
 
 ```{julia}
@@ -402,17 +427,20 @@ function coverage(target::UnitRange{T}, reference::IntervalTree{T}) where {T}
   stop = last(target)
   ft = first(target)
   n = 0
-  covered = empty!(BitSet([]))
+  overlap = empty!(BitSet([]))
   for i in intersect(reference, (ft, stop))
     n += 1
-    union!(covered, intersect(target, first(i):last(i)))
+    union!(overlap, intersect(target, first(i):last(i)))
   end
-  start = ft - one(stop)
-  nover = T(n)
-  noverbp = T(length(covered))
-  flen = T(length(target))
-  return (; start, stop, nover, noverbp, flen)
+  return (;
+    start = ft - one(stop),
+    stop = stop,
+    nover = T(n),
+    noverbp = T(length(overlap)),
+    flen = T(length(target)),
+  )
 end
+coverage(rnadict[:chr05][2], annoitrdict[:chr05])
 ```
 
 ```{julia}
