@@ -8,7 +8,8 @@ project:
       - about.qmd
       - session0-housekeeping.qmd
       - session1-get-started.qmd
-      - session2-tables-and-arrow.qmd
+      - session2a-tables-and-arrow.qmd
+      - session2b-interval-overlap.qmd
       - session4-exercise.qmd
       - session6-conclusions.qmd
 
