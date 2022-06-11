@@ -30,7 +30,7 @@ datadir = "biofast-data-v1";
 - The reference (i.e. `anno`) intervals are converted to a `GroupedDataFrame` then converted to a `Dict{Symbol, Vector{UnitRange}}`.
 
 ::: {.callout-note}
-We could use the original character strings in the `chromo` column as the keys in this `Dict`.  There are some advantages to using symbols - for one, symbols are easier to type. The important advantages are storage and lookup speed.
+We could use the original character strings in the `chromo` column as the keys in this `Dict`.  There are some advantages to using symbols - for one, symbols are easier to type. The important advantages are smaller memory footprint and faster lookup.
 :::
 
 - The intervals should be sorted by increasing first element. We know this is true for our tables but it is safest to sort them.  ("Trust but verify" is the data scientist's motto.).  An in-place `sort!` is very fast if the elements of the container are already sorted.
@@ -73,6 +73,10 @@ end
 refitrees = toitrees(refranges)
 typeof(refitrees)
 ```
+
+::: {.callout-note}
+The call `Interval.(v)` is an example of [dot broadcasting](https://docs.julialang.org/en/v1/manual/functions/#man-vectorized)
+:::
 
 ```{julia}
 show(refitrees[:chr21])

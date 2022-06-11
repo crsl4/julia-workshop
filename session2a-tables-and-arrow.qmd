@@ -159,6 +159,9 @@ A function's name ending in `!` is a hint that it is a *mutating* function, whic
 ```{julia}
 replacements =  ["chr$i" => "chr0$i" for i in 1:9]
 ```
+::: {.callout-note}
+The expression in the right is called a "comprehension".  I think of it as an inside-out loop.
+:::
 
 ```{julia}
 show(unique(replace!(annodf.chromo, replacements...)))
