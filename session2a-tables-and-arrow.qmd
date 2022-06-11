@@ -84,7 +84,7 @@ if !isempty(toextract)
     Tar.extract(h -> in(h.path, toextract), io)
   end
   for pathnm in toextract
-    mv(joinpath(tmpdir, pathnm), pathnm)
+    mv(joinpath(tmpdir, pathnm), pathnm; force=true)
   end
 end
 run(`ls -lh $datadir`);
