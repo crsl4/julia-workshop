@@ -2,7 +2,7 @@ project:
   type: website
   title: "Julia Workshop, ISCB 2022, Madison"
   execute-dir: project
-  output-dir: _site
+  output-dir: docs
   render: 
       - index.qmd
       - about.qmd

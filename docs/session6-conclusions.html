@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Claudia Solis-Lemus and Douglas Bates">
+<meta name="dcterms.date" content="2022-07-10">
+
+<title>Julia Workshop - Session 6: Conclusions</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Julia Workshop</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html">About</a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/crsl4/julia-workshop"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#today-we-learned" id="toc-today-we-learned" class="nav-link active" data-scroll-target="#today-we-learned">Today we learned</a>
+  <ul class="collapse">
+  <li><a href="#data-tools" id="toc-data-tools" class="nav-link" data-scroll-target="#data-tools">1. Data tools:</a></li>
+  <li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting">2. Model fitting:</a></li>
+  <li><a href="#communications-with-other-systems" id="toc-communications-with-other-systems" class="nav-link" data-scroll-target="#communications-with-other-systems">3. Communications with other systems:</a></li>
+  <li><a href="#package-system" id="toc-package-system" class="nav-link" data-scroll-target="#package-system">4. Package system</a></li>
+  <li><a href="#tuning-performance" id="toc-tuning-performance" class="nav-link" data-scroll-target="#tuning-performance">5. Tuning performance</a></li>
+  <li><a href="#plotting" id="toc-plotting" class="nav-link" data-scroll-target="#plotting">6. Plotting</a></li>
+  <li><a href="#literate-programming" id="toc-literate-programming" class="nav-link" data-scroll-target="#literate-programming">7. Literate programming</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/crsl4/julia-workshop/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Session 6: Conclusions</h1>
+<p class="subtitle lead">ISMB 2022 Madison</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Claudia Solis-Lemus and Douglas Bates </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2022-07-10</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="today-we-learned" class="level1">
+<h1>Today we learned</h1>
+<ul>
+<li>Julia provides many advantages to data science programmers especially those creating programs that need to be efficient and that will be shared with the scientific community</li>
+<li>Julia allows programmers to easily write good performant code and avoid the two language problem</li>
+</ul>
+<p>Among the main Julia tools, we focused on five:</p>
+<section id="data-tools" class="level2">
+<h2 class="anchored" data-anchor-id="data-tools">1. Data tools:</h2>
+<ul>
+<li><a href="https://github.com/JuliaData/Arrow.jl">Arrow.jl</a>: memory, layout, data frame, binary form. The binary form allows for cross-platform use (julia, R, python). Need to be careful going from Julia to R</li>
+<li><a href="https://github.com/JuliaData/Tables.jl">Tables.jl</a>: generic idea of data table; row oriented (vector of named tuples) or column oriented (named tuple of vectors)</li>
+<li><a href="https://github.com/JuliaData/DataFrames.jl">DataFrames.jl</a>: <a href="https://ahsmart.com/assets/pages/data-wrangling-with-data-frames-jl-cheat-sheet/DataFramesCheatSheet_v0.22_rev1.pdf">cheatsheet</a> similar to <code>tidyverse</code>; split-apply-combine</li>
+</ul>
+</section>
+<section id="model-fitting" class="level2">
+<h2 class="anchored" data-anchor-id="model-fitting">2. Model fitting:</h2>
+<ul>
+<li><a href="https://github.com/JuliaStats/MixedModels.jl">MixedModels.jl</a>: 100% julia package</li>
+</ul>
+</section>
+<section id="communications-with-other-systems" class="level2">
+<h2 class="anchored" data-anchor-id="communications-with-other-systems">3. Communications with other systems:</h2>
+<ul>
+<li><a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a>: 100% julia package</li>
+<li><a href="https://github.com/JuliaPy/PyCall.jl">PyCall.jl</a>: 100% julia package</li>
+</ul>
+</section>
+<section id="package-system" class="level2">
+<h2 class="anchored" data-anchor-id="package-system">4. Package system</h2>
+<ul>
+<li>With Julia 1.7+, precompilation is done when the package is added</li>
+</ul>
+</section>
+<section id="tuning-performance" class="level2">
+<h2 class="anchored" data-anchor-id="tuning-performance">5. Tuning performance</h2>
+<ul>
+<li><a href="https://docs.julialang.org/en/v1/manual/performance-tips/">Performance tips</a></li>
+<li><a href="https://docs.julialang.org/en/v1/manual/profile/">Profiling</a></li>
+</ul>
+</section>
+<section id="plotting" class="level2">
+<h2 class="anchored" data-anchor-id="plotting">6. Plotting</h2>
+<ul>
+<li><a href="https://makie.juliaplots.org/stable/">Makie ecosystem</a></li>
+<li><a href="https://docs.juliaplots.org/latest/">Plots.jl</a></li>
+</ul>
+</section>
+<section id="literate-programming" class="level2">
+<h2 class="anchored" data-anchor-id="literate-programming">7. Literate programming</h2>
+<ul>
+<li><a href="https://quarto.org/">quarto.org</a>. These notes are rendered with quarto!</li>
+<li><a href="https://jupyter.org">Jupyter</a></li>
+<li><a href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a></li>
+</ul>
+<div style="text-align:center">
+<img src="lectures/pics/julia-logo.png" width="350">
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
