@@ -1,0 +1,374 @@
+---
+title: "Session 2a: Data Tables and Arrow files"
+author: "Douglas Bates and Claudia Solis-Lemus"
+jupyter: julia-1.8
+---
+
+## Load packages to be used
+
+```{julia}
+#| code-fold: show
+using Arrow             # Arrow storage and file format
+using CategoricalArrays # similar to the factor type in R
+using CSV               # read/write CSV and similar formats
+using Downloads         # file downloads
+using DataFrames        # versatile tabular data format
+using GZip              # utilities for compressed files
+using RCall             # run R within Julia
+using Tar               # tar archive utilities
+```
+
+- `Downloads`, `Gzip` and `Tar` are included just to demonstrate downloading and extracting tar files within Julia.
+- You may find it easier to simply click on the download link and extract the files by hand.
+- Downloading and extracting within Julia, as shown here, has a greater chance of working across various operating systems and environments in a workshop like this.
+- `RCall` is included to show the use of other systems running within Julia. 
+- You can instead use your favorite environment, such as [jupyterlab](https://jupyter.org) or [RStudio](https://www.rstudio.com/products/rstudio/), to run Python or R
+- Note that the [quarto notebooks](https://quarto.org) for these notes are easily converted, e.g. `quarto convert notebookname.qmd`, to Jupyter notebooks.
+
+## Objectives
+
+- Use an example of computing interval overlaps to introduce Julia facilities for working with tabular data.
+- Introduce the Arrow format for tabular data and demonstrate its use in Julia, Python/Pandas and R.
+- Show a naive approach to computing overlaps.
+- Modify the approach to use [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl) and multi-threading.
+- Roll our own interval tree representation and use that.
+
+This notebook covers the first two objectives.
+
+## Task and sample data
+
+- [Li Heng](https://liheng.org) provides benchmark code and sample data for comparing programming languages on Bioinformatics tasks in the [biofast](https://github.com/lh3/biofast) repository.
+- One of these tasks, an [interval query](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html), takes two [.bed files](https://en.wikipedia.org/wiki/BED_(file_format)) to compare.
+- One file, `ex-anno.bed`, contains a reference set of intervals; the other, `ex-rna.bed`, contains target intervals.
+- For each target interval, determine which reference intervals overlap with it.
+- In the benchmark both the number of reference intervals that overlap with a target and the proportion of the target covered by the overlap are computed.
+- Note that the calculation of the proportion of overlap must allow for overlapping intervals in the reference set, as shown in this [figure](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html#default-behavior)
+
+## Downloading the sample data
+
+- The data sets for the benchmark are available in the compressed archive `biofast-data-v1.tar.gz` at [biofast-data-v1](https://github.com/lh3/biofast/releases/tag/biofast-data-v1).
+- The following code chunks download the tarball, if necessary, and extract the two bedfiles to a directory `biofast-data-v1`, if necessary.
+(Alternatively, you can just click on the link to the tarball in the github tag page and extract the files by hand.)
+
+```{julia}
+datadir = "biofast-data-v1"
+tarball = "$datadir.tar.gz"
+if !isfile(tarball)
+  dataurl = joinpath(
+    "https://github.com/lh3/biofast/releases/download",
+    datadir,
+    tarball,
+  )
+  Downloads.download(dataurl, tarball)
+end
+run(`ls -lh $tarball`);
+```
+
+::: {.callout-note}
+An expression like `"$datadir.tar.gz"` interpolates the value of `datadir` into the string, producing the name shown in the output.
+:::
+
+::: {.callout-note}
+- Redundant commas are allowed at the end of the list of arguments before the `)` in a function call.
+:::
+
+- The `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
+- Extract the two `.bed` files to be used in this example (and only if they are not present).
+
+```{julia}
+isdir(datadir) || mkdir(datadir)
+bedfnms = joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])
+toextract = filter(!isfile, bedfnms)  # don't overwrite exisitng files
+if !isempty(toextract)
+  tmpdir = gzopen(tarball, "r") do io
+    Tar.extract(h -> in(h.path, toextract), io)
+  end
+  for pathnm in toextract
+    mv(joinpath(tmpdir, pathnm), pathnm; force=true)
+  end
+end
+run(`ls -lh $datadir`);
+```
+
+::: {.callout-note}
+Because of the way Quarto documents are rendered, this listing may show `.arrow` files that are generated later in this document.
+:::
+
+::: {.callout-note}
+The expression `h -> in(h.path, toextract)` defines an anonymous function to be used as a predicate in `Tar.extract`.
+```{julia}
+methods(Tar.extract)
+```
+:::
+
+::: {.callout-note}
+The 'do/end' block is yet another way of writing an anonymous function.
+:::
+
+::: {.callout-note}
+Because `Tar.extract` is conservative about overwriting files and requires that the directory into which the files are extracted be empty, we extract to a freshly-created temporary directory then move the files to the desired location.
+:::
+
+::: {.callout-note}
+- It is common for packages providing utilities to avoid name conflicts by not exporting any names from their namespace (or Module).
+- The fully qualified name, `Tar.extract`, can always be used - similar to Python naming conventions.
+- If a package exports a name, say `foo`, then after the `using FooPackage` directive, the unqualified name `foo` can be used.
+- The `varinfo` function provides a listing of the names exported by a Package (formally the package's `Module`).
+- Compare the result of `varinfo(Tar)` with that of `varinfo(DataFrames)`.
+:::
+
+## Initial processing
+
+- The `.bed` files, in this case, are simple tab-separated-value files.
+- Each of the language implementations in the `biofast` benchmark contains code to parse lines of the `.bed` files producing a `String` and two `Int32` values.
+- Furthermore the results of these benchmarks are written out as very large text files.  I don't plan to read a several-million-line text file to check if a program is working properly.
+- Why go through this parsing of text files to create a numeric representation in each language?
+- Writing code to parse a CSV or TSV file is tedious and error prone.
+- But skilled people have put a lot of work into creating packages to do just that.
+- More importantly they have tested, debugged, and documented their packages.
+- Within the `CSV` package, the `CSV.read` function reads and parses a file and converts it to a type specified by the second argument.
+- As is common for such functions, there are many, many optional named arguments
+- We read `ex-anno.bed` and create a `DataFrame` as
+
+```{julia}
+annodf = CSV.read(
+  joinpath(datadir, "ex-anno.bed"),
+  DataFrame;
+  delim='\t',
+  types=[String, Int32, Int32],
+  header=["chromo", "start", "stop"],
+)
+```
+
+::: {.callout-note}
+- Positional arguments must come before named arguments.
+- Optionally, the comma after the last positional argument can be replace by a semicolon, as shown above.
+:::
+
+- It turns out that both of the `.bed` files contain many duplicate rows. Use `unique!` to eliminate the duplicates.
+
+::: {.callout-note}
+A function's name ending in `!` is a hint that it is a *mutating* function, which can modify one or more of its arguments.
+:::
+
+- As row order is not important, we also `sort!` the `DataFrame`, which has the effect of sorting the intervals within a chromosome by `start` position.
+- Before sorting I will change strings like `"chr1"` to `"chr01"` so that sorting by `chromo` is equivalent to sorting by chromosome number.
+- The `replace!` generic takes the object to modify and one or more `pair`s of values of the form `from => to`
+- We generate a vector of pairs of strings for replacement then "splat" them into a call to `replace`
+
+```{julia}
+replacements =  ["chr$i" => "chr0$i" for i in 1:9]
+```
+::: {.callout-note}
+The expression in the right is called a "comprehension".  I think of it as an inside-out loop.
+:::
+
+```{julia}
+show(unique(replace!(annodf.chromo, replacements...)))
+```
+
+```{julia}
+sort!(unique!(annodf))
+annodf.chromo = categorical(annodf.chromo; ordered=true)
+annodf
+```
+
+## Arrow file format
+
+- The [Arrow project](https://arrow.apache.org) defines a memory and file format for storing and manipulating column-oriented, static, tables (i.e. like data frames in R, Python/Pandas, and Julia)
+- Either 'lz4' or 'zstd' compression can be used when creating an Arrow file.
+- Metadata on the names and types of columns is automatically stored.  Additional column or table metadata can be specified.
+
+```{julia}
+Arrow.write(
+  "./biofast-data-v1/ex-anno.arrow",
+  annodf;
+  compress=:lz4,
+  metadata=[
+    "url" =>
+    "https://github.com/lh3/biofast/releases/tag/biofast-data-v1",
+  ],
+)
+```
+
+- `bed2arrow` encapsulates reading the `.bed` file, replacing the strings in the `chromo` column, reducing the data frame to unique, sorted rows, and writing the Arrow file.
+- Named arguments with defaults are used to configure the "usual" call but allow for variations.
+- The Boolean `overwrite` named argument, which defaults to `false`, controls overwriting of existing files. 
+```{julia}
+metadata = ["url" => "https://github.com/lh3/biofast/releases/tag/biofast-data-v1",]
+function bed2arrow(
+  fnroot::AbstractString;
+  datadir=datadir,
+  delim='\t',
+  header=[:chromo, :start, :stop],
+  types=[String, Int32, Int32],
+  compress=:lz4,
+  metadata=metadata,
+  replacements=replacements,
+  overwrite::Bool=false,
+)
+  bednm = joinpath(datadir, "$fnroot.bed")
+  arrownm = joinpath(datadir, "$fnroot.arrow")
+  if overwrite || !isfile(arrownm)
+    df = CSV.read(bednm, DataFrame; header, delim, types)
+    replace!(df.chromo, replacements...)
+    sort!(unique!(df))
+    df.chromo = categorical(df.chromo; ordered=true)
+    Arrow.write(arrownm, df; compress, metadata)
+  end
+  return arrownm
+end
+rnaarrownm = bed2arrow("ex-rna")
+```
+
+```{julia}
+run(`ls -lh $datadir`);
+```
+:::{.callout-note}
+In the calls to `CSV.read` and `Arrow.write`, the semicolon after the positional arguments followed by argument names only indicates that the value passed for the named argument is the object of the same name in the current namespace.  That is, `Arrow.write(arrownm, df; compress, metadata)` is equivalent to `Arrow.write(arrownm, df; compress=compress, metadata=metadata)`.
+:::
+## Reading Arrow files in Julia
+
+```{julia}
+annotbl = Arrow.Table("./biofast-data-v1/ex-anno.arrow")
+```
+
+- Although the schema describes the `chromo` column as `String`s the values are dictionary encoded such that each value is represented by one byte.
+
+```{julia}
+typeof(annotbl.chromo)
+```
+
+```{julia}
+rnatbl = Arrow.Table(rnaarrownm)
+```
+
+- We can use operations like split-apply-combine on these tables to summarize properties
+
+```{julia}
+annogdf = groupby(DataFrame(annotbl), :chromo)
+rnagdf = groupby(DataFrame(rnatbl), :chromo)
+innerjoin(
+  combine(rnagdf, nrow => :nrna),
+  combine(annogdf, nrow => :nanno);
+  on=:chromo,
+)  
+```
+
+
+## Reading Arrow files in R
+
+- In R (and in Python) the Arrow file format is confounded with an earlier file format called Feather and referred to as `Feather V2`.
+
+- In R the `arrow::read_feather` function returns a tibble.  In an R session it looks like
+
+```r
+> library(tibble)
+> arrow::read_feather("./biofast-data-v1/ex-rna.arrow")
+# A tibble: 4,685,080 × 3
+   chromo start  stop
+   <fct>  <int> <int>
+ 1 chr01  14354 24892
+ 2 chr01  14359 24855
+ 3 chr01  14361 14672
+ 4 chr01  14361 16878
+ 5 chr01  14366 24894
+ 6 chr01  14370 14989
+ 7 chr01  14396 24894
+ 8 chr01  14397 17733
+ 9 chr01  14398 24894
+10 chr01  14399 15977
+# … with 4,685,070 more rows
+```
+
+- The `RCall` package in Julia allows for running an R process within a Julia session.
+- One way of executing R code with `RCall` is to prepend `R` to a string.  This causes the string to be evaluated in R.
+- `$`-interpolation in the string causes a Julia object to be copied into the R environment and its name in R interpolated.
+
+```{julia}
+R"""
+library(tibble)
+glimpse(rnatbl <- arrow::read_feather($rnaarrownm))
+""";
+```
+
+## Reading Arrow files in Python
+
+- The `pyarrow` package includes `pyarrow.feather`.  Its use in a Python session looks like
+
+```python
+>>> import pyarrow.feather as fea
+>>> fea.read_table('./biofast-data-v1/ex-rna.arrow')
+pyarrow.Table
+chromo: dictionary<values=string, indices=int8, ordered=0> not null
+start: int32 not null
+stop: int32 not null
+----
+chromo: [  -- dictionary:
+["chr01","chr02","chr03","chr04","chr05",...,"chr20","chr21","chr22","chrX","chrY"]  -- indices:
+[0,0,0,0,0,...,23,23,23,23,23]]
+start: [[14354,14359,14361,14361,14366,...,18992169,18992297,24362035,24362037,25307904]]
+stop: [[24892,24855,14672,16878,24894,...,18992298,18992676,24362135,24362201,25308109]]
+>>> fea.read_feather('./biofast-data-v1/ex-rna.arrow')
+        chromo     start      stop
+0        chr01     14354     24892
+1        chr01     14359     24855
+2        chr01     14361     14672
+3        chr01     14361     16878
+4        chr01     14366     24894
+...        ...       ...       ...
+4685075   chrY  18992169  18992298
+4685076   chrY  18992297  18992676
+4685077   chrY  24362035  24362135
+4685078   chrY  24362037  24362201
+4685079   chrY  25307904  25308109
+
+[4685080 rows x 3 columns]
+```
+- `read_table` returns a `Table` object, `read_feather` returns a Pandas dataframe.
+
+- The `PyCall` package for `Julia` starts a Python process and allows communication with it, including data transfer.
+- I use this instead of the Python REPL when working with both Julia and Python.
+- Configuring Python, Conda, pyarrow, pandas, and PyCall across platforms is sufficiently complicated to almost surely cause failures for some workshop participants.  Instead of evaluating this code chunk we quote the results.
+
+```julia
+julia> using PyCall
+
+julia> fea = pyimport("pyarrow.feather")
+
+julia> fea.read_table(rnaarrownm)
+PyObject pyarrow.Table
+chromo: dictionary<values=string, indices=int8, ordered=0> not null
+start: int32 not null
+stop: int32 not null
+----
+chromo: [  -- dictionary:
+["chr01","chr02","chr03","chr04","chr05",...,"chr20","chr21","chr22","chrX","chrY"]  -- indices:
+[0,0,0,0,0,...,23,23,23,23,23]]
+start: [[14354,14359,14361,14361,14366,...,18992169,18992297,24362035,24362037,25307904]]
+stop: [[24892,24855,14672,16878,24894,...,18992298,18992676,24362135,24362201,25308109]]
+```
+
+## Conclusions
+
+- Julia provides an impressive array of tools for Bioinformatics and similar tasks
+- We have shown the use of
+[Arrow.jl](https://github.com/apache/arrow-julia),
+[CategoricalArrays.jl](https://github.com/JuliaData/CategoricalArrays.jl)
+[CSV.jl](https://github.com/JuliaData/CSV.jl),
+and 
+[DataFrames](https://github.com/JuliaData/DataFrames.jl)
+for data input, storage and manipulation.
+- Although not shown here [DataFrameMacros.jl](https://github.com/jkrumbiegel/DataFrameMacros.jl) (or [DataFramesMeta.jl](https://github.com/JuliaData/DataFramesMeta.jl)) and [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) are worth considering for more sophisticated work with DataFrames.
+- A general framework for working with tabular data is provided in [Tables.jl](https://github.com/JuliaData/Tables.jl) (not shown here).
+- We have shown the use of
+[PyCall.jl](https://github.com/JuliaPy/PyCall.jl) and
+[RCall.jl](https://github.com/JuliaInterop/RCall.jl) for running and communicating with other language systems within Julia.
+- We have shown the use of utility packages [Downloads.jl](https://github.com/JuliaLang/Downloads.jl), [GZip.jl](https://github.com/JuliaIO/GZip.jl.git) and [Tar.jl](https://github.com/JuliaIO/Tar.jl) for scripting, say within [Quarto](https://quarto.org) documents like these.
+- Take a moment to look at the repositories for some of these Julia packages.  Most (all?) of them are 100% Julia code.
+
+## Version information
+
+```{julia}
+versioninfo()
+```

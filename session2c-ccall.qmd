@@ -1,0 +1,165 @@
+---
+title: "Session 2c: Interfacing with Compiled Code"
+jupyter: julia-1.8
+---
+Load packages to be used
+
+```{julia}
+#| code-fold: show
+using Arrow             # Arrow storage and file format
+using DataFrames        # versatile tabular data format
+using Tables            # row- or column-oriented data tables
+
+annotbl = rowtable(DataFrame(Arrow.Table("./biofast-data-v1/ex-anno.arrow")));
+rnatbl = rowtable(DataFrame(Arrow.Table("./biofast-data-v1/ex-rna.arrow")));
+```
+
+## Background
+
+- [Li Heng](https://liheng.org) wrote the [biofast](https://github.com/lh3/biofast) benchmarks to compare implementations of his [cgranges](https://github.com/lh3/cgranges) interval tree method.
+- The code in other languages imitates the C/C++ style of his original implementation.
+- A line-by-line translation of C code into another language is not always an effective approach.
+- What if, instead, we could just link into the C functions from within Julia?  Well, we can.
+
+## The ccall interface
+
+- Like many projects coded in C, `cgranges` is divided into a header file, "cgranges.h", that defines the API, and an implementation, "cgranges.c".
+- The JIT (Just-In-Time) compiler in Julia is build upon the [LLVM](https://llvm.org) compiler back end, used by [Clang](https://clang.llvm.org) and other projects.
+- Julia function calls already use C-style linkage.  Julia's `ccall` function and several utilities allow for this without the need to write, compile and link "glue" code.
+- It is not trivial to do this (the manual section is rather long) but it is easy and straightforward compared to what you need to do in other languages.
+- The big obstacle in doing this for packages is cross-platform building of packages with binary dependencies.  [BinaryBuilder.jl](https://JuliaPackaging/BinaryBuilder.jl) simplifies that process.
+
+## Building the DLL
+
+- I am just going to show this on Linux, because that is what I know.
+- The lib directory contains "cgranges.c" and two header files, "cgranges.h" and "khash.h"
+- A shell session to build "libcgranges.so" looks like
+
+```
+$ cd lib
+$ gcc -c -Wall -Werror -fpic cgranges.c
+$ gcc -shared -o libcgranges.so cgranges.o
+$ nm -g libcgranges.so 
+                 U __assert_fail@GLIBC_2.2.5
+                 U calloc@GLIBC_2.2.5
+00000000000028c3 T cr_add
+000000000000268f T cr_add_ctg
+0000000000003901 T cr_contain
+00000000000036cf T cr_contain_int
+000000000000260f T cr_destroy
+00000000000013f2 T cr_en
+0000000000001438 T cr_end
+0000000000002865 T cr_get_ctg
+0000000000002eae T cr_index
+0000000000002c61 T cr_index1
+0000000000002af3 T cr_index_prepare
+00000000000025dd T cr_init
+0000000000002a7d T cr_is_sorted
+0000000000001469 T cr_label
+0000000000003869 T cr_min_start
+0000000000002f50 T cr_min_start_int
+00000000000038a8 T cr_overlap
+0000000000003098 T cr_overlap_int
+0000000000002a28 T cr_sort
+00000000000013d9 T cr_st
+0000000000001407 T cr_start
+                 w __cxa_finalize@GLIBC_2.2.5
+                 U free@GLIBC_2.2.5
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 U malloc@GLIBC_2.2.5
+                 U memset@GLIBC_2.2.5
+0000000000001a97 T radix_sort_cr_intv
+                 U realloc@GLIBC_2.2.5
+00000000000014e2 T rs_insertsort_cr_intv
+000000000000159b T rs_sort_cr_intv
+                 U __stack_chk_fail@GLIBC_2.4
+                 U strcmp@GLIBC_2.2.5
+                 U strdup@GLIBC_2.2.5
+```
+
+- The [Clang.jl](https://github.com/JuliaInterop/Clang.jl) package allows for parsing the C header files and producing Julia code to mimic the structs and functions.
+- The configuration file, cgranges.toml, and the resulting Julia interface, CGranges.jl, are in the lib directory.
+- Normally CGranges.jl would be part of a Julia package and define a module that exports symbols but we will skip over that.
+
+```{julia}
+libcgranges = "./lib/libcgranges.so"
+include("./lib/CGranges.jl")
+crptr = cr_init()
+```
+
+```{julia}
+unsafe_load(crptr)
+```
+
+- We can check the fields of this object with `propertynames`.
+
+```{julia}
+propertynames(unsafe_load(crptr))
+```
+
+- The `cr_add` function inserts a new value into the interval tree.
+- Define another method taking a `NamedTuple` so we can iterate over `annotbl`
+
+```{julia}
+function cr_add(crptr::Ptr{cgranges_t}, r::NamedTuple, i::Integer)
+  cr_add(crptr, r.chromo, r.start, r.stop, i)
+end
+```
+
+- The `cr_add` function takes an extra integer argument that is stored as a label.
+```{julia}
+for (i, r) in enumerate(annotbl)
+  cr_add(crptr, r, i)
+end
+cr_index(crptr)
+unsafe_load(crptr)
+```
+
+- To get the overlap we have to pass a reference to a vector of 64-bit integers and a reference to a 64-bit integer so they can be overwritten in the C code.
+
+```{julia}
+b_ = Ref(Ptr{Int64}(0))
+typeof(b_)
+```
+
+```{julia}
+m_b_ = Ref(0)
+r = first(rnatbl)
+noverlap = cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_)
+```
+
+- There are 12 overlapping reference intervals for this first target interval
+- The 0-based indices into these positions are now in `b_`
+
+```{julia}
+bcp = [unsafe_load(b_[], i) for i in 1:noverlap]
+show(bcp)
+```
+
+- The exact representation of an interval in the `cg_intv_t` is, well, peculiar but there are extractors.
+
+```{julia}
+(; start=cr_start(crptr, 7), stop=cr_end(crptr, 7), label=cr_label(crptr, 7))
+```
+
+- We see that this does indeed overlap with our row `r` from the `rnatbl`
+
+```{julia}
+r
+```
+
+- To get the count of the overlap we can use a comprehension
+
+```{julia}
+nover = [cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r in rnatbl]
+```
+
+- This is very fast (remember that this timing is for all the chromosomes).
+```{julia}
+@time [cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r in rnatbl];
+```
+
+- Getting the proportion of the overlap would require more code.
+

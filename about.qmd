@@ -1,0 +1,10 @@
+---
+title: "About"
+jupyter: julia-1.8
+---
+
+About this site
+
+```{julia}
+1 + 1
+```

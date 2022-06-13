@@ -1,0 +1,144 @@
+---
+title: "Session 1: Getting started with Julia"
+author: "Claudia Solis-Lemus and Douglas Bates"
+subtitle: "ISCB 2022 Madison"
+jupyter: julia-1.8
+---
+
+# Why Julia? 
+
+## From the creators of Julia
+
+"We want a language that is
+
+- open source 
+- with the speed of C 
+- obvious, familiar mathematical notation like Matlab
+- as usable for general programming as Python
+- as easy for statistics as R
+- as natural for string processing as Perl
+- as powerful for linear algebra as Matlab
+- as good at gluing programs together as the shell
+- dirt simple to learn, yet keeps the most serious hackers happy"
+
+## Reasons to check out Julia
+
+- Comparison with other languages: [Julia touts its speed edge over Python and R](https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/)
+- Used for large-scale projects like [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
+    - [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
+- Julia adoption accelerated at a rapid pace in 2020:
+
+<div style="text-align:center"><img src="lectures/pics/julia-adoption.png" width="450"/></div>
+
+
+## The five stages of programming
+
+1. Use the REPL as a sophisticated calculator
+2. Realize that you are repeating many operations, so you decide to write some functions
+3. To organize all your functions, you begin scripting
+4. You want to share your code with others and thus, you want to write a package
+5. Your package is actually used by others and thus, it should be optimized and have good performance
+
+Julia offers many advantages to data science programmers: avoiding the two-language problem
+
+# Workshop topics
+
+In this workshop, we will focus on three main topics:
+
+1. Data tools: `Arrow.jl`, `Tables.jl`
+2. Model fitting: `MixedModels.jl`
+3. Package system and important packages for Data Science: interoperability with R and python ([RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)), literate programming ([quarto.org](https://quarto.org/) and [Pluto.jl](https://github.com/fonsp/Pluto.jl)), plotting ([Makie ecosystem](https://makie.juliaplots.org/stable/))
+
+In addition, we will have an hands-on exercise in which participants will bring a dataset of their choice along with an existing script in another language like R or python with a specific data analysis. Assisted by the presenters, they will work during the tutorial to convert the code to Julia language.
+
+# The Julia REPL
+
+Let's start by looking at the REPL and try:
+
+- `;` to open shell mode
+- `$` to open R mode (after `using RCall`)
+- `]` to open package mode: try `status`
+- `?` to open help mode
+- `\beta+TAB` for math symbols
+- `<backspace>` return to Julia mode
+
+# Setting up your project folder
+
+## How do I write code?
+
+![](lectures/pics/julia-editors.png)
+
+
+## Installing dependencies in a project environment
+
+Create a folder in the terminal:
+```shell
+mkdir myProject
+cd myProject
+```
+
+Open Julia inside your folder, and activate your environment with:
+```julia
+(@v1.8) pkg> activate .
+```
+
+Install the packages that we need for today's workshop:
+```julia
+julia> ENV["PYTHON"] = ""
+(myproject) pkg> add PyCall
+(myproject) pkg> add IJulia
+(myproject) pkg> build IJulia
+(myproject) pkg> add MixedModels
+(myproject) pkg> add RCall
+(myproject) pkg> add Arrow
+(myproject) pkg> add DataFrames
+(myproject) pkg> add Tables
+```
+
+
+Two files are noteworthy:
+
+- `Project.toml`: Defines project
+- `Manifest.toml`: Contains exact list of project dependencies
+
+```julia
+shell> head Project.toml
+[deps]
+Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+MixedModels = "ff71e718-51f3-5ec2-a782-8ffcbfa3c316"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+RCall = "6f49c342-dc21-5d91-9882-a32aef131414"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+
+
+shell> head Manifest.toml
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.8.0-beta3"
+manifest_format = "2.0"
+project_hash = "01baf737705b090869a607b779c699f83bbeb154"
+
+[[deps.ArgTools]]
+uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+version = "1.1.1"
+```
+
+Look at your `Project.toml` and `Manifest.toml` files after installation. They have all the necessary information about your session.
+
+The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) string which is the universally unique identifier.
+More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
+
+
+## Easy share with collaborators
+
+Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:
+
+```julia
+julia> cd("path/to/project")
+pkg> activate .
+pkg> instantiate
+```
+
+All required packages and dependencies will be installed. Scripts that run in your computer will also run in their computer.

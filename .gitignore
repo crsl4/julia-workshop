@@ -149,3 +149,7 @@ Backup[ ]of[ ]*.numbers/
 
 ### Mathematica
 *.nb
+
+/.quarto/
+/_site/
+_site/*
