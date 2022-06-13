@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Claudia Solis-Lemus and Douglas Bates">
+<meta name="dcterms.date" content="2022-07-10">
+
+<title>Julia Workshop - Session 1: Getting started with Julia</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Julia Workshop</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html">About</a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/crsl4/julia-workshop"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-julia" id="toc-why-julia" class="nav-link active" data-scroll-target="#why-julia">Why Julia?</a>
+  <ul class="collapse">
+  <li><a href="#from-the-creators-of-julia" id="toc-from-the-creators-of-julia" class="nav-link" data-scroll-target="#from-the-creators-of-julia">From the creators of Julia</a></li>
+  <li><a href="#reasons-to-check-out-julia" id="toc-reasons-to-check-out-julia" class="nav-link" data-scroll-target="#reasons-to-check-out-julia">Reasons to check out Julia</a></li>
+  <li><a href="#the-five-stages-of-programming" id="toc-the-five-stages-of-programming" class="nav-link" data-scroll-target="#the-five-stages-of-programming">The five stages of programming</a></li>
+  </ul></li>
+  <li><a href="#workshop-topics" id="toc-workshop-topics" class="nav-link" data-scroll-target="#workshop-topics">Workshop topics</a></li>
+  <li><a href="#the-julia-repl" id="toc-the-julia-repl" class="nav-link" data-scroll-target="#the-julia-repl">The Julia REPL</a></li>
+  <li><a href="#setting-up-your-project-folder" id="toc-setting-up-your-project-folder" class="nav-link" data-scroll-target="#setting-up-your-project-folder">Setting up your project folder</a>
+  <ul class="collapse">
+  <li><a href="#how-do-i-write-code" id="toc-how-do-i-write-code" class="nav-link" data-scroll-target="#how-do-i-write-code">How do I write code?</a></li>
+  <li><a href="#installing-dependencies-in-a-project-environment" id="toc-installing-dependencies-in-a-project-environment" class="nav-link" data-scroll-target="#installing-dependencies-in-a-project-environment">Installing dependencies in a project environment</a></li>
+  <li><a href="#easy-share-with-collaborators" id="toc-easy-share-with-collaborators" class="nav-link" data-scroll-target="#easy-share-with-collaborators">Easy share with collaborators</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/crsl4/julia-workshop/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Session 1: Getting started with Julia</h1>
+<p class="subtitle lead">ISCB 2022 Madison</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Claudia Solis-Lemus and Douglas Bates </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2022-07-10</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="why-julia" class="level1">
+<h1>Why Julia?</h1>
+<section id="from-the-creators-of-julia" class="level2">
+<h2 class="anchored" data-anchor-id="from-the-creators-of-julia">From the creators of Julia</h2>
+<p>“We want a language that is</p>
+<ul>
+<li>open source</li>
+<li>with the speed of C</li>
+<li>obvious, familiar mathematical notation like Matlab</li>
+<li>as usable for general programming as Python</li>
+<li>as easy for statistics as R</li>
+<li>as natural for string processing as Perl</li>
+<li>as powerful for linear algebra as Matlab</li>
+<li>as good at gluing programs together as the shell</li>
+<li>dirt simple to learn, yet keeps the most serious hackers happy”</li>
+</ul>
+</section>
+<section id="reasons-to-check-out-julia" class="level2">
+<h2 class="anchored" data-anchor-id="reasons-to-check-out-julia">Reasons to check out Julia</h2>
+<ul>
+<li>Comparison with other languages: <a href="https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/">Julia touts its speed edge over Python and R</a></li>
+<li>Used for large-scale projects like <a href="https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/">CliMA 0.1</a>: a first milestone in the next generation of climate models
+<ul>
+<li><a href="https://github.com/CliMA/ClimateMachine.jl">ClimateMachine.jl</a></li>
+</ul></li>
+<li>Julia adoption accelerated at a rapid pace in 2020:</li>
+</ul>
+<div style="text-align:center">
+<img src="lectures/pics/julia-adoption.png" width="450">
+</div>
+</section>
+<section id="the-five-stages-of-programming" class="level2">
+<h2 class="anchored" data-anchor-id="the-five-stages-of-programming">The five stages of programming</h2>
+<ol type="1">
+<li>Use the REPL as a sophisticated calculator</li>
+<li>Realize that you are repeating many operations, so you decide to write some functions</li>
+<li>To organize all your functions, you begin scripting</li>
+<li>You want to share your code with others and thus, you want to write a package</li>
+<li>Your package is actually used by others and thus, it should be optimized and have good performance</li>
+</ol>
+<p>Julia offers many advantages to data science programmers: avoiding the two-language problem</p>
+</section>
+</section>
+<section id="workshop-topics" class="level1">
+<h1>Workshop topics</h1>
+<p>In this workshop, we will focus on three main topics:</p>
+<ol type="1">
+<li>Data tools: <code>Arrow.jl</code>, <code>Tables.jl</code></li>
+<li>Model fitting: <code>MixedModels.jl</code></li>
+<li>Package system and important packages for Data Science: interoperability with R and python (<a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a> and <a href="https://github.com/JuliaPy/PyCall.jl">PyCall.jl</a>), literate programming (<a href="https://quarto.org/">quarto.org</a> and <a href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a>), plotting (<a href="https://makie.juliaplots.org/stable/">Makie ecosystem</a>)</li>
+</ol>
+<p>In addition, we will have an hands-on exercise in which participants will bring a dataset of their choice along with an existing script in another language like R or python with a specific data analysis. Assisted by the presenters, they will work during the tutorial to convert the code to Julia language.</p>
+</section>
+<section id="the-julia-repl" class="level1">
+<h1>The Julia REPL</h1>
+<p>Let’s start by looking at the REPL and try:</p>
+<ul>
+<li><code>;</code> to open shell mode</li>
+<li><code>$</code> to open R mode (after <code>using RCall</code>)</li>
+<li><code>]</code> to open package mode: try <code>status</code></li>
+<li><code>?</code> to open help mode</li>
+<li><code>\beta+TAB</code> for math symbols</li>
+<li><code>&lt;backspace&gt;</code> return to Julia mode</li>
+</ul>
+</section>
+<section id="setting-up-your-project-folder" class="level1">
+<h1>Setting up your project folder</h1>
+<section id="how-do-i-write-code" class="level2">
+<h2 class="anchored" data-anchor-id="how-do-i-write-code">How do I write code?</h2>
+<p><img src="lectures/pics/julia-editors.png" class="img-fluid"></p>
+</section>
+<section id="installing-dependencies-in-a-project-environment" class="level2">
+<h2 class="anchored" data-anchor-id="installing-dependencies-in-a-project-environment">Installing dependencies in a project environment</h2>
+<p>Create a folder in the terminal:</p>
+<pre class="shell"><code>mkdir myProject
+cd myProject</code></pre>
+<p>Open Julia inside your folder, and activate your environment with:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="pp">@v1</span><span class="fl">.8</span>) pkg<span class="op">&gt;</span> activate .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Install the packages that we need for today’s workshop:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="cn">ENV</span>[<span class="st">"PYTHON"</span>] <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add PyCall</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add IJulia</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> build IJulia</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add MixedModels</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add RCall</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Arrow</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add DataFrames</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Tables</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Two files are noteworthy:</p>
+<ul>
+<li><code>Project.toml</code>: Defines project</li>
+<li><code>Manifest.toml</code>: Contains exact list of project dependencies</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>shell<span class="op">&gt;</span> head Project.toml</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>[deps]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>Arrow <span class="op">=</span> <span class="st">"69666777-d1a9-59fb-9406-91d4454c9d45"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>DataFrames <span class="op">=</span> <span class="st">"a93c6f00-e57d-5684-b7b6-d8193f3e46c0"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>IJulia <span class="op">=</span> <span class="st">"7073ff75-c697-5162-941a-fcdaad2a7d2a"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>MixedModels <span class="op">=</span> <span class="st">"ff71e718-51f3-5ec2-a782-8ffcbfa3c316"</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>PyCall <span class="op">=</span> <span class="st">"438e738f-606a-5dbb-bf0a-cddfbfd45ab0"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>RCall <span class="op">=</span> <span class="st">"6f49c342-dc21-5d91-9882-a32aef131414"</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Tables <span class="op">=</span> <span class="st">"bd369af6-aec1-5ad0-b16a-f7cc5008161c"</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>shell<span class="op">&gt;</span> head Manifest.toml</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># This file is machine-generated - editing it directly is not advised</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>julia_version <span class="op">=</span> <span class="st">"1.8.0-beta3"</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>manifest_format <span class="op">=</span> <span class="st">"2.0"</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>project_hash <span class="op">=</span> <span class="st">"01baf737705b090869a607b779c699f83bbeb154"</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>[[deps.ArgTools]]</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>uuid <span class="op">=</span> <span class="st">"0dad84c5-d112-42e6-8d28-ef12dabb789f"</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>version <span class="op">=</span> <span class="st">"1.1.1"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Look at your <code>Project.toml</code> and <code>Manifest.toml</code> files after installation. They have all the necessary information about your session.</p>
+<p>The packages have a <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">uuid</a> string which is the universally unique identifier. More on the <code>Project.toml</code> and <code>Manifest.toml</code> files <a href="https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1">here</a>.</p>
+</section>
+<section id="easy-share-with-collaborators" class="level2">
+<h2 class="anchored" data-anchor-id="easy-share-with-collaborators">Easy share with collaborators</h2>
+<p>Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">cd</span>(<span class="st">"path/to/project"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> activate .</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> instantiate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>All required packages and dependencies will be installed. Scripts that run in your computer will also run in their computer.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
