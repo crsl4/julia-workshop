@@ -8,11 +8,12 @@ Load packages to be used
 ```{julia}
 #| code-fold: show
 using Arrow          # Arrow storage and file format
-using BenchmarkTools
+using BenchmarkTools # tools for benchmarking code
 using DataFrames     # versatile tabular data format
 using IntervalTrees  # interval trees from BioJulia
+using Random         # random number generation tools
+using RangeTrees     # a bespoke implementation of interval trees
 using Tables         # row- or column-oriented tabular data
-using Random
 
 datadir = "biofast-data-v1";
 ```
@@ -108,8 +109,7 @@ rnartbl = rowtable(
 
 ```{julia}
 function overlaps(targets::AbstractVector{<:NamedTuple}, refs::Dict)
-  len = length(targets)
-  nover = similar(targets, (len ≤ typemax(Int32) ? Int32 : Int64))
+  nover = similar(targets, (length(targets) ≤ typemax(Int32) ? Int32 : Int64))
   coverage = similar(targets, typeof(first(first(targets).range)))
   @inbounds Threads.@threads for i in eachindex(targets)
     tup = targets[i]
@@ -123,7 +123,7 @@ end
 
 ## Cut to the chase
 
-- The fastest `overlap` method is the one for an `IntervalTree`, shown here and explained below.
+- One of the fastest `overlap` methods is the one for an `IntervalTree`, shown here and explained below.
 
 ```{julia}
 function overlap(target::UnitRange{T}, reference::IntervalTree{T}) where {T}
@@ -225,8 +225,96 @@ sampleresult == overlaps(rnasamp, refranges)  # check the we reproduce earlier r
 
 ## Rolling our own interval tree
 
-- At this point we may want to create a bespoke version of an interval tree for this application.
-- We will use the ["augmented"](https://en.wikipedia.org/wiki/Interval_tree#Augmented_tree) balanced binary tree form and construct the tree as an vector of nodes with the children stored as indices into this array.
+- [RangeTrees.jl](https://github.com/dmbates/RangeTrees.jl) is a bespoke implementation of interval trees using the ["augmented"](https://en.wikipedia.org/wiki/Interval_tree#Augmented_tree) balanced binary tree form.
+
+```{julia}
+refrangetrees = Dict(k => RangeTree(v) for (k, v) in refranges)
+```
+
+The package defines methods for both `intersect` and `intersect!` of a `UnitRange` and a `RangeTree`.  In the mutating method a vector to hold the results is passed as the first argument, thereby eliminating the storage allocation for the result.
+
+```{julia}
+rng = first(rnartbl).range
+intersect(rng, refrangetrees[:chr01])
+```
+
+```{julia}
+isects = typeof(rng)[]
+RangeTrees.intersect!(isects, rng, refrangetrees[:chr01])
+```
+
+- Make sure `isects` is properly re-initialized
+
+```{julia}
+RangeTrees.intersect!(isects, rng, refrangetrees[:chr01])
+```
+
+```{julia}
+@benchmark intersect(rg, rt) setup=(rg = rng; rt = refrangetrees[:chr01])
+```
+
+```{julia}
+@benchmark RangeTrees.intersect!(res, rg, rt) setup=(res = isects; rg = rng; rt = refrangetrees[:chr01])
+```
+
+- We see that `intersect!` performs a bit better than `intersect` on a `RangeTree` but it will complicate multithreading.
+
+```{julia}
+function overlap(target::UnitRange{T}, reference::RangeTree{T}) where {T}
+  n = 0
+  coverage = 0
+  goalposts = target
+  rightpost = last(goalposts)
+  for ivl in intersect(target, reference)
+    n += 1
+    coverage += length(intersect(goalposts, ivl))
+    goalposts = (last(ivl) + one(T)):rightpost
+  end
+  return n, coverage
+end
+sampleresult == overlaps(rnasamp, refrangetrees)
+```
+
+```{julia}
+@benchmark overlaps(rtbl, rngtr)  setup=(rtbl = rnasamp; rngtr=refrangetrees)
+```
+
+```{julia}
+function overlap!(result::Vector{UnitRange{T}}, target::UnitRange{T}, reference::RangeTree{T}) where {T}
+  coverage = 0
+  goalposts = target
+  rightpost = last(goalposts)
+  for ivl in RangeTrees.intersect!(empty!(result), target, reference)
+    coverage += length(intersect(goalposts, ivl))
+    goalposts = (last(ivl) + one(T)):rightpost
+  end
+  return length(result), coverage
+end
+overlap!(UnitRange{Int32}[], first(rnartbl).range, refrangetrees[:chr01])
+```
+```{julia}
+function overlaps!(targets::AbstractVector{<:NamedTuple}, refs::Dict)
+  nover = similar(targets, (length(targets) ≤ typemax(Int32) ? Int32 : Int64))
+  firstrange = first(targets).range
+  coverage = similar(targets, typeof(first(firstrange)))
+  scratch = [typeof(firstrange)[] for _ in 1:Threads.nthreads()]
+  @inbounds Threads.@threads for i in eachindex(targets)
+    tup = targets[i]
+    nover[i], coverage[i] = overlap!(scratch[Threads.threadid()], tup.range, refs[tup.chromo])
+  end
+  return DataFrame((; nover, coverage))
+end
+sampleresult == overlaps!(rnasamp, refrangetrees)
+```
+
+```{julia}
+@benchmark overlaps!(targets, refs) setup=(targets = rnasamp; refs = refrangetrees)
+```
+
+```{julia}
+@time overlaps!(rnartbl, refrangetrees);
+```
+
 
 ## Conclusions
 
