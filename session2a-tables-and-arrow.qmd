@@ -95,14 +95,20 @@ Because of the way Quarto documents are rendered, this listing may show `.arrow`
 :::
 
 ::: {.callout-note}
-The expression `h -> in(h.path, toextract)` defines an anonymous function to be used as a predicate in `Tar.extract`.
+The expression `h -> in(h.path, toextract)` defines an anonymous function, in the "stabby lambda" syntax, to be used as a predicate in `Tar.extract`.
+
 ```{julia}
 methods(Tar.extract)
 ```
 :::
 
 ::: {.callout-note}
-The 'do/end' block is yet another way of writing an anonymous function.
+The 'do/end' block is yet another way of writing an anonymous function passed as a processing argument to `gzopen`.
+
+```{julia}
+methods(gzopen)
+```
+
 :::
 
 ::: {.callout-note}
@@ -240,7 +246,7 @@ typeof(annotbl.chromo)
 ```
 
 ```{julia}
-rnatbl = Arrow.Table(rnaarrownm)
+@time rnatbl = Arrow.Table(rnaarrownm)
 ```
 
 - We can use operations like split-apply-combine on these tables to summarize properties
@@ -255,6 +261,7 @@ innerjoin(
 )  
 ```
 
+- In the next section we will use data from `chr21` for comparative timings, because there are a small, but nontrivial, number of intervals in both the reference and target groups.
 
 ## Reading Arrow files in R
 
