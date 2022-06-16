@@ -178,3 +178,24 @@ pkg> instantiate
 ```
 
 All required packages and dependencies will be installed. Scripts that run in your computer will also run in their computer.
+
+# Opening the julia code
+
+There are many ways to work on julia code depending on the editor.
+
+For those using VSCode, you can open the project easily with:
+```shell
+cd julia-workshop
+code .
+```
+You need to have the `code` command in your `PATH` which can be done within VSCode searching in the Command Palette "shell command".
+
+Alternatively, you can open a specific `qmd` file in your editor of choice:
+```shell
+cd julia-workshop
+open session2a-tables-and-arrow.qmd
+```
+
+Note that jupyter notebooks `ipynb` are produced when the `qmd` files when rendered into `html`.
+
+In addition to `qmd` files, you can work with standard `.jl` julia files.
