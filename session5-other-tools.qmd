@@ -219,13 +219,23 @@ py"sinpi"(1)
 
 ### Landscape of Julia packages for biology
 
-- [BioJulia](https://github.com/BioJulia) is a combination of Julia packages for biology applications
+- [BioJulia](https://github.com/BioJulia) is a combination of Julia packages for biology applications.
+- [Julia for Biologists](https://arxiv.org/abs/2109.09973) is an arxiv paper the features that make Julia a perfect language for bioinformatics and computational biology.
+- [List of useful packages by SMLP2022](https://github.com/RePsychLing/SMLP2022/blob/main/notebooks/useful_packages.qmd)
 
-# Performance tips
+![](docs/pics/julia4bio.png)
+
+## Plotting
+
+- [Makie ecosystem](https://makie.juliaplots.org/stable/)
+- [Plots.jl](https://docs.juliaplots.org/latest/)
+- [Other graphics packages available in Julia](https://juliapackages.com/c/graphics)
+
+## Performance tips
 
 See more in [Julia docs](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
-## `@time` to measure performance
+### `@time` to measure performance
 
 ```julia
 julia> x = rand(1000);
@@ -247,7 +257,7 @@ julia> @time sum_global()
 496.84883432553846
 ```
 
-## Break functions into multiple definitions
+### Break functions into multiple definitions
 
 The function
 
@@ -273,9 +283,6 @@ norm(A::Matrix) = maximum(svdvals(A))
 
 to allow the compiler to directly call the most applicable code.
 
----
-
-
 #### Multiple dispatch
 
 - The choice of which method to execute when a function is applied is called _dispatch_
@@ -296,9 +303,6 @@ Closest candidates are:
   f(::Float64, !Matched::Float64) at none:1
 ```
 
----
-
-
 Compare to
 
 ```julia
@@ -318,10 +322,7 @@ julia> f(2, 3)
 7
 ```
 
----
-
-
-#### Profiling
+### Profiling
 
 Read more in [Julia docs](https://docs.julialang.org/en/v1/manual/profile/#Profiling).
 
@@ -342,18 +343,19 @@ julia> Profile.print()
 
 To see the profiling results, there are several graphical browsers (see [Julia docs](https://docs.julialang.org/en/v1/manual/profile/#Profiling)).
 
----
-
 
 ### Other packages for performance
 
 - [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl): performance tracking of Julia code
 - [Traceur.jl](https://github.com/JunoLab/Traceur.jl): You run your code, it tells you about any obvious performance traps
 
-# Exercise
 
-**Instructions:** Choose one function that was defined in the previous sessions and test its performance with `@time`, `@allocated` or whatever profiling tools you choose
+## Literate programming
 
-**Time:** 5 minutes
-
-_Optional:_ Re-write the function in R or python and run it through julia with `RCall` or `PyCall`. Compare the performance with the julia implementation.
+- [quarto.org](https://quarto.org/). These notes are rendered with quarto!
+- [Jupyter](https://jupyter.org)
+- [Pluto.jl](https://github.com/fonsp/Pluto.jl)
+- [Weave.jl](https://weavejl.mpastell.com/stable/) package provides "Julia markdown" and also provides support for converting between `jmd` files and Jupyter notebooks.
+- [Literate.jl](https://fredrikekre.github.io/Literate.jl/v2/) is a simple package for literate programming (i.e. programming where documentation and code are "woven" together) and can generate Markdown, plain code and Jupyter notebook output. 
+- [Documenter.jl](https://juliadocs.github.io/Documenter.jl/stable/) is the standard tool for building webpages from Julia documentation
+- [Books.jl](https://rikhuijzer.github.io/Books.jl/) is a package designed to offer somewhat similar functionality to the `bookdown` package in R.

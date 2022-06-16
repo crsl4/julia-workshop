@@ -10,6 +10,7 @@ project:
       - session2a-tables-and-arrow.qmd
       - session2b-interval-overlap.qmd
       - session4-exercise.qmd
+      - session5-other-tools.qmd
       - session6-conclusions.qmd
 
 website:
