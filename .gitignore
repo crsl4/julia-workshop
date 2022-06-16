@@ -3,6 +3,8 @@ figures/*
 logistics.md
 resources/*
 *.arrow
+biofast-data-v1/*
+*.ipynb
 
 # Compiled source #
 ###################

@@ -6,7 +6,6 @@ project:
   render: 
       - index.qmd
       - about.qmd
-      - session0-housekeeping.qmd
       - session1-get-started.qmd
       - session2a-tables-and-arrow.qmd
       - session2b-interval-overlap.qmd
