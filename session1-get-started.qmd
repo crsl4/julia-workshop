@@ -21,14 +21,14 @@ jupyter: julia-1.8
 - as good at gluing programs together as the shell
 - dirt simple to learn, yet keeps the most serious hackers happy"
 
-## Reasons to check out Julia
+## Reasons to try Julia
 
 - Comparison with other languages: [Julia touts its speed edge over Python and R](https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/)
 - Used for large-scale projects like [CliMA 0.1](https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/): a first milestone in the next generation of climate models
     - [ClimateMachine.jl](https://github.com/CliMA/ClimateMachine.jl)
 - Julia adoption accelerated at a rapid pace in 2020:
 
-<div style="text-align:center"><img src="lectures/pics/julia-adoption.png" width="450"/></div>
+<div style="text-align:center"><img src="docs/pics/julia-adoption.png" width="450"/></div>
 
 
 ## The five stages of programming
@@ -39,7 +39,7 @@ jupyter: julia-1.8
 4. You want to share your code with others and thus, you want to write a package
 5. Your package is actually used by others and thus, it should be optimized and have good performance
 
-Julia offers many advantages to data science programmers: avoiding the two-language problem
+Julia offers many advantages to data science programmers such as avoid the two-language problem and existing tools that allows programmers to write efficient code without having to write everything from scratch!
 
 # Workshop topics
 
@@ -47,7 +47,10 @@ In this workshop, we will focus on three main topics:
 
 1. Data tools: `Arrow.jl`, `Tables.jl`
 2. Model fitting: `MixedModels.jl`
-3. Package system and important packages for Data Science: interoperability with R and python ([RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)), literate programming ([quarto.org](https://quarto.org/) and [Pluto.jl](https://github.com/fonsp/Pluto.jl)), plotting ([Makie ecosystem](https://makie.juliaplots.org/stable/))
+3. Package system and important packages for Data Science: 
+    a. interoperability with R and python ([RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)), 
+    b. literate programming ([quarto.org](https://quarto.org/) and [Pluto.jl](https://github.com/fonsp/Pluto.jl)), 
+    c. plotting ([Makie ecosystem](https://makie.juliaplots.org/stable/))
 
 In addition, we will have an hands-on exercise in which participants will bring a dataset of their choice along with an existing script in another language like R or python with a specific data analysis. Assisted by the presenters, they will work during the tutorial to convert the code to Julia language.
 
@@ -66,10 +69,42 @@ Let's start by looking at the REPL and try:
 
 ## How do I write code?
 
-![](lectures/pics/julia-editors.png)
+![](docs/pics/julia-editors.png)
 
 
 ## Installing dependencies in a project environment
+
+There are two alternatives:
+
+1. Using an existing project with dependencies already in `Project.toml` (this will be the case when you are collaborating with someone that already set up the project dependencies)
+2. Set up the dependencies for your project on your own (this will be the case if your project is new)
+
+For this workshop, participants will use [the workshop GitHub repository](https://github.com/crsl4/julia-workshop) as the existing project that already has all the dependencies. However, we also show the steps below to create a new project from scratch.
+
+### 1. Working on an existing project environment
+
+Git clone the repository:
+```shell
+git clone https://github.com/crsl4/julia-workshop.git
+```
+
+Open julia and activate the package with:
+```julia
+julia --project
+```
+
+Alternatively, you can open julia normally, and type `] activate .`
+
+Then, instantiate the package (install dependencies) with:
+```julia
+] instantiate
+] update
+```
+
+Now, you should be able to follow along the workshop commands. Trouble-shooting might be needed when we reach the interoperability with Python and R as certain libraries or packages might need to be installed too.
+
+
+### 2. Creating a new project environment
 
 Create a folder in the terminal:
 ```shell
@@ -82,7 +117,7 @@ Open Julia inside your folder, and activate your environment with:
 (@v1.8) pkg> activate .
 ```
 
-Install the packages that we need for today's workshop:
+Install the packages that we need. For example, the packages needed for today's workshop are:
 ```julia
 julia> ENV["PYTHON"] = ""
 (myproject) pkg> add PyCall
@@ -93,8 +128,8 @@ julia> ENV["PYTHON"] = ""
 (myproject) pkg> add Arrow
 (myproject) pkg> add DataFrames
 (myproject) pkg> add Tables
+(myproject) pkg> add RangeTrees
 ```
-
 
 Two files are noteworthy:
 
@@ -128,6 +163,7 @@ version = "1.1.1"
 Look at your `Project.toml` and `Manifest.toml` files after installation. They have all the necessary information about your session.
 
 The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_identifier) string which is the universally unique identifier.
+
 More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
 
 
