@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-0.9.363">
+<meta name="generator" content="quarto-0.9.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -167,7 +167,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#why-julia" id="toc-why-julia" class="nav-link active" data-scroll-target="#why-julia">Why Julia?</a>
   <ul class="collapse">
   <li><a href="#from-the-creators-of-julia" id="toc-from-the-creators-of-julia" class="nav-link" data-scroll-target="#from-the-creators-of-julia">From the creators of Julia</a></li>
-  <li><a href="#reasons-to-check-out-julia" id="toc-reasons-to-check-out-julia" class="nav-link" data-scroll-target="#reasons-to-check-out-julia">Reasons to check out Julia</a></li>
+  <li><a href="#reasons-to-try-julia" id="toc-reasons-to-try-julia" class="nav-link" data-scroll-target="#reasons-to-try-julia">Reasons to try Julia</a></li>
   <li><a href="#the-five-stages-of-programming" id="toc-the-five-stages-of-programming" class="nav-link" data-scroll-target="#the-five-stages-of-programming">The five stages of programming</a></li>
   </ul></li>
   <li><a href="#workshop-topics" id="toc-workshop-topics" class="nav-link" data-scroll-target="#workshop-topics">Workshop topics</a></li>
@@ -175,9 +175,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#setting-up-your-project-folder" id="toc-setting-up-your-project-folder" class="nav-link" data-scroll-target="#setting-up-your-project-folder">Setting up your project folder</a>
   <ul class="collapse">
   <li><a href="#how-do-i-write-code" id="toc-how-do-i-write-code" class="nav-link" data-scroll-target="#how-do-i-write-code">How do I write code?</a></li>
-  <li><a href="#installing-dependencies-in-a-project-environment" id="toc-installing-dependencies-in-a-project-environment" class="nav-link" data-scroll-target="#installing-dependencies-in-a-project-environment">Installing dependencies in a project environment</a></li>
+  <li><a href="#installing-dependencies-in-a-project-environment" id="toc-installing-dependencies-in-a-project-environment" class="nav-link" data-scroll-target="#installing-dependencies-in-a-project-environment">Installing dependencies in a project environment</a>
+  <ul class="collapse">
+  <li><a href="#working-on-an-existing-project-environment" id="toc-working-on-an-existing-project-environment" class="nav-link" data-scroll-target="#working-on-an-existing-project-environment">1. Working on an existing project environment</a></li>
+  <li><a href="#creating-a-new-project-environment" id="toc-creating-a-new-project-environment" class="nav-link" data-scroll-target="#creating-a-new-project-environment">2. Creating a new project environment</a></li>
+  </ul></li>
   <li><a href="#easy-share-with-collaborators" id="toc-easy-share-with-collaborators" class="nav-link" data-scroll-target="#easy-share-with-collaborators">Easy share with collaborators</a></li>
   </ul></li>
+  <li><a href="#opening-the-julia-code" id="toc-opening-the-julia-code" class="nav-link" data-scroll-target="#opening-the-julia-code">Opening the julia code</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/crsl4/julia-workshop/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
     </div>
@@ -232,8 +237,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>dirt simple to learn, yet keeps the most serious hackers happy”</li>
 </ul>
 </section>
-<section id="reasons-to-check-out-julia" class="level2">
-<h2 class="anchored" data-anchor-id="reasons-to-check-out-julia">Reasons to check out Julia</h2>
+<section id="reasons-to-try-julia" class="level2">
+<h2 class="anchored" data-anchor-id="reasons-to-try-julia">Reasons to try Julia</h2>
 <ul>
 <li>Comparison with other languages: <a href="https://www.zdnet.com/article/programming-languages-julia-touts-its-speed-edge-over-python-and-r/">Julia touts its speed edge over Python and R</a></li>
 <li>Used for large-scale projects like <a href="https://clima.caltech.edu/2020/06/08/clima-0-1-a-first-milestone-in-the-next-generation-of-climate-models/">CliMA 0.1</a>: a first milestone in the next generation of climate models
@@ -243,7 +248,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Julia adoption accelerated at a rapid pace in 2020:</li>
 </ul>
 <div style="text-align:center">
-<img src="lectures/pics/julia-adoption.png" width="450">
+<img src="docs/pics/julia-adoption.png" width="450">
 </div>
 </section>
 <section id="the-five-stages-of-programming" class="level2">
@@ -255,7 +260,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>You want to share your code with others and thus, you want to write a package</li>
 <li>Your package is actually used by others and thus, it should be optimized and have good performance</li>
 </ol>
-<p>Julia offers many advantages to data science programmers: avoiding the two-language problem</p>
+<p>Julia offers many advantages to data science programmers such as avoid the two-language problem and existing tools that allows programmers to write efficient code without having to write everything from scratch!</p>
 </section>
 </section>
 <section id="workshop-topics" class="level1">
@@ -264,7 +269,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol type="1">
 <li>Data tools: <code>Arrow.jl</code>, <code>Tables.jl</code></li>
 <li>Model fitting: <code>MixedModels.jl</code></li>
-<li>Package system and important packages for Data Science: interoperability with R and python (<a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a> and <a href="https://github.com/JuliaPy/PyCall.jl">PyCall.jl</a>), literate programming (<a href="https://quarto.org/">quarto.org</a> and <a href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a>), plotting (<a href="https://makie.juliaplots.org/stable/">Makie ecosystem</a>)</li>
+<li>Package system and important packages for Data Science:
+<ol type="a">
+<li>interoperability with R and python (<a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a> and <a href="https://github.com/JuliaPy/PyCall.jl">PyCall.jl</a>),</li>
+<li>literate programming (<a href="https://quarto.org/">quarto.org</a> and <a href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a>),</li>
+<li>plotting (<a href="https://makie.juliaplots.org/stable/">Makie ecosystem</a>)</li>
+</ol></li>
 </ol>
 <p>In addition, we will have an hands-on exercise in which participants will bring a dataset of their choice along with an existing script in another language like R or python with a specific data analysis. Assisted by the presenters, they will work during the tutorial to convert the code to Julia language.</p>
 </section>
@@ -284,64 +294,100 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>Setting up your project folder</h1>
 <section id="how-do-i-write-code" class="level2">
 <h2 class="anchored" data-anchor-id="how-do-i-write-code">How do I write code?</h2>
-<p><img src="lectures/pics/julia-editors.png" class="img-fluid"></p>
+<p><img src="docs/pics/julia-editors.png" class="img-fluid"></p>
 </section>
 <section id="installing-dependencies-in-a-project-environment" class="level2">
 <h2 class="anchored" data-anchor-id="installing-dependencies-in-a-project-environment">Installing dependencies in a project environment</h2>
+<p>There are two alternatives:</p>
+<ol type="1">
+<li>Using an existing project with dependencies already in <code>Project.toml</code> (this will be the case when you are collaborating with someone that already set up the project dependencies)</li>
+<li>Set up the dependencies for your project on your own (this will be the case if your project is new)</li>
+</ol>
+<p>For this workshop, participants will use <a href="https://github.com/crsl4/julia-workshop">the workshop GitHub repository</a> as the existing project that already has all the dependencies. However, we also show the steps below to create a new project from scratch.</p>
+<section id="working-on-an-existing-project-environment" class="level3">
+<h3 class="anchored" data-anchor-id="working-on-an-existing-project-environment">1. Working on an existing project environment</h3>
+<p>Git clone the repository:</p>
+<pre class="shell"><code>git clone https://github.com/crsl4/julia-workshop.git</code></pre>
+<p>Open julia and activate the package with:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>julia <span class="op">--</span>project</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Alternatively, you can open julia normally, and type <code>] activate .</code></p>
+<p>Then, instantiate the package (install dependencies) with:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>] instantiate</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>] update</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now, you should be able to follow along the workshop commands. Trouble-shooting might be needed when we reach the interoperability with Python and R as certain libraries or packages might need to be installed too.</p>
+</section>
+<section id="creating-a-new-project-environment" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-new-project-environment">2. Creating a new project environment</h3>
 <p>Create a folder in the terminal:</p>
 <pre class="shell"><code>mkdir myProject
 cd myProject</code></pre>
 <p>Open Julia inside your folder, and activate your environment with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="pp">@v1</span><span class="fl">.8</span>) pkg<span class="op">&gt;</span> activate .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Install the packages that we need for today’s workshop:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="cn">ENV</span>[<span class="st">"PYTHON"</span>] <span class="op">=</span> <span class="st">""</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add PyCall</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add IJulia</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> build IJulia</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add MixedModels</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add RCall</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Arrow</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add DataFrames</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Tables</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(<span class="pp">@v1</span><span class="fl">.8</span>) pkg<span class="op">&gt;</span> activate .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Install the packages that we need. For example, the packages needed for today’s workshop are:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="cn">ENV</span>[<span class="st">"PYTHON"</span>] <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add PyCall</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add IJulia</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> build IJulia</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add MixedModels</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add RCall</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Arrow</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add DataFrames</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Tables</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add RangeTrees</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Two files are noteworthy:</p>
 <ul>
 <li><code>Project.toml</code>: Defines project</li>
 <li><code>Manifest.toml</code>: Contains exact list of project dependencies</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>shell<span class="op">&gt;</span> head Project.toml</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>[deps]</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>Arrow <span class="op">=</span> <span class="st">"69666777-d1a9-59fb-9406-91d4454c9d45"</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>DataFrames <span class="op">=</span> <span class="st">"a93c6f00-e57d-5684-b7b6-d8193f3e46c0"</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>IJulia <span class="op">=</span> <span class="st">"7073ff75-c697-5162-941a-fcdaad2a7d2a"</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>MixedModels <span class="op">=</span> <span class="st">"ff71e718-51f3-5ec2-a782-8ffcbfa3c316"</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>PyCall <span class="op">=</span> <span class="st">"438e738f-606a-5dbb-bf0a-cddfbfd45ab0"</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>RCall <span class="op">=</span> <span class="st">"6f49c342-dc21-5d91-9882-a32aef131414"</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Tables <span class="op">=</span> <span class="st">"bd369af6-aec1-5ad0-b16a-f7cc5008161c"</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>shell<span class="op">&gt;</span> head Manifest.toml</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># This file is machine-generated - editing it directly is not advised</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>julia_version <span class="op">=</span> <span class="st">"1.8.0-beta3"</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>manifest_format <span class="op">=</span> <span class="st">"2.0"</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>project_hash <span class="op">=</span> <span class="st">"01baf737705b090869a607b779c699f83bbeb154"</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>[[deps.ArgTools]]</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>uuid <span class="op">=</span> <span class="st">"0dad84c5-d112-42e6-8d28-ef12dabb789f"</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>version <span class="op">=</span> <span class="st">"1.1.1"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>shell<span class="op">&gt;</span> head Project.toml</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>[deps]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>Arrow <span class="op">=</span> <span class="st">"69666777-d1a9-59fb-9406-91d4454c9d45"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>DataFrames <span class="op">=</span> <span class="st">"a93c6f00-e57d-5684-b7b6-d8193f3e46c0"</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>IJulia <span class="op">=</span> <span class="st">"7073ff75-c697-5162-941a-fcdaad2a7d2a"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>MixedModels <span class="op">=</span> <span class="st">"ff71e718-51f3-5ec2-a782-8ffcbfa3c316"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>PyCall <span class="op">=</span> <span class="st">"438e738f-606a-5dbb-bf0a-cddfbfd45ab0"</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>RCall <span class="op">=</span> <span class="st">"6f49c342-dc21-5d91-9882-a32aef131414"</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>Tables <span class="op">=</span> <span class="st">"bd369af6-aec1-5ad0-b16a-f7cc5008161c"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>shell<span class="op">&gt;</span> head Manifest.toml</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># This file is machine-generated - editing it directly is not advised</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>julia_version <span class="op">=</span> <span class="st">"1.8.0-beta3"</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>manifest_format <span class="op">=</span> <span class="st">"2.0"</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>project_hash <span class="op">=</span> <span class="st">"01baf737705b090869a607b779c699f83bbeb154"</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>[[deps.ArgTools]]</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>uuid <span class="op">=</span> <span class="st">"0dad84c5-d112-42e6-8d28-ef12dabb789f"</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>version <span class="op">=</span> <span class="st">"1.1.1"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Look at your <code>Project.toml</code> and <code>Manifest.toml</code> files after installation. They have all the necessary information about your session.</p>
-<p>The packages have a <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">uuid</a> string which is the universally unique identifier. More on the <code>Project.toml</code> and <code>Manifest.toml</code> files <a href="https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1">here</a>.</p>
+<p>The packages have a <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">uuid</a> string which is the universally unique identifier.</p>
+<p>More on the <code>Project.toml</code> and <code>Manifest.toml</code> files <a href="https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1">here</a>.</p>
+</section>
 </section>
 <section id="easy-share-with-collaborators" class="level2">
 <h2 class="anchored" data-anchor-id="easy-share-with-collaborators">Easy share with collaborators</h2>
 <p>Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">cd</span>(<span class="st">"path/to/project"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> activate .</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> instantiate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">cd</span>(<span class="st">"path/to/project"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> activate .</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> instantiate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>All required packages and dependencies will be installed. Scripts that run in your computer will also run in their computer.</p>
-
-
 </section>
+</section>
+<section id="opening-the-julia-code" class="level1">
+<h1>Opening the julia code</h1>
+<p>There are many ways to work on julia code depending on the editor.</p>
+<p>For those using VSCode, you can open the project easily with:</p>
+<pre class="shell"><code>cd julia-workshop
+code .</code></pre>
+<p>You need to have the <code>code</code> command in your <code>PATH</code> which can be done within VSCode searching in the Command Palette “shell command”.</p>
+<p>Alternatively, you can open a specific <code>qmd</code> file in your editor of choice:</p>
+<pre class="shell"><code>cd julia-workshop
+open session2a-tables-and-arrow.qmd</code></pre>
+<p>Note that jupyter notebooks <code>ipynb</code> are produced when the <code>qmd</code> files when rendered into <code>html</code>.</p>
+<p>In addition to <code>qmd</code> files, you can work with standard <code>.jl</code> julia files.</p>
+
+
 </section>
 
 </main> <!-- /main -->

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-0.9.363">
+<meta name="generator" content="quarto-0.9.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -279,7 +279,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $tarball`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>-rw-r--r--@ 1 Clauberry  staff   540M Jun 16 05:06 biofast-data-v1.tar.gz</code></pre>
+<pre><code>-rw-r--r--@ 1 useradmin  staff   540M Jun 16 05:06 biofast-data-v1.tar.gz</code></pre>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -312,12 +312,12 @@ Note
 </div>
 <ul>
 <li>The <code>.tar.gz</code> file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.</li>
-<li>Extract the two <code>.bed</code> files to be used in this example (and only if they are not present).</li>
+<li>Extract the two <code>.bed</code> files to be used in this example, if not already present.</li>
 </ul>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">isdir</span>(datadir) <span class="op">||</span> <span class="fu">mkdir</span>(datadir)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>bedfnms <span class="op">=</span> <span class="fu">joinpath</span>.(datadir, [<span class="st">"ex-anno.bed"</span>, <span class="st">"ex-rna.bed"</span>])</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>toextract <span class="op">=</span> <span class="fu">filter</span>(!isfile, bedfnms)  <span class="co"># don't overwrite exisitng files</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>toextract <span class="op">=</span> <span class="fu">filter</span>(!isfile, bedfnms)  <span class="co"># don't overwrite existing files</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> !<span class="fu">isempty</span>(toextract)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  tmpdir <span class="op">=</span> <span class="fu">gzopen</span>(tarball, <span class="st">"r"</span>) <span class="cf">do</span> io</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    Tar.<span class="fu">extract</span>(h <span class="op">-&gt;</span> <span class="fu">in</span>(h.path, toextract), io)</span>
@@ -328,12 +328,12 @@ Note
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>total 3343088
--rw-r--r--@ 1 Clauberry  staff   1.3G May  3  2020 M_abscessus_HiSeq.fq
--rw-r--r--@ 1 Clauberry  staff   3.7M Jun 16 05:18 ex-anno.arrow
--rw-r--r--@ 1 Clauberry  staff    27M May 11  2020 ex-anno.bed
--rw-r--r--@ 1 Clauberry  staff    67M Jun  1 15:36 ex-rna.arrow
--rw-r--r--@ 1 Clauberry  staff   203M May 11  2020 ex-rna.bed</code></pre>
+<pre><code>total 3343304
+-rw-r--r--@ 1 useradmin  staff   1.3G May  3  2020 M_abscessus_HiSeq.fq
+-rw-r--r--@ 1 useradmin  staff   3.8M Jun 16 12:32 ex-anno.arrow
+-rw-r--r--@ 1 useradmin  staff    27M May 11  2020 ex-anno.bed
+-rw-r--r--@ 1 useradmin  staff    67M Jun  3 12:02 ex-rna.arrow
+-rw-r--r--@ 1 useradmin  staff   203M May 11  2020 ex-rna.bed</code></pre>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -359,11 +359,24 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The expression <code>h -&gt; in(h.path, toextract)</code> defines an anonymous function to be used as a predicate in <code>Tar.extract</code>.</p>
+<p>The call <code>joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])</code> is an example of <a href="https://docs.julialang.org/en/v1/manual/functions/#man-vectorized">dot broadcasting</a></p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The expression <code>h -&gt; in(h.path, toextract)</code> defines an anonymous function, in the “stabby lambda” syntax, to be used as a predicate in <code>Tar.extract</code>.</p>
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">methods</span>(Tar.extract)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-# 4 methods for generic function <b>extract</b>:<ul><li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/Clauberry/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/Clauberry/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/Clauberry/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/Clauberry/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> </ul>
+# 4 methods for generic function <b>extract</b>:<ul><li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/useradmin/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/useradmin/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/useradmin/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///Users/julia/.julia/scratchspaces/a66863c6-20e8-4ff4-8a62-49f30b1f605e/agent-cache/default-macmini-x64-5.0/build/default-macmini-x64-5-0/julialang/julia-release-1-dot-8/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/Users/useradmin/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> </ul>
 </div>
 </div>
 </div>
@@ -378,7 +391,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The ‘do/end’ block is yet another way of writing an anonymous function.</p>
+<p>The ‘do/end’ block is yet another way of writing an anonymous function passed as a processing argument to <code>gzopen</code>.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">methods</span>(gzopen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+# 4 methods for generic function <b>gzopen</b>:<ul><li> gzopen(fname::<b>AbstractString</b>) in GZip at <a href="file:///Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl:264</a></li> <li> gzopen(fname::<b>AbstractString</b>, gzmode::<b>AbstractString</b>) in GZip at <a href="file:///Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl:263</a></li> <li> gzopen(fname::<b>AbstractString</b>, gzmode::<b>AbstractString</b>, gz_buf_size::<b>Integer</b>) in GZip at <a href="file:///Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl:236</a></li> <li> gzopen(f::<b>Function</b>, args...) in GZip at <a href="file:///Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/Users/useradmin/.julia/packages/GZip/JNmGn/src/GZip.jl:267</a></li> </ul>
+</div>
+</div>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -428,15 +447,15 @@ Note
 <li>As is common for such functions, there are many, many optional named arguments</li>
 <li>We read <code>ex-anno.bed</code> and create a <code>DataFrame</code> as</li>
 </ul>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>annodf <span class="op">=</span> CSV.<span class="fu">read</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">joinpath</span>(datadir, <span class="st">"ex-anno.bed"</span>),</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  DataFrame;</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  delim<span class="op">=</span><span class="ch">'\t'</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  types<span class="op">=</span>[<span class="dt">String</span>, <span class="dt">Int32</span>, <span class="dt">Int32</span>],</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  header<span class="op">=</span>[<span class="st">"chromo"</span>, <span class="st">"start"</span>, <span class="st">"stop"</span>],</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>annodf <span class="op">=</span> CSV.<span class="fu">read</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">joinpath</span>(datadir, <span class="st">"ex-anno.bed"</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  DataFrame;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  delim<span class="op">=</span><span class="ch">'\t'</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  types<span class="op">=</span>[<span class="dt">String</span>, <span class="dt">Int32</span>, <span class="dt">Int32</span>],</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  header<span class="op">=</span>[<span class="st">"chromo"</span>, <span class="st">"start"</span>, <span class="st">"stop"</span>],</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div class="data-frame"><p>1,193,657 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="String">String</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr1</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr1</td><td>12612</td><td>12721</td></tr><tr><th>3</th><td>chr1</td><td>13220</td><td>14409</td></tr><tr><th>4</th><td>chr1</td><td>12009</td><td>12057</td></tr><tr><th>5</th><td>chr1</td><td>12178</td><td>12227</td></tr><tr><th>6</th><td>chr1</td><td>12612</td><td>12697</td></tr><tr><th>7</th><td>chr1</td><td>12974</td><td>13052</td></tr><tr><th>8</th><td>chr1</td><td>13220</td><td>13374</td></tr><tr><th>9</th><td>chr1</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr1</td><td>29533</td><td>29570</td></tr><tr><th>11</th><td>chr1</td><td>24737</td><td>24891</td></tr><tr><th>12</th><td>chr1</td><td>18267</td><td>18366</td></tr><tr><th>13</th><td>chr1</td><td>17914</td><td>18061</td></tr><tr><th>14</th><td>chr1</td><td>17605</td><td>17742</td></tr><tr><th>15</th><td>chr1</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr1</td><td>16857</td><td>17055</td></tr><tr><th>17</th><td>chr1</td><td>16606</td><td>16765</td></tr><tr><th>18</th><td>chr1</td><td>15795</td><td>15947</td></tr><tr><th>19</th><td>chr1</td><td>15004</td><td>15038</td></tr><tr><th>20</th><td>chr1</td><td>14403</td><td>14501</td></tr><tr><th>21</th><td>chr1</td><td>17368</td><td>17436</td></tr><tr><th>22</th><td>chr1</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr1</td><td>30563</td><td>30667</td></tr><tr><th>24</th><td>chr1</td><td>30975</td><td>31097</td></tr><tr><th>25</th><td>chr1</td><td>30266</td><td>30667</td></tr><tr><th>26</th><td>chr1</td><td>30975</td><td>31109</td></tr><tr><th>27</th><td>chr1</td><td>30365</td><td>30503</td></tr><tr><th>28</th><td>chr1</td><td>35720</td><td>36081</td></tr><tr><th>29</th><td>chr1</td><td>35276</td><td>35481</td></tr><tr><th>30</th><td>chr1</td><td>34553</td><td>35174</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
@@ -457,7 +476,7 @@ Note
 </div>
 </div>
 <ul>
-<li>It turns out that both of the <code>.bed</code> files contain many duplicate rows. Use <code>unique!</code> to eliminate the duplicates.</li>
+<li>It turns out that both of the <code>.bed</code> files contain many duplicate rows - probably not intentionally. Eliminate the duplicates with <code>unique!</code>.</li>
 </ul>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -473,14 +492,12 @@ Note
 </div>
 </div>
 <ul>
-<li>As row order is not important, we also <code>sort!</code> the <code>DataFrame</code>, which has the effect of sorting the intervals within a chromosome by <code>start</code> position.</li>
-<li>Before sorting I will change strings like <code>"chr1"</code> to <code>"chr01"</code> so that sorting by <code>chromo</code> is equivalent to sorting by chromosome number.</li>
-<li>The <code>replace!</code> generic takes the object to modify and one or more <code>pair</code>s of values of the form <code>from =&gt; to</code></li>
-<li>We generate a vector of pairs of strings for replacement then “splat” them into a call to <code>replace</code></li>
+<li>Do make one change of replacing the tags <code>"chr1"</code> up to <code>"chr9"</code> by <code>"chr01"</code> to <code>"chr09"</code> so later sorting by these strings will also give sorted chromosome numbers.</li>
+<li>We use a <code>replace!</code> method takes the object to modify and one or more <code>pair</code>s of values of the form <code>from =&gt; to</code> and generate the replacements as</li>
 </ul>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>replacements <span class="op">=</span>  [<span class="st">"chr</span><span class="sc">$</span>i<span class="st">"</span> <span class="op">=&gt;</span> <span class="st">"chr0</span><span class="sc">$</span>i<span class="st">"</span> for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">9</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>replacements <span class="op">=</span>  [<span class="st">"chr</span><span class="sc">$</span>i<span class="st">"</span> <span class="op">=&gt;</span> <span class="st">"chr0</span><span class="sc">$</span>i<span class="st">"</span> for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">9</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>9-element Vector{Pair{String, String}}:
  "chr1" =&gt; "chr01"
  "chr2" =&gt; "chr02"
@@ -503,21 +520,34 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The expression in the right is called a “comprehension”. I think of it as an inside-out loop.</p>
+<p>The expression on the right of the <code>=</code> is called a “comprehension”. I think of it as an inside-out loop.</p>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(<span class="fu">unique</span>(<span class="fu">replace!</span>(annodf.chromo, replacements<span class="op">...</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(<span class="fu">unique</span>(<span class="fu">replace!</span>(annodf.chromo, replacements<span class="op">...</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>["chr01", "chr02", "chr03", "chr04", "chr05", "chr06", "chr07", "chrX", "chr08", "chr09", "chr11", "chr10", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr20", "chr19", "chrY", "chr22", "chr21"]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort!</span>(<span class="fu">unique!</span>(annodf))</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>annodf.chromo <span class="op">=</span> <span class="fu">categorical</span>(annodf.chromo; ordered<span class="op">=</span><span class="cn">true</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>annodf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<div class="data-frame"><p>573,806 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="CategoricalValue{String, UInt32}">Cat…</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr01</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr01</td><td>12009</td><td>12057</td></tr><tr><th>3</th><td>chr01</td><td>12178</td><td>12227</td></tr><tr><th>4</th><td>chr01</td><td>12612</td><td>12697</td></tr><tr><th>5</th><td>chr01</td><td>12612</td><td>12721</td></tr><tr><th>6</th><td>chr01</td><td>12974</td><td>13052</td></tr><tr><th>7</th><td>chr01</td><td>13220</td><td>13374</td></tr><tr><th>8</th><td>chr01</td><td>13220</td><td>14409</td></tr><tr><th>9</th><td>chr01</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr01</td><td>14403</td><td>14501</td></tr><tr><th>11</th><td>chr01</td><td>15004</td><td>15038</td></tr><tr><th>12</th><td>chr01</td><td>15795</td><td>15947</td></tr><tr><th>13</th><td>chr01</td><td>16606</td><td>16765</td></tr><tr><th>14</th><td>chr01</td><td>16857</td><td>17055</td></tr><tr><th>15</th><td>chr01</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr01</td><td>17368</td><td>17436</td></tr><tr><th>17</th><td>chr01</td><td>17605</td><td>17742</td></tr><tr><th>18</th><td>chr01</td><td>17914</td><td>18061</td></tr><tr><th>19</th><td>chr01</td><td>18267</td><td>18366</td></tr><tr><th>20</th><td>chr01</td><td>24737</td><td>24891</td></tr><tr><th>21</th><td>chr01</td><td>29533</td><td>29570</td></tr><tr><th>22</th><td>chr01</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr01</td><td>30266</td><td>30667</td></tr><tr><th>24</th><td>chr01</td><td>30365</td><td>30503</td></tr><tr><th>25</th><td>chr01</td><td>30563</td><td>30667</td></tr><tr><th>26</th><td>chr01</td><td>30975</td><td>31097</td></tr><tr><th>27</th><td>chr01</td><td>30975</td><td>31109</td></tr><tr><th>28</th><td>chr01</td><td>34553</td><td>35174</td></tr><tr><th>29</th><td>chr01</td><td>35244</td><td>35481</td></tr><tr><th>30</th><td>chr01</td><td>35276</td><td>35481</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique!</span>(annodf)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>annodf.chromo <span class="op">=</span> <span class="fu">categorical</span>(annodf.chromo)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>annodf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="data-frame"><p>573,806 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="CategoricalValue{String, UInt32}">Cat…</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr01</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr01</td><td>12612</td><td>12721</td></tr><tr><th>3</th><td>chr01</td><td>13220</td><td>14409</td></tr><tr><th>4</th><td>chr01</td><td>12009</td><td>12057</td></tr><tr><th>5</th><td>chr01</td><td>12178</td><td>12227</td></tr><tr><th>6</th><td>chr01</td><td>12612</td><td>12697</td></tr><tr><th>7</th><td>chr01</td><td>12974</td><td>13052</td></tr><tr><th>8</th><td>chr01</td><td>13220</td><td>13374</td></tr><tr><th>9</th><td>chr01</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr01</td><td>29533</td><td>29570</td></tr><tr><th>11</th><td>chr01</td><td>24737</td><td>24891</td></tr><tr><th>12</th><td>chr01</td><td>18267</td><td>18366</td></tr><tr><th>13</th><td>chr01</td><td>17914</td><td>18061</td></tr><tr><th>14</th><td>chr01</td><td>17605</td><td>17742</td></tr><tr><th>15</th><td>chr01</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr01</td><td>16857</td><td>17055</td></tr><tr><th>17</th><td>chr01</td><td>16606</td><td>16765</td></tr><tr><th>18</th><td>chr01</td><td>15795</td><td>15947</td></tr><tr><th>19</th><td>chr01</td><td>15004</td><td>15038</td></tr><tr><th>20</th><td>chr01</td><td>14403</td><td>14501</td></tr><tr><th>21</th><td>chr01</td><td>17368</td><td>17436</td></tr><tr><th>22</th><td>chr01</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr01</td><td>30563</td><td>30667</td></tr><tr><th>24</th><td>chr01</td><td>30975</td><td>31097</td></tr><tr><th>25</th><td>chr01</td><td>30266</td><td>30667</td></tr><tr><th>26</th><td>chr01</td><td>30975</td><td>31109</td></tr><tr><th>27</th><td>chr01</td><td>30365</td><td>30503</td></tr><tr><th>28</th><td>chr01</td><td>35720</td><td>36081</td></tr><tr><th>29</th><td>chr01</td><td>35276</td><td>35481</td></tr><tr><th>30</th><td>chr01</td><td>34553</td><td>35174</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Representing the <code>chromo</code> column as a <code>CategoricalArray</code> converts the individual values to indices into a vector of <code>String</code>s, which saves on space.</p>
 </div>
 </div>
 </section>
@@ -528,17 +558,17 @@ Note
 <li>Either ‘lz4’ or ‘zstd’ compression can be used when creating an Arrow file.</li>
 <li>Metadata on the names and types of columns is automatically stored. Additional column or table metadata can be specified.</li>
 </ul>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Arrow.<span class="fu">write</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"./biofast-data-v1/ex-anno.arrow"</span>,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  annodf;</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  compress<span class="op">=:</span>lz4,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  metadata<span class="op">=</span>[</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"url"</span> <span class="op">=&gt;</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://github.com/lh3/biofast/releases/tag/biofast-data-v1"</span>,</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  ],</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Arrow.<span class="fu">write</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"./biofast-data-v1/ex-anno.arrow"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  annodf;</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  compress<span class="op">=:</span>lz4,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  metadata<span class="op">=</span>[</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"url"</span> <span class="op">=&gt;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://github.com/lh3/biofast/releases/tag/biofast-data-v1"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  ],</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>"./biofast-data-v1/ex-anno.arrow"</code></pre>
 </div>
 </div>
@@ -547,44 +577,43 @@ Note
 <li>Named arguments with defaults are used to configure the “usual” call but allow for variations.</li>
 <li>The Boolean <code>overwrite</code> named argument, which defaults to <code>false</code>, controls overwriting of existing files.</li>
 </ul>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>metadata <span class="op">=</span> [<span class="st">"url"</span> <span class="op">=&gt;</span> <span class="st">"https://github.com/lh3/biofast/releases/tag/biofast-data-v1"</span>,]</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bed2arrow</span>(</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  fnroot<span class="op">::</span><span class="dt">AbstractString</span>;</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  datadir<span class="op">=</span>datadir,</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  delim<span class="op">=</span><span class="ch">'\t'</span>,</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  header<span class="op">=</span>[<span class="op">:</span>chromo, <span class="op">:</span>start, <span class="op">:</span>stop],</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  types<span class="op">=</span>[<span class="dt">String</span>, <span class="dt">Int32</span>, <span class="dt">Int32</span>],</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  compress<span class="op">=:</span>lz4,</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  metadata<span class="op">=</span>metadata,</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  replacements<span class="op">=</span>replacements,</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  overwrite<span class="op">::</span><span class="dt">Bool</span>=<span class="cn">false</span>,</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  bednm <span class="op">=</span> <span class="fu">joinpath</span>(datadir, <span class="st">"</span><span class="sc">$</span>fnroot<span class="st">.bed"</span>)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  arrownm <span class="op">=</span> <span class="fu">joinpath</span>(datadir, <span class="st">"</span><span class="sc">$</span>fnroot<span class="st">.arrow"</span>)</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> overwrite <span class="op">||</span> !<span class="fu">isfile</span>(arrownm)</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> CSV.<span class="fu">read</span>(bednm, DataFrame; header, delim, types)</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">replace!</span>(df.chromo, replacements<span class="op">...</span>)</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sort!</span>(<span class="fu">unique!</span>(df))</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    df.chromo <span class="op">=</span> <span class="fu">categorical</span>(df.chromo; ordered<span class="op">=</span><span class="cn">true</span>)</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    Arrow.<span class="fu">write</span>(arrownm, df; compress, metadata)</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> arrownm</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>rnaarrownm <span class="op">=</span> <span class="fu">bed2arrow</span>(<span class="st">"ex-rna"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>metadata <span class="op">=</span> [<span class="st">"url"</span> <span class="op">=&gt;</span> <span class="st">"https://github.com/lh3/biofast/releases/tag/biofast-data-v1"</span>,]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bed2arrow</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  fnroot<span class="op">::</span><span class="dt">AbstractString</span>;</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  datadir<span class="op">=</span>datadir,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  delim<span class="op">=</span><span class="ch">'\t'</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  header<span class="op">=</span>[<span class="op">:</span>chromo, <span class="op">:</span>start, <span class="op">:</span>stop],</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  types<span class="op">=</span>[<span class="dt">String</span>, <span class="dt">Int32</span>, <span class="dt">Int32</span>],</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  compress<span class="op">=:</span>lz4,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  metadata<span class="op">=</span>metadata,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  replacements<span class="op">=</span>replacements,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  overwrite<span class="op">::</span><span class="dt">Bool</span>=<span class="cn">false</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  bednm <span class="op">=</span> <span class="fu">joinpath</span>(datadir, <span class="st">"</span><span class="sc">$</span>fnroot<span class="st">.bed"</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  arrownm <span class="op">=</span> <span class="fu">joinpath</span>(datadir, <span class="st">"</span><span class="sc">$</span>fnroot<span class="st">.arrow"</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> overwrite <span class="op">||</span> !<span class="fu">isfile</span>(arrownm)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> <span class="fu">unique!</span>(CSV.<span class="fu">read</span>(bednm, DataFrame; header, delim, types))</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">replace!</span>(df.chromo, replacements<span class="op">...</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    df.chromo <span class="op">=</span> <span class="fu">categorical</span>(df.chromo)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    Arrow.<span class="fu">write</span>(arrownm, df; compress, metadata)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> arrownm</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>rnaarrownm <span class="op">=</span> <span class="fu">bed2arrow</span>(<span class="st">"ex-rna"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>"biofast-data-v1/ex-rna.arrow"</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>total 3343088
--rw-r--r--@ 1 Clauberry  staff   1.3G May  3  2020 M_abscessus_HiSeq.fq
--rw-r--r--@ 1 Clauberry  staff   3.7M Jun 16 05:20 ex-anno.arrow
--rw-r--r--@ 1 Clauberry  staff    27M May 11  2020 ex-anno.bed
--rw-r--r--@ 1 Clauberry  staff    67M Jun  1 15:36 ex-rna.arrow
--rw-r--r--@ 1 Clauberry  staff   203M May 11  2020 ex-rna.bed</code></pre>
+<pre><code>total 3343304
+-rw-r--r--@ 1 useradmin  staff   1.3G May  3  2020 M_abscessus_HiSeq.fq
+-rw-r--r--@ 1 useradmin  staff   3.8M Jun 16 13:08 ex-anno.arrow
+-rw-r--r--@ 1 useradmin  staff    27M May 11  2020 ex-anno.bed
+-rw-r--r--@ 1 useradmin  staff    67M Jun  3 12:02 ex-rna.arrow
+-rw-r--r--@ 1 useradmin  staff   203M May 11  2020 ex-rna.bed</code></pre>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -603,9 +632,9 @@ Note
 </section>
 <section id="reading-arrow-files-in-julia" class="level2">
 <h2 class="anchored" data-anchor-id="reading-arrow-files-in-julia">Reading Arrow files in Julia</h2>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>annotbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(<span class="st">"./biofast-data-v1/ex-anno.arrow"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>annotbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(<span class="st">"./biofast-data-v1/ex-anno.arrow"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>Arrow.Table with 573806 rows, 3 columns, and schema:
  :chromo  String
  :start   Int32
@@ -618,15 +647,18 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <ul>
 <li>Although the schema describes the <code>chromo</code> column as <code>String</code>s the values are dictionary encoded such that each value is represented by one byte.</li>
 </ul>
-<div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(annotbl.chromo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(annotbl.chromo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>Arrow.DictEncoded{String, Int8, Arrow.List{String, Int32, Vector{UInt8}}}</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  0.524858 seconds (326 allocations: 134.340 MiB, 1.83% gc time)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>Arrow.Table with 8942869 rows, 3 columns, and schema:
  :chromo  String
  :start   Int32
@@ -639,18 +671,21 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <ul>
 <li>We can use operations like split-apply-combine on these tables to summarize properties</li>
 </ul>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>annogdf <span class="op">=</span> <span class="fu">groupby</span>(<span class="fu">DataFrame</span>(annotbl), <span class="op">:</span>chromo)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>rnagdf <span class="op">=</span> <span class="fu">groupby</span>(<span class="fu">DataFrame</span>(rnatbl), <span class="op">:</span>chromo)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">innerjoin</span>(</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">combine</span>(rnagdf, nrow <span class="op">=&gt;</span> <span class="op">:</span>nrna),</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">combine</span>(annogdf, nrow <span class="op">=&gt;</span> <span class="op">:</span>nanno);</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  on<span class="op">=:</span>chromo,</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>annogdf <span class="op">=</span> <span class="fu">groupby</span>(<span class="fu">DataFrame</span>(annotbl), <span class="op">:</span>chromo)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>rnagdf <span class="op">=</span> <span class="fu">groupby</span>(<span class="fu">DataFrame</span>(rnatbl), <span class="op">:</span>chromo)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">innerjoin</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">combine</span>(rnagdf, nrow <span class="op">=&gt;</span> <span class="op">:</span>nrna),</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">combine</span>(annogdf, nrow <span class="op">=&gt;</span> <span class="op">:</span>nanno);</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  on<span class="op">=:</span>chromo,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div class="data-frame"><p>15 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>nrna</th><th>nanno</th></tr><tr><th></th><th title="String">String</th><th title="Int64">Int64</th><th title="Int64">Int64</th></tr></thead><tbody><tr><th>1</th><td>chr10</td><td>276041</td><td>20061</td></tr><tr><th>2</th><td>chr11</td><td>610858</td><td>34021</td></tr><tr><th>3</th><td>chr12</td><td>570009</td><td>33524</td></tr><tr><th>4</th><td>chr13</td><td>125904</td><td>9464</td></tr><tr><th>5</th><td>chr14</td><td>288156</td><td>19995</td></tr><tr><th>6</th><td>chr15</td><td>400642</td><td>22187</td></tr><tr><th>7</th><td>chr16</td><td>368399</td><td>28276</td></tr><tr><th>8</th><td>chr17</td><td>556250</td><td>35888</td></tr><tr><th>9</th><td>chr18</td><td>85689</td><td>10179</td></tr><tr><th>10</th><td>chr19</td><td>743471</td><td>35451</td></tr><tr><th>11</th><td>chr20</td><td>169843</td><td>12387</td></tr><tr><th>12</th><td>chr21</td><td>71347</td><td>6518</td></tr><tr><th>13</th><td>chr22</td><td>259515</td><td>12724</td></tr><tr><th>14</th><td>chrX</td><td>374656</td><td>17618</td></tr><tr><th>15</th><td>chrY</td><td>89</td><td>2467</td></tr></tbody></table></div>
 </div>
 </div>
+<ul>
+<li>In the next section we will use data from <code>chr21</code> for comparative timings, because there are small, but nontrivial, number of intervals in both the reference and target groups.</li>
+</ul>
 </section>
 <section id="reading-arrow-files-in-r" class="level2">
 <h2 class="anchored" data-anchor-id="reading-arrow-files-in-r">Reading Arrow files in R</h2>
@@ -658,32 +693,32 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <li><p>In R (and in Python) the Arrow file format is confounded with an earlier file format called Feather and referred to as <code>Feather V2</code>.</p></li>
 <li><p>In R the <code>arrow::read_feather</code> function returns a tibble. In an R session it looks like</p></li>
 </ul>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(tibble)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> arrow<span class="sc">::</span><span class="fu">read_feather</span>(<span class="st">"./biofast-data-v1/ex-rna.arrow"</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># A tibble: 4,685,080 × 3</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>   chromo start  stop</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>   <span class="sc">&lt;</span>fct<span class="sc">&gt;</span>  <span class="er">&lt;</span>int<span class="sc">&gt;</span> <span class="er">&lt;</span>int<span class="sc">&gt;</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a> <span class="dv">1</span> chr01  <span class="dv">14354</span> <span class="dv">24892</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a> <span class="dv">2</span> chr01  <span class="dv">14359</span> <span class="dv">24855</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a> <span class="dv">3</span> chr01  <span class="dv">14361</span> <span class="dv">14672</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a> <span class="dv">4</span> chr01  <span class="dv">14361</span> <span class="dv">16878</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a> <span class="dv">5</span> chr01  <span class="dv">14366</span> <span class="dv">24894</span></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a> <span class="dv">6</span> chr01  <span class="dv">14370</span> <span class="dv">14989</span></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a> <span class="dv">7</span> chr01  <span class="dv">14396</span> <span class="dv">24894</span></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a> <span class="dv">8</span> chr01  <span class="dv">14397</span> <span class="dv">17733</span></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a> <span class="dv">9</span> chr01  <span class="dv">14398</span> <span class="dv">24894</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span> chr01  <span class="dv">14399</span> <span class="dv">15977</span></span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a><span class="co"># … with 4,685,070 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">library</span>(tibble)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> arrow<span class="sc">::</span><span class="fu">read_feather</span>(<span class="st">"biofast-data-v1/ex-rna.arrow"</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># A tibble: 4,685,080 × 3</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>   chromo     start      stop</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>   <span class="sc">&lt;</span>fct<span class="sc">&gt;</span>      <span class="er">&lt;</span>int<span class="sc">&gt;</span>     <span class="er">&lt;</span>int<span class="sc">&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a> <span class="dv">1</span> chr02  <span class="dv">216499331</span> <span class="dv">216501458</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a> <span class="dv">2</span> chr07  <span class="dv">101239611</span> <span class="dv">101245071</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a> <span class="dv">3</span> chr19   <span class="dv">49487626</span>  <span class="dv">49491841</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a> <span class="dv">4</span> chr10   <span class="dv">80155590</span>  <span class="dv">80169336</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a> <span class="dv">5</span> chr17   <span class="dv">76270411</span>  <span class="dv">76271290</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a> <span class="dv">6</span> chr06   <span class="dv">31268756</span>  <span class="dv">31272069</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a> <span class="dv">7</span> chr05  <span class="dv">170083214</span> <span class="dv">170083368</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a> <span class="dv">8</span> chr19   <span class="dv">51989731</span>  <span class="dv">51989996</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a> <span class="dv">9</span> chr18   <span class="dv">55225980</span>  <span class="dv">55226732</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span> chr16   <span class="dv">84565611</span>  <span class="dv">84566066</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="co"># … with 4,685,070 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>The <code>RCall</code> package in Julia allows for running an R process within a Julia session.</li>
 <li>One way of executing R code with <code>RCall</code> is to prepend <code>R</code> to a string. This causes the string to be evaluated in R.</li>
 <li><code>$</code>-interpolation in the string causes a Julia object to be copied into the R environment and its name in R interpolated.</li>
 </ul>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>R<span class="st">"""</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="st">library(tibble)</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="st">glimpse(rnatbl &lt;- arrow::read_feather(</span><span class="sc">$</span>rnaarrownm<span class="st">))</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>R<span class="st">"""</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="st">library(tibble)</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="st">glimpse(rnatbl &lt;- arrow::read_feather(</span><span class="sc">$</span>rnaarrownm<span class="st">))</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 8,942,869
 Columns: 3
@@ -698,54 +733,54 @@ $ stop   &lt;int&gt; 216501458, 101245071, 49491841, 80169336, 76271290, 3127206
 <ul>
 <li>The <code>pyarrow</code> package includes <code>pyarrow.feather</code>. Its use in a Python session looks like</li>
 </ul>
-<div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> pyarrow.feather <span class="im">as</span> fea</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> fea.read_table(<span class="st">'./biofast-data-v1/ex-rna.arrow'</span>)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>pyarrow.Table</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>chromo: dictionary<span class="op">&lt;</span>values<span class="op">=</span>string, indices<span class="op">=</span>int8, ordered<span class="op">=</span><span class="dv">0</span><span class="op">&gt;</span> <span class="kw">not</span> null</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>start: int32 <span class="kw">not</span> null</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>stop: int32 <span class="kw">not</span> null</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="op">----</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>chromo: [  <span class="op">--</span> dictionary:</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>[<span class="st">"chr01"</span>,<span class="st">"chr02"</span>,<span class="st">"chr03"</span>,<span class="st">"chr04"</span>,<span class="st">"chr05"</span>,...,<span class="st">"chr20"</span>,<span class="st">"chr21"</span>,<span class="st">"chr22"</span>,<span class="st">"chrX"</span>,<span class="st">"chrY"</span>]  <span class="op">--</span> indices:</span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,...,<span class="dv">23</span>,<span class="dv">23</span>,<span class="dv">23</span>,<span class="dv">23</span>,<span class="dv">23</span>]]</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>start: [[<span class="dv">14354</span>,<span class="dv">14359</span>,<span class="dv">14361</span>,<span class="dv">14361</span>,<span class="dv">14366</span>,...,<span class="dv">18992169</span>,<span class="dv">18992297</span>,<span class="dv">24362035</span>,<span class="dv">24362037</span>,<span class="dv">25307904</span>]]</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>stop: [[<span class="dv">24892</span>,<span class="dv">24855</span>,<span class="dv">14672</span>,<span class="dv">16878</span>,<span class="dv">24894</span>,...,<span class="dv">18992298</span>,<span class="dv">18992676</span>,<span class="dv">24362135</span>,<span class="dv">24362201</span>,<span class="dv">25308109</span>]]</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> fea.read_feather(<span class="st">'./biofast-data-v1/ex-rna.arrow'</span>)</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>        chromo     start      stop</span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span>        chr01     <span class="dv">14354</span>     <span class="dv">24892</span></span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>        chr01     <span class="dv">14359</span>     <span class="dv">24855</span></span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>        chr01     <span class="dv">14361</span>     <span class="dv">14672</span></span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>        chr01     <span class="dv">14361</span>     <span class="dv">16878</span></span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>        chr01     <span class="dv">14366</span>     <span class="dv">24894</span></span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>...        ...       ...       ...</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="dv">4685075</span>   chrY  <span class="dv">18992169</span>  <span class="dv">18992298</span></span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="dv">4685076</span>   chrY  <span class="dv">18992297</span>  <span class="dv">18992676</span></span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a><span class="dv">4685077</span>   chrY  <span class="dv">24362035</span>  <span class="dv">24362135</span></span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a><span class="dv">4685078</span>   chrY  <span class="dv">24362037</span>  <span class="dv">24362201</span></span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="dv">4685079</span>   chrY  <span class="dv">25307904</span>  <span class="dv">25308109</span></span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4685080</span> rows x <span class="dv">3</span> columns]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> pyarrow.feather <span class="im">as</span> fea</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> fea.read_table(<span class="st">'./biofast-data-v1/ex-rna.arrow'</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>pyarrow.Table</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>chromo: dictionary<span class="op">&lt;</span>values<span class="op">=</span>string, indices<span class="op">=</span>int8, ordered<span class="op">=</span><span class="dv">0</span><span class="op">&gt;</span> <span class="kw">not</span> null</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>start: int32 <span class="kw">not</span> null</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>stop: int32 <span class="kw">not</span> null</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="op">----</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>chromo: [  <span class="op">--</span> dictionary:</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>[<span class="st">"chr01"</span>,<span class="st">"chr02"</span>,<span class="st">"chr03"</span>,<span class="st">"chr04"</span>,<span class="st">"chr05"</span>,...,<span class="st">"chr20"</span>,<span class="st">"chr21"</span>,<span class="st">"chr22"</span>,<span class="st">"chrX"</span>,<span class="st">"chrY"</span>]  <span class="op">--</span> indices:</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">18</span>,<span class="dv">9</span>,<span class="dv">16</span>,...,<span class="dv">16</span>,<span class="dv">15</span>,<span class="dv">10</span>,<span class="dv">22</span>,<span class="dv">0</span>]]</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>start: [[<span class="dv">216499331</span>,<span class="dv">101239611</span>,<span class="dv">49487626</span>,<span class="dv">80155590</span>,<span class="dv">76270411</span>,...,<span class="dv">7014179</span>,<span class="dv">75627747</span>,<span class="dv">59636724</span>,<span class="dv">153785767</span>,<span class="dv">182839364</span>]]</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>stop: [[<span class="dv">216501458</span>,<span class="dv">101245071</span>,<span class="dv">49491841</span>,<span class="dv">80169336</span>,<span class="dv">76271290</span>,...,<span class="dv">7014515</span>,<span class="dv">75631483</span>,<span class="dv">59666963</span>,<span class="dv">153787586</span>,<span class="dv">182887745</span>]]</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> fea.read_feather(<span class="st">'./biofast-data-v1/ex-rna.arrow'</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>        chromo      start       stop</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span>        chr02  <span class="dv">216499331</span>  <span class="dv">216501458</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>        chr07  <span class="dv">101239611</span>  <span class="dv">101245071</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>        chr19   <span class="dv">49487626</span>   <span class="dv">49491841</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>        chr10   <span class="dv">80155590</span>   <span class="dv">80169336</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>        chr17   <span class="dv">76270411</span>   <span class="dv">76271290</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>...        ...        ...        ...</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="dv">4685075</span>  chr17    <span class="dv">7014179</span>    <span class="dv">7014515</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="dv">4685076</span>  chr16   <span class="dv">75627747</span>   <span class="dv">75631483</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="dv">4685077</span>  chr11   <span class="dv">59636724</span>   <span class="dv">59666963</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a><span class="dv">4685078</span>   chrX  <span class="dv">153785767</span>  <span class="dv">153787586</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="dv">4685079</span>  chr01  <span class="dv">182839364</span>  <span class="dv">182887745</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4685080</span> rows x <span class="dv">3</span> columns]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li><p><code>read_table</code> returns a <code>Table</code> object, <code>read_feather</code> returns a Pandas dataframe.</p></li>
 <li><p>The <code>PyCall</code> package for <code>Julia</code> starts a Python process and allows communication with it, including data transfer.</p></li>
 <li><p>I use this instead of the Python REPL when working with both Julia and Python.</p></li>
 <li><p>Configuring Python, Conda, pyarrow, pandas, and PyCall across platforms is sufficiently complicated to almost surely cause failures for some workshop participants. Instead of evaluating this code chunk we quote the results.</p></li>
 </ul>
-<div class="sourceCode" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="im">using</span> <span class="bu">PyCall</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> fea <span class="op">=</span> <span class="fu">pyimport</span>(<span class="st">"pyarrow.feather"</span>)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> fea.<span class="fu">read_table</span>(rnaarrownm)</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>PyObject pyarrow.Table</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>chromo<span class="op">:</span> dictionary<span class="op">&lt;</span>values<span class="op">=</span>string, indices<span class="op">=</span>int8, ordered<span class="op">=</span><span class="fl">0</span><span class="op">&gt;</span> not null</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>start<span class="op">:</span> int32 not null</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>stop<span class="op">:</span> int32 not null</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="op">----</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>chromo<span class="op">:</span> [  <span class="op">--</span> dictionary<span class="op">:</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>[<span class="st">"chr01"</span>,<span class="st">"chr02"</span>,<span class="st">"chr03"</span>,<span class="st">"chr04"</span>,<span class="st">"chr05"</span>,<span class="op">...</span>,<span class="st">"chr20"</span>,<span class="st">"chr21"</span>,<span class="st">"chr22"</span>,<span class="st">"chrX"</span>,<span class="st">"chrY"</span>]  <span class="op">--</span> indices<span class="op">:</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>[<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="op">...</span>,<span class="fl">23</span>,<span class="fl">23</span>,<span class="fl">23</span>,<span class="fl">23</span>,<span class="fl">23</span>]]</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>start<span class="op">:</span> [[<span class="fl">14354</span>,<span class="fl">14359</span>,<span class="fl">14361</span>,<span class="fl">14361</span>,<span class="fl">14366</span>,<span class="op">...</span>,<span class="fl">18992169</span>,<span class="fl">18992297</span>,<span class="fl">24362035</span>,<span class="fl">24362037</span>,<span class="fl">25307904</span>]]</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>stop<span class="op">:</span> [[<span class="fl">24892</span>,<span class="fl">24855</span>,<span class="fl">14672</span>,<span class="fl">16878</span>,<span class="fl">24894</span>,<span class="op">...</span>,<span class="fl">18992298</span>,<span class="fl">18992676</span>,<span class="fl">24362135</span>,<span class="fl">24362201</span>,<span class="fl">25308109</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="im">using</span> <span class="bu">PyCall</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> fea <span class="op">=</span> <span class="fu">pyimport</span>(<span class="st">"pyarrow.feather"</span>);</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> fea.<span class="fu">read_table</span>(rnaarrownm)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>PyObject pyarrow.Table</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>chromo<span class="op">:</span> dictionary<span class="op">&lt;</span>values<span class="op">=</span>string, indices<span class="op">=</span>int8, ordered<span class="op">=</span><span class="fl">0</span><span class="op">&gt;</span> not null</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>start<span class="op">:</span> int32 not null</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>stop<span class="op">:</span> int32 not null</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="op">----</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>chromo<span class="op">:</span> [  <span class="op">--</span> dictionary<span class="op">:</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>[<span class="st">"chr01"</span>,<span class="st">"chr02"</span>,<span class="st">"chr03"</span>,<span class="st">"chr04"</span>,<span class="st">"chr05"</span>,<span class="op">...</span>,<span class="st">"chr20"</span>,<span class="st">"chr21"</span>,<span class="st">"chr22"</span>,<span class="st">"chrX"</span>,<span class="st">"chrY"</span>]  <span class="op">--</span> indices<span class="op">:</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>[<span class="fl">1</span>,<span class="fl">6</span>,<span class="fl">18</span>,<span class="fl">9</span>,<span class="fl">16</span>,<span class="op">...</span>,<span class="fl">16</span>,<span class="fl">15</span>,<span class="fl">10</span>,<span class="fl">22</span>,<span class="fl">0</span>]]</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>start<span class="op">:</span> [[<span class="fl">216499331</span>,<span class="fl">101239611</span>,<span class="fl">49487626</span>,<span class="fl">80155590</span>,<span class="fl">76270411</span>,<span class="op">...</span>,<span class="fl">7014179</span>,<span class="fl">75627747</span>,<span class="fl">59636724</span>,<span class="fl">153785767</span>,<span class="fl">182839364</span>]]</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>stop<span class="op">:</span> [[<span class="fl">216501458</span>,<span class="fl">101245071</span>,<span class="fl">49491841</span>,<span class="fl">80169336</span>,<span class="fl">76271290</span>,<span class="op">...</span>,<span class="fl">7014515</span>,<span class="fl">75631483</span>,<span class="fl">59666963</span>,<span class="fl">153787586</span>,<span class="fl">182887745</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="conclusions" class="level2">
 <h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
@@ -761,18 +796,18 @@ $ stop   &lt;int&gt; 216501458, 101245071, 49491841, 80169336, 76271290, 3127206
 </section>
 <section id="version-information" class="level2">
 <h2 class="anchored" data-anchor-id="version-information">Version information</h2>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">versioninfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">versioninfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Julia Version 1.8.0-rc1
 Commit 6368fdc6565 (2022-05-27 18:33 UTC)
 Platform Info:
   OS: macOS (x86_64-apple-darwin21.4.0)
-  CPU: 36 × Intel(R) Xeon(R) W-2191B CPU @ 2.30GHz
+  CPU: 8 × Intel(R) Core(TM) i7-8569U CPU @ 2.80GHz
   WORD_SIZE: 64
   LIBM: libopenlibm
-  LLVM: libLLVM-13.0.1 (ORCJIT, skylake-avx512)
-  Threads: 1 on 36 virtual cores</code></pre>
+  LLVM: libLLVM-13.0.1 (ORCJIT, skylake)
+  Threads: 4 on 8 virtual cores</code></pre>
 </div>
 </div>
 
