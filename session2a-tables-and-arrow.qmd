@@ -73,12 +73,12 @@ An expression like `"$datadir.tar.gz"` interpolates the value of `datadir` into 
 :::
 
 - The `.tar.gz` file is about 0.5 GB. but most of that is the data for the FASTQ parsing test.
-- Extract the two `.bed` files to be used in this example (and only if they are not present).
+- Extract the two `.bed` files to be used in this example, if not already present.
 
 ```{julia}
 isdir(datadir) || mkdir(datadir)
 bedfnms = joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])
-toextract = filter(!isfile, bedfnms)  # don't overwrite exisitng files
+toextract = filter(!isfile, bedfnms)  # don't overwrite existing files
 if !isempty(toextract)
   tmpdir = gzopen(tarball, "r") do io
     Tar.extract(h -> in(h.path, toextract), io)
@@ -92,6 +92,10 @@ run(`ls -lh $datadir`);
 
 ::: {.callout-note}
 Because of the way Quarto documents are rendered, this listing may show `.arrow` files that are generated later in this document.
+:::
+
+::: {.callout-note}
+The call `joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])` is an example of [dot broadcasting](https://docs.julialang.org/en/v1/manual/functions/#man-vectorized)
 :::
 
 ::: {.callout-note}
@@ -151,22 +155,20 @@ annodf = CSV.read(
 - Optionally, the comma after the last positional argument can be replace by a semicolon, as shown above.
 :::
 
-- It turns out that both of the `.bed` files contain many duplicate rows. Use `unique!` to eliminate the duplicates.
+- It turns out that both of the `.bed` files contain many duplicate rows - probably not intentionally.  Eliminate the duplicates with `unique!`.
 
 ::: {.callout-note}
 A function's name ending in `!` is a hint that it is a *mutating* function, which can modify one or more of its arguments.
 :::
 
-- As row order is not important, we also `sort!` the `DataFrame`, which has the effect of sorting the intervals within a chromosome by `start` position.
-- Before sorting I will change strings like `"chr1"` to `"chr01"` so that sorting by `chromo` is equivalent to sorting by chromosome number.
-- The `replace!` generic takes the object to modify and one or more `pair`s of values of the form `from => to`
-- We generate a vector of pairs of strings for replacement then "splat" them into a call to `replace`
+- Do make one change of replacing the tags `"chr1"` up to `"chr9"` by `"chr01"` to `"chr09"` so later sorting by these strings will also give sorted chromosome numbers.
+- We use a `replace!` method takes the object to modify and one or more `pair`s of values of the form `from => to` and generate the replacements as
 
 ```{julia}
 replacements =  ["chr$i" => "chr0$i" for i in 1:9]
 ```
 ::: {.callout-note}
-The expression in the right is called a "comprehension".  I think of it as an inside-out loop.
+The expression on the right of the `=` is called a "comprehension".  I think of it as an inside-out loop.
 :::
 
 ```{julia}
@@ -174,10 +176,13 @@ show(unique(replace!(annodf.chromo, replacements...)))
 ```
 
 ```{julia}
-sort!(unique!(annodf))
-annodf.chromo = categorical(annodf.chromo; ordered=true)
+unique!(annodf)
+annodf.chromo = categorical(annodf.chromo)
 annodf
 ```
+::: {.callout-note}
+Representing the `chromo` column as a `CategoricalArray` converts the individual values to indices into a vector of `String`s, which saves on space.
+:::
 
 ## Arrow file format
 
@@ -216,10 +221,9 @@ function bed2arrow(
   bednm = joinpath(datadir, "$fnroot.bed")
   arrownm = joinpath(datadir, "$fnroot.arrow")
   if overwrite || !isfile(arrownm)
-    df = CSV.read(bednm, DataFrame; header, delim, types)
+    df = unique!(CSV.read(bednm, DataFrame; header, delim, types))
     replace!(df.chromo, replacements...)
-    sort!(unique!(df))
-    df.chromo = categorical(df.chromo; ordered=true)
+    df.chromo = categorical(df.chromo)
     Arrow.write(arrownm, df; compress, metadata)
   end
   return arrownm
@@ -261,7 +265,7 @@ innerjoin(
 )  
 ```
 
-- In the next section we will use data from `chr21` for comparative timings, because there are a small, but nontrivial, number of intervals in both the reference and target groups.
+- In the next section we will use data from `chr21` for comparative timings, because there are small, but nontrivial, number of intervals in both the reference and target groups.
 
 ## Reading Arrow files in R
 
@@ -271,20 +275,20 @@ innerjoin(
 
 ```r
 > library(tibble)
-> arrow::read_feather("./biofast-data-v1/ex-rna.arrow")
+> arrow::read_feather("biofast-data-v1/ex-rna.arrow")
 # A tibble: 4,685,080 × 3
-   chromo start  stop
-   <fct>  <int> <int>
- 1 chr01  14354 24892
- 2 chr01  14359 24855
- 3 chr01  14361 14672
- 4 chr01  14361 16878
- 5 chr01  14366 24894
- 6 chr01  14370 14989
- 7 chr01  14396 24894
- 8 chr01  14397 17733
- 9 chr01  14398 24894
-10 chr01  14399 15977
+   chromo     start      stop
+   <fct>      <int>     <int>
+ 1 chr02  216499331 216501458
+ 2 chr07  101239611 101245071
+ 3 chr19   49487626  49491841
+ 4 chr10   80155590  80169336
+ 5 chr17   76270411  76271290
+ 6 chr06   31268756  31272069
+ 7 chr05  170083214 170083368
+ 8 chr19   51989731  51989996
+ 9 chr18   55225980  55226732
+10 chr16   84565611  84566066
 # … with 4,685,070 more rows
 ```
 
@@ -313,22 +317,22 @@ stop: int32 not null
 ----
 chromo: [  -- dictionary:
 ["chr01","chr02","chr03","chr04","chr05",...,"chr20","chr21","chr22","chrX","chrY"]  -- indices:
-[0,0,0,0,0,...,23,23,23,23,23]]
-start: [[14354,14359,14361,14361,14366,...,18992169,18992297,24362035,24362037,25307904]]
-stop: [[24892,24855,14672,16878,24894,...,18992298,18992676,24362135,24362201,25308109]]
+[1,6,18,9,16,...,16,15,10,22,0]]
+start: [[216499331,101239611,49487626,80155590,76270411,...,7014179,75627747,59636724,153785767,182839364]]
+stop: [[216501458,101245071,49491841,80169336,76271290,...,7014515,75631483,59666963,153787586,182887745]]
 >>> fea.read_feather('./biofast-data-v1/ex-rna.arrow')
-        chromo     start      stop
-0        chr01     14354     24892
-1        chr01     14359     24855
-2        chr01     14361     14672
-3        chr01     14361     16878
-4        chr01     14366     24894
-...        ...       ...       ...
-4685075   chrY  18992169  18992298
-4685076   chrY  18992297  18992676
-4685077   chrY  24362035  24362135
-4685078   chrY  24362037  24362201
-4685079   chrY  25307904  25308109
+        chromo      start       stop
+0        chr02  216499331  216501458
+1        chr07  101239611  101245071
+2        chr19   49487626   49491841
+3        chr10   80155590   80169336
+4        chr17   76270411   76271290
+...        ...        ...        ...
+4685075  chr17    7014179    7014515
+4685076  chr16   75627747   75631483
+4685077  chr11   59636724   59666963
+4685078   chrX  153785767  153787586
+4685079  chr01  182839364  182887745
 
 [4685080 rows x 3 columns]
 ```
@@ -341,7 +345,7 @@ stop: [[24892,24855,14672,16878,24894,...,18992298,18992676,24362135,24362201,25
 ```julia
 julia> using PyCall
 
-julia> fea = pyimport("pyarrow.feather")
+julia> fea = pyimport("pyarrow.feather");
 
 julia> fea.read_table(rnaarrownm)
 PyObject pyarrow.Table
@@ -351,9 +355,9 @@ stop: int32 not null
 ----
 chromo: [  -- dictionary:
 ["chr01","chr02","chr03","chr04","chr05",...,"chr20","chr21","chr22","chrX","chrY"]  -- indices:
-[0,0,0,0,0,...,23,23,23,23,23]]
-start: [[14354,14359,14361,14361,14366,...,18992169,18992297,24362035,24362037,25307904]]
-stop: [[24892,24855,14672,16878,24894,...,18992298,18992676,24362135,24362201,25308109]]
+[1,6,18,9,16,...,16,15,10,22,0]]
+start: [[216499331,101239611,49487626,80155590,76270411,...,7014179,75627747,59636724,153785767,182839364]]
+stop: [[216501458,101245071,49491841,80169336,76271290,...,7014515,75631483,59666963,153787586,182887745]]
 ```
 
 ## Conclusions
