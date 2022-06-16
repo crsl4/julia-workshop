@@ -31,6 +31,7 @@ Among the main Julia tools, we focused on five:
 ## 4. Package system
 
 - With Julia 1.7+, precompilation is done when the package is added
+- Multiple biology-oriented packages in [BioJulia](https://github.com/BioJulia)
 
 ## 5. Tuning performance
 

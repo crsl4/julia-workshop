@@ -18,26 +18,30 @@ format:
 
 - Communication with other systems: R and python
 - Package system
-- Tuning performance 
+  - [BioJulia](https://github.com/BioJulia)
+- Plotting
+- Tuning performance
+- Literate programming
 
-# Communication with other systems: Julia interoperability
+## Communication with other systems: Julia interoperability
 
 [JuliaInterop](https://github.com/JuliaInterop)
 
-![](pics/juliainterop.png)
+![](docs/pics/juliainterop.png)
 
 **Note:** Both `RCall` and `PyCall` are written 100% julia
 
----
 
-## RCall
+### RCall
 
 [Documentation](https://juliainterop.github.io/RCall.jl/stable/)
 
 
-Switching between julia and R:
+Switching between julia and R using `$`:
 
 ```julia
+julia> using RCall
+
 julia> foo = 1
 1
 
@@ -47,10 +51,7 @@ R> x
 [1] 1
 ```
 
----
-
-
-`@rget` and `@rput` macros:
+Macros `@rget` and `@rput`:
 
 ```julia
 julia> z = 1
@@ -71,10 +72,8 @@ julia> r
 2.0
 ```
 
----
 
-
-`R""` string macro
+`R""` string macro:
 
 ```julia
 julia> R"rnorm(10)"
@@ -83,7 +82,7 @@ RObject{RealSxp}
  [7]  1.0949319 -0.8180752  0.7316163 -1.3735100
 ```
 
-Large chunk of code
+Large chunk of code:
 
 ```julia
 julia> y=1
@@ -97,10 +96,7 @@ RObject{RealSxp}
 [1] 2
 ```
 
----
-
-
-## A small example from [this blog](http://luiarthur.github.io/usingrcall)
+#### A small example from [this blog](http://luiarthur.github.io/usingrcall)
 
 Simulate data
 
@@ -128,9 +124,6 @@ julia> y = X * b + randn(3,1)
   6.149009488103242
 ```
 
----
-
-
 Fit a model
 
 ```julia
@@ -155,12 +148,7 @@ lm(formula = y ~ X - 1)
 Coefficients:
    X1     X2  
 2.867  3.418 
-```
 
----
-
-
-```julia
 julia> R"summary(mod)"
 RObject{VecSxp}
 
@@ -185,14 +173,16 @@ F-statistic: 404.8 on 2 and 1 DF,  p-value: 0.03512
 julia> R"plot(X[,1],y)"
 ```
 
----
 
-
-## PyCall
+### PyCall
 
 [Documentation](https://github.com/JuliaPy/PyCall.jl)
 
-`(@v1.6) pkg> add PyCall` will use the `Conda.jl` package to install a minimal Python distribution (via Miniconda) that is private to Julia (not in your PATH)
+Note that `(@v1.8) pkg> add PyCall` will use the `Conda.jl` package to install a minimal Python distribution (via Miniconda) that is private to Julia (not in your PATH).
+
+We need to make sure that `which conda` points at the conda folder inside `.julia`, so we need to put `~/.julia/conda/3/bin` early on the PATH. In Mac zsh, we need to add 
+`export PATH=~/.julia/conda/3/bin:$PATH` in the `~/.zshrc` file.
+
 
 Simple example:
 
@@ -201,9 +191,6 @@ using PyCall
 math = pyimport("math")
 math.sin(math.pi / 4)
 ```
-
----
-
 
 `py"..."` evaluates `"..."` as Python code:
 
@@ -217,18 +204,22 @@ def sinpi(x):
 py"sinpi"(1)
 ```
 
-#### More on Julia/python connectivity
+### More on Julia/python connectivity
 
 - The [pyjulia](https://github.com/JuliaPy/pyjulia) module allows you to call Julia directly from Python
 - Check out the packages in [JuliaPy](https://github.com/JuliaPy)
 
 
-# Package system
+## Package system
 
 - Starting on Julia 1.6, precompilation is much faster
 - Many changes under the hood that allow things to work faster and more smoothly
 - A local environment can be established and preserved with `Project.toml` and `Manifest.toml` files.
 - Use of `Artifacts.toml` allows for binary dependencies
+
+### Landscape of Julia packages for biology
+
+- [BioJulia](https://github.com/BioJulia) is a combination of Julia packages for biology applications
 
 # Performance tips
 
