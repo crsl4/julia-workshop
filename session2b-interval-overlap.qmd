@@ -44,7 +44,7 @@ length(2:10)
 
 - The positions in the `start` and `stop` columns in a `.bed` are not both included in the interval represented.  The positions correspond to the interval `start:(stop - 1)` as 0-based positions or `(start + 1):stop` in 1-based positions.
 - It doesn't matter which one we use as long as we are consistent.
-- We will start counting from 1, just like [world's greatest expert on counting](https://en.wikipedia.org/wiki/Count_von_Count) does.
+- We will start counting from 1, just like the [world's foremost expert on counting](https://twitter.com/CountVonCount) does.
 - We wrap this conversion in a utility function to help ensure consistency.
 
 ```{julia}
@@ -281,9 +281,9 @@ savedresult == intersect!(result, target, intvltree21) # check it
 - Replacing `union!(bs, isect)` by `union!(bs, BitSet(isect))` avoids this "infelicity" at the expense of more memory usage and compute time.
 :::
 
-- There is a better method that takes advantage of the intersecting intervals being produced in sorted order by `first`
+- There is a better method that takes advantage of the intersecting intervals being sorted by `first`
 
-- The idea is to "keep moving the goalposts". When evaluating the coverage count, add the length of the current reference interval's intersection with only the part to the right of what has already been covered.
+- The idea is to "keep moving the goalposts". When evaluating the coverage count, add the length of the current reference interval's intersection with only the part to the right of what has already been covered.  The thing we know about the intersecting intervals is that each successive intervals's `first` position is greater than or equal to the `first` position of all the intervals preceding it.  That is, the intervals can't "move left" as we iterate through them.
 
 ```{julia}
 function coveragecount(
@@ -309,7 +309,7 @@ function overlaps(targets::Vector{UnitRange{T}}, refs::RangeTree{T}) where {T}
   ntargets = length(targets)
   nover = sizehint!(Int[], ntargets)
   covcount = sizehint!(T[], ntargets)
-  result = UnitRange{T}[]
+  result = sizehint!(UnitRange{T}[], Int(round(sqrt(ntargets))))
   for tar in targets
     push!(nover, length(intersect!(result, tar, refs)))
     push!(covcount, coveragecount(tar, result))
