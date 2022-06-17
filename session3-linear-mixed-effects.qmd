@@ -1,10 +1,7 @@
 ---
 title: "Linear Mixed-effects Models"
 author: "Douglas Bates and Claudia Solis-Lemus"
-format:
-  html:
-    toc: true
-jupyter: julia-1.7
+jupyter: julia-1.8
 ---
 
 # Linear Mixed Models in Julia

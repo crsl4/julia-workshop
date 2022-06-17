@@ -1,12 +1,7 @@
 ---
-title: "Session 4: Other tools for Data Science"
+title: "Session 5: Other tools for Data Science"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
-format:
-  revealjs:
-    incremental: true
-    scrollable: true
-    theme: sky
 ---
 
 # So far you have learned
@@ -27,7 +22,7 @@ format:
 
 [JuliaInterop](https://github.com/JuliaInterop)
 
-![](docs/pics/juliainterop.png)
+![](pics/juliainterop.png)
 
 **Note:** Both `RCall` and `PyCall` are written 100% julia
 
@@ -178,10 +173,11 @@ julia> R"plot(X[,1],y)"
 
 [Documentation](https://github.com/JuliaPy/PyCall.jl)
 
-Note that `(@v1.8) pkg> add PyCall` will use the `Conda.jl` package to install a minimal Python distribution (via Miniconda) that is private to Julia (not in your PATH).
+Note that `(@v1.8) pkg> add PyCall` will use the `Conda.jl` package to install a minimal Python distribution (via [Miniforge](https://github.com/conda-forge/miniforge)) that is private to Julia (not in your PATH).
 
 We need to make sure that `which conda` points at the conda folder inside `.julia`, so we need to put `~/.julia/conda/3/bin` early on the PATH. In Mac zsh, we need to add 
 `export PATH=~/.julia/conda/3/bin:$PATH` in the `~/.zshrc` file.
+(Those who prefer not to conda-ize their entire environment may instead choose just to link `~/.julia/conda/3/bin/{conda,jupyter,python,python3}` somewhere on their existing path, such as `~/bin`.)
 
 
 Simple example:
@@ -223,7 +219,7 @@ py"sinpi"(1)
 - [Julia for Biologists](https://arxiv.org/abs/2109.09973) is an arxiv paper the features that make Julia a perfect language for bioinformatics and computational biology.
 - [List of useful packages by SMLP2022](https://github.com/RePsychLing/SMLP2022/blob/main/notebooks/useful_packages.qmd)
 
-![](docs/pics/julia4bio.png)
+![](pics/julia4bio.png)
 
 ## Plotting
 
