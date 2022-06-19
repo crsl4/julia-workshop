@@ -95,7 +95,7 @@ filter(endswith(".bed"), readdir(datadir))
 ```
 
 ::: {.callout-note}
-The call `joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])` is an example of [dot broadcasting](https://docs.julialang.org/en/v1/manual/functions/#man-vectorized)
+The call `joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])` is an example of [dot vectorization](https://docs.julialang.org/en/v1/manual/functions/#man-vectorized).
 :::
 
 ::: {.callout-note}
@@ -114,7 +114,7 @@ The 'do/end' block is yet another way of writing an anonymous function passed as
 methods(gzopen)
 ```
 
-The effect is to open the file as a uncompressed stream, process the stream in this anonymous function, then close the stream.
+The effect is to uncompress the file into a stream, process the stream in this anonymous function, then close the stream.
 :::
 
 ::: {.callout-note}
@@ -185,6 +185,10 @@ The expression on the right of the `=` is called a "comprehension".  I think of 
 ```{julia}
 show(unique(replace!(annodf.chromo, replacements...)))
 ```
+
+::: {.callout-note}
+The ellipsis (`...`) after `replacements` in this call "splats" the single name into, in this case, 9 different arguments of pairs.  That is, this call is the equivalent of a call to `replace!` with 10 arguments: `annodf.chromo`, `"chr1" => "chr01"`, `"chr2" => "chr02"`, and so on.
+:::
 
 ```{julia}
 unique!(annodf)

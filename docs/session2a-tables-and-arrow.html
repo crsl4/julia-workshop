@@ -417,7 +417,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The call <code>joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])</code> is an example of <a href="https://docs.julialang.org/en/v1/manual/functions/#man-vectorized">dot broadcasting</a></p>
+<p>The call <code>joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])</code> is an example of <a href="https://docs.julialang.org/en/v1/manual/functions/#man-vectorized">dot vectorization</a>.</p>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -456,7 +456,7 @@ Note
 # 4 methods for generic function <b>gzopen</b>:<ul><li> gzopen(fname::<b>AbstractString</b>) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:264</a></li> <li> gzopen(fname::<b>AbstractString</b>, gzmode::<b>AbstractString</b>) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:263</a></li> <li> gzopen(fname::<b>AbstractString</b>, gzmode::<b>AbstractString</b>, gz_buf_size::<b>Integer</b>) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:236</a></li> <li> gzopen(f::<b>Function</b>, args...) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:267</a></li> </ul>
 </div>
 </div>
-<p>The effect is to open the file as a uncompressed stream, process the stream in this anonymous function, then close the stream.</p>
+<p>The effect is to uncompress the file into a stream, process the stream in this anonymous function, then close the stream.</p>
 </div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
@@ -607,6 +607,19 @@ Note
 <pre><code>["chr01", "chr02", "chr03", "chr04", "chr05", "chr06", "chr07", "chrX", "chr08", "chr09", "chr11", "chr10", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr20", "chr19", "chrY", "chr22", "chr21"]</code></pre>
 </div>
 </div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The ellipsis (<code>...</code>) after <code>replacements</code> in this call “splats” the single name into, in this case, 9 different arguments of pairs. That is, this call is the equivalent of a call to <code>replace!</code> with 10 arguments: <code>annodf.chromo</code>, <code>"chr1" =&gt; "chr01"</code>, <code>"chr2" =&gt; "chr02"</code>, and so on.</p>
+</div>
+</div>
 <div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique!</span>(annodf)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>annodf.chromo <span class="op">=</span> <span class="fu">categorical</span>(annodf.chromo)</span>
@@ -688,7 +701,7 @@ Note
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>total 273M
--rw-rw-r-- 1 bates bates 3.9M Jun 19 07:23 ex-anno.arrow
+-rw-rw-r-- 1 bates bates 3.9M Jun 19 11:57 ex-anno.arrow
 -rw-r--r-- 1 bates bates  28M Jun 16 16:18 ex-anno.bed
 -rw-rw-r-- 1 bates bates  39M Jun 16 16:19 ex-rna.arrow
 -rw-r--r-- 1 bates bates 203M Jun 16 16:18 ex-rna.bed</code></pre>
@@ -733,7 +746,7 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  0.044793 seconds (326 allocations: 77.842 MiB)</code></pre>
+<pre><code>  0.044752 seconds (326 allocations: 77.842 MiB)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>Arrow.Table with 4685080 rows, 3 columns, and schema:
