@@ -490,9 +490,9 @@ version = "1.4.1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "3e32c8dbbbe1159a5057c80b8a463369a78dd8d8"
+git-tree-sha1 = "7f4869861f8dac4990d6808b66b57e5a425cfd99"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
-version = "0.11.12"
+version = "0.11.13"
 
 [[deps.Parsers]]
 deps = ["Dates"]
@@ -564,12 +564,10 @@ deps = ["SHA", "Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeTrees]]
-deps = ["AbstractTrees"]
-git-tree-sha1 = "aebfd2ea3a25688191a6a350c082439d6e91cdce"
-repo-rev = "main"
-repo-url = "https://github.com/dmbates/RangeTrees.jl"
+deps = ["AbstractTrees", "Arrow"]
+path = "/home/bates/.julia/dev/RangeTrees"
 uuid = "66b63344-7bd8-483a-a4f0-15733e6c45d1"
-version = "0.1.0"
+version = "0.3.0"
 
 [[deps.RecipesBase]]
 git-tree-sha1 = "6bf3f380ff52ce0832ddd3a2a7b9538ed1bcca7d"

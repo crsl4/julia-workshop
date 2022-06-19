@@ -28,6 +28,19 @@ website:
     right:
       - icon: github
         href: https://github.com/crsl4/julia-workshop
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - index.qmd
+      - session1-get-started.qmd
+      - session2a-tables-and-arrow.qmd
+      - session2b-interval-overlap.qmd
+      - session4-exercise.qmd
+      - session5-other-tools.qmd
+      - session6-conclusions.qmd
+  page-navigation: true
+
 
 format:
   html:
