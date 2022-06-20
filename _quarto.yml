@@ -48,7 +48,7 @@ format:
     css: styles.css
     toc: true
 
-date: 2022-07-10
+date: today
 date-format: iso
 
 jupyter: julia-1.8
