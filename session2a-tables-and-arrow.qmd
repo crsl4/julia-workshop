@@ -40,7 +40,7 @@ This notebook covers the first two objectives.
 
 ## Task and sample data
 
-  - [Li Heng](https://liheng.org) provides benchmark code and sample data for comparing programming languages on Bioinformatics tasks in his [biofast](https://github.com/lh3/biofast) repository.
+  - [Li Heng](https://www.liheng.org) provides benchmark code and sample data for comparing programming languages on Bioinformatics tasks in his [biofast](https://github.com/lh3/biofast) repository.
   - One of these tasks, an [interval query](https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html), takes two [.bed files](https://en.wikipedia.org/wiki/BED_(file_format)) to compare.
   - One file, `ex-anno.bed`, contains a reference set of intervals; the other, `ex-rna.bed`, contains target intervals.
   - For each target interval, determine which reference intervals overlap with it.

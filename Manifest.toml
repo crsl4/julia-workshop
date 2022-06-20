@@ -2,7 +2,7 @@
 
 julia_version = "1.8.0-rc1"
 manifest_format = "2.0"
-project_hash = "e2aa98f3fbcfb4c6e1c791e23687c59f0d682807"
+project_hash = "276ef9d1e26c8348ae1e9655fea1119381d9b752"
 
 [[deps.AbstractTrees]]
 git-tree-sha1 = "896c6cd357f08890d407e36c1301087c42a13e61"
@@ -565,7 +565,7 @@ uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeTrees]]
 deps = ["AbstractTrees", "Arrow"]
-path = "/home/bates/.julia/dev/RangeTrees"
+git-tree-sha1 = "9c4e3e0447e81dc8944bfd61510b18fcd603c314"
 uuid = "66b63344-7bd8-483a-a4f0-15733e6c45d1"
 version = "0.3.0"
 

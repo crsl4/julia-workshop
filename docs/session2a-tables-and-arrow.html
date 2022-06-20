@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-07-10">
+<meta name="dcterms.date" content="2022-06-20">
 
 <title>Julia Workshop - Session 2a: Data Tables and Arrow files</title>
 <style>
@@ -270,7 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-10</p>
+      <p class="date">2022-06-20</p>
     </div>
   </div>
     
@@ -326,7 +326,7 @@ Note
 <section id="task-and-sample-data" class="level2">
 <h2 class="anchored" data-anchor-id="task-and-sample-data">Task and sample data</h2>
 <ul>
-<li><a href="https://liheng.org">Li Heng</a> provides benchmark code and sample data for comparing programming languages on Bioinformatics tasks in his <a href="https://github.com/lh3/biofast">biofast</a> repository.</li>
+<li><a href="https://www.liheng.org">Li Heng</a> provides benchmark code and sample data for comparing programming languages on Bioinformatics tasks in his <a href="https://github.com/lh3/biofast">biofast</a> repository.</li>
 <li>One of these tasks, an <a href="https://bedtools.readthedocs.io/en/latest/content/tools/coverage.html">interval query</a>, takes two <a href="https://en.wikipedia.org/wiki/BED_(file_format)">.bed files</a> to compare.</li>
 <li>One file, <code>ex-anno.bed</code>, contains a reference set of intervals; the other, <code>ex-rna.bed</code>, contains target intervals.</li>
 <li>For each target interval, determine which reference intervals overlap with it.</li>
@@ -501,7 +501,7 @@ Note
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Tar</td>
-<td style="text-align: right;">857.063 KiB</td>
+<td style="text-align: right;">856.961 KiB</td>
 <td style="text-align: left;">Module</td>
 </tr>
 </tbody>
@@ -701,7 +701,7 @@ Note
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>total 273M
--rw-rw-r-- 1 bates bates 3.9M Jun 19 11:57 ex-anno.arrow
+-rw-rw-r-- 1 bates bates 3.9M Jun 20 14:56 ex-anno.arrow
 -rw-r--r-- 1 bates bates  28M Jun 16 16:18 ex-anno.bed
 -rw-rw-r-- 1 bates bates  39M Jun 16 16:19 ex-rna.arrow
 -rw-r--r-- 1 bates bates 203M Jun 16 16:18 ex-rna.bed</code></pre>
@@ -746,7 +746,7 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  0.044752 seconds (326 allocations: 77.842 MiB)</code></pre>
+<pre><code>  0.074396 seconds (326 allocations: 77.842 MiB)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>Arrow.Table with 4685080 rows, 3 columns, and schema:
