@@ -2,7 +2,7 @@
 
 julia_version = "1.8.0-rc1"
 manifest_format = "2.0"
-project_hash = "c9ff46f8f844902a9d8d5b232555e108aaf75cd8"
+project_hash = "276ef9d1e26c8348ae1e9655fea1119381d9b752"
 
 [[deps.AbstractTrees]]
 git-tree-sha1 = "896c6cd357f08890d407e36c1301087c42a13e61"
@@ -490,9 +490,9 @@ version = "1.4.1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "3e32c8dbbbe1159a5057c80b8a463369a78dd8d8"
+git-tree-sha1 = "7f4869861f8dac4990d6808b66b57e5a425cfd99"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
-version = "0.11.12"
+version = "0.11.13"
 
 [[deps.Parsers]]
 deps = ["Dates"]
@@ -564,10 +564,11 @@ deps = ["SHA", "Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeTrees]]
-deps = ["AbstractTrees"]
-git-tree-sha1 = "4abe8c01b8ec777db382478fb25a2e9d0a9d1682"
+deps = ["AbstractTrees", "Arrow"]
+git-tree-sha1 = "9c4e3e0447e81dc8944bfd61510b18fcd603c314"
 uuid = "66b63344-7bd8-483a-a4f0-15733e6c45d1"
-version = "0.2.0"
+version = "0.3.0"
+
 
 [[deps.RecipesBase]]
 git-tree-sha1 = "6bf3f380ff52ce0832ddd3a2a7b9538ed1bcca7d"

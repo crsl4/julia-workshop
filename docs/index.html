@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Claudia Solis-Lemus and Douglas Bates">
-<meta name="dcterms.date" content="2022-07-10">
+<meta name="dcterms.date" content="2022-06-20">
 
 <title>Julia Workshop - Julia Workshop for Data Science</title>
 <style>
@@ -27,6 +27,7 @@ ul.task-list{list-style: none;}
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./session1-get-started.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -60,7 +61,8 @@ ul.task-list{list-style: none;}
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-sidebar docked nav-fixed">
+
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -92,10 +94,64 @@ ul.task-list{list-style: none;}
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Julia Workshop for Data Science</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">Julia Workshop for Data Science</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session1-get-started.html" class="sidebar-item-text sidebar-link">Session 1: Getting started with Julia</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session2a-tables-and-arrow.html" class="sidebar-item-text sidebar-link">Session 2a: Data Tables and Arrow files</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session2b-interval-overlap.html" class="sidebar-item-text sidebar-link">Session 2b: Determining Interval Overlap</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session4-exercise.html" class="sidebar-item-text sidebar-link">Hands-on exercise</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session5-other-tools.html" class="sidebar-item-text sidebar-link">Session 5: Other tools for Data Science</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session6-conclusions.html" class="sidebar-item-text sidebar-link">Session 6: Conclusions</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc">
@@ -116,7 +172,7 @@ ul.task-list{list-style: none;}
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Julia Workshop for Data Science</h1>
+<h1 class="title d-none d-lg-block">Julia Workshop for Data Science</h1>
 <p class="subtitle lead">ISMB 2022, Madison</p>
 </div>
 
@@ -134,7 +190,7 @@ ul.task-list{list-style: none;}
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-10</p>
+      <p class="date">2022-06-20</p>
     </div>
   </div>
     
@@ -183,12 +239,12 @@ ul.task-list{list-style: none;}
 <tr class="even">
 <td style="text-align: center;">11:30 - 12:30</td>
 <td style="text-align: center;"><a href="./session2a-tables-and-arrow.html">Session 2a: Data Tables and Arrow files</a></td>
-<td style="text-align: center;">Doug Bates</td>
+<td style="text-align: center;">Douglas Bates</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">12:30 - 1:00</td>
 <td style="text-align: center;"><a href="./session2b-interval-overlap.html">Session 2b: Interval Overlap</a></td>
-<td style="text-align: center;">Doug Bates</td>
+<td style="text-align: center;">Douglas Bates</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">1:00 - 2:00</td>
@@ -242,9 +298,9 @@ ul.task-list{list-style: none;}
 </ul>
 <p>After JuliaUp is installed, you can install different Julia versions with:</p>
 <pre class="shell"><code>juliaup add release  ## installs release version
-juliaup add rc     ## installs rc version
+juliaup add rc       ## installs release candidate version
 juliaup st           ## status of julia versions installed
-juliaup default rc ## making beta version the default</code></pre>
+juliaup default rc   ## make release candidate version the default</code></pre>
 <ol start="3" type="1">
 <li>Choose a dataset along with a script to analyze it written in another language (R or python) as we will spend part of the workshop translating participants’ scripts to Julia.</li>
 </ol>
@@ -332,6 +388,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./session1-get-started.html" class="pagination-link">
+        <span class="nav-page-text">Session 1: Getting started with Julia</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 
