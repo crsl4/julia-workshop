@@ -341,7 +341,7 @@ coveragecount(target, savedresult)
 ```{julia}
 function overlaps(targets::Vector{UnitRange{T}}, refs::RangeNode{T}) where {T}
   ntargets = length(targets)
-  nover = sizehint!((treesize(refs) ≤ typemax(Int32) ? Int32 : Int64)[], ntargets)
+  nover = sizehint!(Int[], ntargets)
   covcount = sizehint!(T[], ntargets)
   result = sizehint!(UnitRange{T}[], Int(round(sqrt(ntargets))))
   for tar in targets
