@@ -12,7 +12,6 @@ using Arrow          # Arrow storage and file format
 using BenchmarkTools # tools for benchmarking code
 using DataFrames     # versatile tabular data format
 using IntervalTrees  # interval trees from BioJulia
-using Random         # random number generation tools
 using RangeTrees     # a bespoke implementation of interval trees
 using Tables         # row- or column-oriented tabular data
 
@@ -377,7 +376,7 @@ function overlaps(targets::Vector{UnitRange{T}}, refs::RangeNode{T}) where {T}
   ntargets = length(targets)
   nover = sizehint!(Int[], ntargets)
   covcount = sizehint!(T[], ntargets)
-  result = sizehint!(UnitRange{T}[], Int(round(sqrt(ntargets))))
+  result = similar(targets, Int(round(sqrt(length(refs.maxlast)))))
   for tar in targets
     push!(nover, length(intersect!(result, tar, refs)))
     push!(covcount, coveragecount(tar, result))

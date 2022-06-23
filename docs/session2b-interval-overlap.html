@@ -289,13 +289,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">BenchmarkTools </span><span class="co"># tools for benchmarking code</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DataFrames     </span><span class="co"># versatile tabular data format</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">IntervalTrees  </span><span class="co"># interval trees from BioJulia</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Random         </span><span class="co"># random number generation tools</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">RangeTrees     </span><span class="co"># a bespoke implementation of interval trees</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Tables         </span><span class="co"># row- or column-oriented tabular data</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Base</span>: intersect! <span class="co"># not exported from Base</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>datadir <span class="op">=</span> <span class="fu">joinpath</span>(<span class="pp">@__DIR__</span>, <span class="st">"biofast-data-v1"</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">RangeTrees     </span><span class="co"># a bespoke implementation of interval trees</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Tables         </span><span class="co"># row- or column-oriented tabular data</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Base</span>: intersect! <span class="co"># not exported from Base</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>datadir <span class="op">=</span> <span class="fu">joinpath</span>(<span class="pp">@__DIR__</span>, <span class="st">"biofast-data-v1"</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </section>
 <section id="strategy-for-computing-overlaps" class="level1">
@@ -314,7 +313,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(<span class="fl">2</span><span class="op">:</span><span class="fl">10</span>), <span class="fu">length</span>(<span class="fl">2</span><span class="op">:</span><span class="fl">10</span>), <span class="fu">first</span>(<span class="fl">2</span><span class="op">:</span><span class="fl">10</span>), <span class="fu">last</span>(<span class="fl">2</span><span class="op">:</span><span class="fl">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="35">
 <pre><code>(UnitRange{Int64}, 9, 2, 10)</code></pre>
 </div>
 </div>
@@ -326,7 +325,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">asrange</span>(start, stop) <span class="op">=</span> (start <span class="op">+</span> <span class="fu">one</span>(start))<span class="op">:</span>stop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <pre><code>asrange (generic function with 1 method)</code></pre>
 </div>
 </div>
@@ -362,13 +361,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>st <span class="op">=</span> <span class="fu">Int32</span>(<span class="fl">2314</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(st <span class="op">+</span> <span class="fl">1</span>)       <span class="co"># type gets promoted to Int64</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="37">
 <pre><code>Int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(st <span class="op">+</span> <span class="fu">one</span>(st)) <span class="co"># type not promoted</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="38">
 <pre><code>Int32</code></pre>
 </div>
 </div>
@@ -390,7 +389,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>tarrngvecs <span class="op">=</span> <span class="fu">chromodict</span>(<span class="fu">rowtable</span>(Arrow.<span class="fu">Table</span>(<span class="fu">joinpath</span>(datadir, <span class="st">"ex-rna.arrow"</span>))))</span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>refrngvecs <span class="op">=</span> <span class="fu">chromodict</span>(<span class="fu">rowtable</span>(Arrow.<span class="fu">Table</span>(<span class="fu">joinpath</span>(datadir, <span class="st">"ex-anno.arrow"</span>))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="39">
 <pre><code>Dict{Symbol, Vector{UnitRange{Int32}}} with 24 entries:
   :chr21 =&gt; [5011799:5011874, 5012548:5012687, 5014386:5014471, 5016935:5017145…
   :chr15 =&gt; [19878555:19878668, 19878831:19879004, 19881201:19881307, 19882277:…
@@ -466,7 +465,7 @@ Mutating <code>get!</code> for a <code>Dict</code>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>refrngvecs  <span class="co"># note changes in refrngvecs[:chr01]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="40">
 <pre><code>Dict{Symbol, Vector{UnitRange{Int32}}} with 24 entries:
   :chr21 =&gt; [5011799:5011874, 5012548:5012687, 5014386:5014471, 5016935:5017145…
   :chr15 =&gt; [19878555:19878668, 19878831:19879004, 19881201:19881307, 19882277:…
@@ -517,7 +516,7 @@ Mutating <code>get!</code> for a <code>Dict</code>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>refrngvec01 <span class="op">=</span> refrngvecs[<span class="op">:</span>chr01]</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>tarrngvec01 <span class="op">=</span> tarrngvecs[<span class="op">:</span>chr01]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="fu">last</span>(tarrngvec01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="41">
 <pre><code>182839365:182887745</code></pre>
 </div>
 </div>
@@ -554,7 +553,7 @@ Mutating <code>get!</code> for a <code>Dict</code>
 <span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">intersect!</span>(<span class="fu">similar</span>(refs, <span class="fl">0</span>), target, refs)</span>
 <span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>savedresult <span class="op">=</span> <span class="fu">intersect</span>(target, refrngvec01)  <span class="co"># will use for comparisons</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="42">
 <pre><code>44-element Vector{UnitRange{Int32}}:
  182839369:182839456
  182839734:182839935
@@ -587,7 +586,7 @@ Mutating <code>get!</code> for a <code>Dict</code>
 <div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> <span class="fu">similar</span>(refrngvec01, <span class="fl">0</span>)    <span class="co"># working storage</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>savedresult <span class="op">==</span> <span class="fu">intersect!</span>(result, target, refrngvec01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="43">
 <pre><code>true</code></pre>
 </div>
 </div>
@@ -603,7 +602,7 @@ Mutating <code>get!</code> for a <code>Dict</code>
 <div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>refrngtrees <span class="op">=</span> <span class="fu">Dict</span>(k <span class="op">=&gt;</span> <span class="fu">RangeNode</span>(v) <span class="cf">for</span> (k, v) <span class="kw">in</span> refrngvecs)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>rangetree01 <span class="op">=</span> refrngtrees[<span class="op">:</span>chr01]  <span class="co"># tree represented by its root node</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <pre><code>(110172080:110172489, 248937043)</code></pre>
 </div>
 </div>
@@ -622,7 +621,7 @@ Augmented interval trees
 <p>A smaller example may help to understand how this type of interval tree. Consider the first 7 <code>UnitRange</code>s in <code>refrngvecs[:chr01]</code></p>
 <div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>smallrngvec <span class="op">=</span> refrngvecs[<span class="op">:</span>chr01][<span class="fl">1</span><span class="op">:</span><span class="fl">7</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="45">
 <pre><code>7-element Vector{UnitRange{Int32}}:
  11869:12227
  12010:12057
@@ -652,7 +651,7 @@ Augmented interval trees
 </ul>
 <div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">collect</span>(<span class="fu">Leaves</span>(rn))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell-output cell-output-display" data-execution_count="47">
 <pre><code>4-element Vector{RangeNode{Int32, Int32}}:
  (11869:12227, 12227)
  (12179:12227, 12227)
@@ -667,14 +666,14 @@ Augmented interval trees
 </ul>
 <div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">maximum</span>(<span class="fu">last</span>.(smallrngvec))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
+<div class="cell-output cell-output-display" data-execution_count="48">
 <pre><code>13374</code></pre>
 </div>
 </div>
 <p><a href="https://github.com/dmbates/RangeTrees.jl">RangeTrees.jl</a> defines methods for generics like <code>children</code>, <code>getroot</code>, and <code>nodevalue</code> from <a href="https://github.com/JuliaCollections/AbstractTrees.jl">AbstractTrees.jl</a> and these allow for many other generics to be applied to a <code>RangeNode</code>.</p>
 <div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">children</span>(rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="49">
 <pre><code>2-element Vector{RangeNode{Int32, Int32}}:
  (37858488:37858539, 110172217)
  (169855796:169855957, 248937043)</code></pre>
@@ -683,13 +682,13 @@ Augmented interval trees
 <p>The root of the tree can be obtained from any node using <code>getroot</code>. The combination of <code>getroot</code> and <code>children</code> allows traversal of the tree.</p>
 <div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getroot</span>(<span class="fu">first</span>(<span class="fu">children</span>(<span class="fu">first</span>(<span class="fu">children</span>(rangetree01))))) <span class="co"># get the root from its grandchild</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="50">
 <pre><code>(110172080:110172489, 248937043)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">treesize</span>(rangetree01), <span class="fu">treeheight</span>(rangetree01), <span class="fu">treebreadth</span>(rangetree01)  <span class="co"># number of leaves</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="51">
 <pre><code>(52789, 15, 20022)</code></pre>
 </div>
 </div>
@@ -739,13 +738,13 @@ Augmented interval trees
 </ul>
 <div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>savedresult <span class="op">==</span> <span class="fu">intersect</span>(target, rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
+<div class="cell-output cell-output-display" data-execution_count="53">
 <pre><code>true</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>savedresult <span class="op">==</span> <span class="fu">intersect!</span>(result, target, rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="54">
 <pre><code>true</code></pre>
 </div>
 </div>
@@ -765,10 +764,7 @@ Augmented interval trees
 <span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>intvltree01 <span class="op">=</span> refintvltrees[<span class="op">:</span>chr01]</span>
 <span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(intvltree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>IntervalTree{</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Int32, Interval{Int32}}
+<pre><code>IntervalTree{Int32, Interval{Int32}}
 (11869,12227)
 (12010,12057)
 (12179,12227)
@@ -782,27 +778,27 @@ Augmented interval trees
 <li>Creating an <code>intersect!</code> method is also tedious because the package has its own <code>Interval</code> data type and defines <code>intersect(itr::IntervalTree, (frst, lst))</code> to return an iterator of <code>Interval</code>s in the tree, not the intersection</li>
 </ul>
 <div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Interval</span>(target)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Interval</span>(target)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="56">
 <pre><code>Interval{Int32}
 (182839365,182887745)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="bu">Base</span>.<span class="fu">intersect!</span>(</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  res<span class="op">::</span><span class="dt">Vector{UnitRange{T}}</span>,</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  target<span class="op">::</span><span class="dt">AbstractUnitRange</span>,</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  refs<span class="op">::</span><span class="dt">IntervalTree{T}</span>,</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>) <span class="kw">where</span> {T}</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">empty!</span>(res)</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  firstt, lastt <span class="op">=</span> <span class="fu">first</span>(target), <span class="fu">last</span>(target)</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> isect <span class="kw">in</span> <span class="fu">intersect</span>(refs, (firstt, lastt))</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(res, <span class="fu">max</span>(<span class="fu">first</span>(isect), firstt)<span class="op">:</span><span class="fu">min</span>(<span class="fu">last</span>(isect), lastt))</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> res</span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>savedresult <span class="op">==</span> <span class="fu">intersect!</span>(result, target, intvltree01) <span class="co"># check it</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="bu">Base</span>.<span class="fu">intersect!</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  res<span class="op">::</span><span class="dt">Vector{UnitRange{T}}</span>,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  target<span class="op">::</span><span class="dt">AbstractUnitRange</span>,</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  refs<span class="op">::</span><span class="dt">IntervalTree{T}</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>) <span class="kw">where</span> {T}</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">empty!</span>(res)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  firstt, lastt <span class="op">=</span> <span class="fu">first</span>(target), <span class="fu">last</span>(target)</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> isect <span class="kw">in</span> <span class="fu">intersect</span>(refs, (firstt, lastt))</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(res, <span class="fu">max</span>(<span class="fu">first</span>(isect), firstt)<span class="op">:</span><span class="fu">min</span>(<span class="fu">last</span>(isect), lastt))</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> res</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>savedresult <span class="op">==</span> <span class="fu">intersect!</span>(result, target, intvltree01) <span class="co"># check it</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="57">
 <pre><code>true</code></pre>
 </div>
 </div>
@@ -813,32 +809,32 @@ Augmented interval trees
 <section id="vectorunitrange" class="level3">
 <h3 class="anchored" data-anchor-id="vectorunitrange">Vector{UnitRange}</h3>
 <div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect!</span>(res, tar, ref) setup <span class="op">=</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  (res <span class="op">=</span> result; tar <span class="op">=</span> target; ref <span class="op">=</span> refrngvec01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect!</span>(res, tar, ref) setup <span class="op">=</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  (res <span class="op">=</span> result; tar <span class="op">=</span> target; ref <span class="op">=</span> refrngvec01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="58">
 <div class="ansi-escaped-output">
 <pre>BenchmarkTools.Trial: 10000 samples with 1 evaluation.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">50.800 μs</span> … <span class="ansi-magenta-fg"> 86.201 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">50.957 μs               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">51.015 μs</span> ± <span class="ansi-green-fg">939.266 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
-        ▄▆<span class="ansi-blue-fg">█</span>▆▂ <span class="ansi-green-fg"> </span>                                                 
-  ▂▂▂▃▄███<span class="ansi-blue-fg">█</span>██▆<span class="ansi-green-fg">▄</span>▃▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▂▁▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▂▂▂▂▂ ▃
-  50.8 μs<span class="ansi-bright-black-fg">         Histogram: frequency by time</span>         51.9 μs <span class="ansi-bold">&lt;</span>
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">50.834 μs</span> … <span class="ansi-magenta-fg"> 82.139 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">50.972 μs               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">51.070 μs</span> ± <span class="ansi-green-fg">973.481 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
+  ▃▇<span class="ansi-blue-fg">█</span>▆<span class="ansi-green-fg">▁</span>                                                        ▂
+  ██<span class="ansi-blue-fg">█</span>█<span class="ansi-green-fg">█</span>▁▁▁▁▁▁▁▁▁▁▁▆▇▇▇▅▆▅▅▅▁▄▄▃▄▄▄▃▄▃▁▃▃▁▃▃▃▁▁▄▄▃▃▃▃▃▁▃▁▅▃▅▁▃▃ █
+  50.8 μs<span class="ansi-bright-black-fg">       </span><span class="ansi-bright-black-fg">Histogram: </span><span class="ansi-bright-black-fg ansi-bold">log(</span><span class="ansi-bright-black-fg">frequency</span><span class="ansi-bright-black-fg ansi-bold">)</span><span class="ansi-bright-black-fg"> by time</span>      54.3 μs <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">0 bytes</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">0</span>.</pre>
 </div>
 </div>
 </div>
 <div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect</span>(tar, ref) setup <span class="op">=</span> (tar <span class="op">=</span> target; ref <span class="op">=</span> refrngvec01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect</span>(tar, ref) setup <span class="op">=</span> (tar <span class="op">=</span> target; ref <span class="op">=</span> refrngvec01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="59">
 <div class="ansi-escaped-output">
 <pre>BenchmarkTools.Trial: 10000 samples with 1 evaluation.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">50.889 μs</span> … <span class="ansi-magenta-fg">96.100 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">51.090 μs              </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">51.566 μs</span> ± <span class="ansi-green-fg"> 1.516 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
-  ▁▆█▇<span class="ansi-blue-fg">▃</span>▁      <span class="ansi-green-fg"> </span>▁▂▅▆▅▄▃▂▂▂▁▂▂▂▁▁▁▁                             ▂
-  ████<span class="ansi-blue-fg">█</span>█▇▅▆▇▇▆<span class="ansi-green-fg">█</span>████████████████████▇▇▆▇▇▆▇▇▇▆▆▅▆▆▄▆▅▅▅▄▅▅▄▃▄▄ █
-  50.9 μs<span class="ansi-bright-black-fg">      </span><span class="ansi-bright-black-fg">Histogram: </span><span class="ansi-bright-black-fg ansi-bold">log(</span><span class="ansi-bright-black-fg">frequency</span><span class="ansi-bright-black-fg ansi-bold">)</span><span class="ansi-bright-black-fg"> by time</span>      54.3 μs <span class="ansi-bold">&lt;</span>
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">50.887 μs</span> … <span class="ansi-magenta-fg">93.122 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">51.111 μs              </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">51.714 μs</span> ± <span class="ansi-green-fg"> 1.674 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
+  ▅█<span class="ansi-blue-fg">▄</span> ▁ ▂<span class="ansi-green-fg">▆</span>▆▄▄▃▃▃▂▁▁▁                                          ▂
+  ██<span class="ansi-blue-fg">█</span>████<span class="ansi-green-fg">█</span>█████████████▇▇▇▆▆▆▅▅▅▄▄▄▄▄▅▃▃▄▅▅▄▅▄▁▆█▅▅▃▅▆▆▇▇▇▅▄▅ █
+  50.9 μs<span class="ansi-bright-black-fg">      </span><span class="ansi-bright-black-fg">Histogram: </span><span class="ansi-bright-black-fg ansi-bold">log(</span><span class="ansi-bright-black-fg">frequency</span><span class="ansi-bright-black-fg ansi-bold">)</span><span class="ansi-bright-black-fg"> by time</span>      57.9 μs <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">1.92 KiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">4</span>.</pre>
 </div>
 </div>
@@ -847,32 +843,32 @@ Augmented interval trees
 <section id="rangetree" class="level3">
 <h3 class="anchored" data-anchor-id="rangetree">RangeTree</h3>
 <div class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect!</span>(res, tar, ref) setup <span class="op">=</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  (res <span class="op">=</span> result; tar <span class="op">=</span> target; ref <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect!</span>(res, tar, ref) setup <span class="op">=</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  (res <span class="op">=</span> result; tar <span class="op">=</span> target; ref <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="60">
 <div class="ansi-escaped-output">
 <pre>BenchmarkTools.Trial: 10000 samples with 199 evaluations.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">420.075 ns</span> … <span class="ansi-magenta-fg">678.729 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">427.691 ns               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">430.171 ns</span> ± <span class="ansi-green-fg">  9.181 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
-      ▄███▆▃    <span class="ansi-blue-fg"> </span>   <span class="ansi-green-fg"> </span>    ▁▂▂                                     
-  ▂▂▅████████▇▇▇<span class="ansi-blue-fg">▆</span>▅▄▃<span class="ansi-green-fg">▃</span>▃▄▅▇████▇▆▅▅▅▃▃▃▃▃▂▂▂▂▂▂▂▂▁▂▁▁▁▁▁▁▁▂▁▂▂▁▁▁ ▃
-  420 ns<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          454 ns <span class="ansi-bold">&lt;</span>
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">419.598 ns</span> … <span class="ansi-magenta-fg">843.588 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">426.663 ns               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">430.098 ns</span> ± <span class="ansi-green-fg"> 14.153 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
+      ▁▄▇█▇▄<span class="ansi-blue-fg">▂</span>    <span class="ansi-green-fg"> </span>                                               
+  ▂▂▃▆██████<span class="ansi-blue-fg">█</span>▇▅▄▃<span class="ansi-green-fg">▃</span>▃▄▅▆▇▇▇▆▅▅▄▄▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▁▂▂▂▂ ▃
+  420 ns<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          464 ns <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">0 bytes</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">0</span>.</pre>
 </div>
 </div>
 </div>
 <div class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect</span>(tar, ref) setup <span class="op">=</span> (tar <span class="op">=</span> target; ref <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect</span>(tar, ref) setup <span class="op">=</span> (tar <span class="op">=</span> target; ref <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="61">
 <div class="ansi-escaped-output">
 <pre>BenchmarkTools.Trial: 10000 samples with 193 evaluations.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">504.503 ns</span> … <span class="ansi-magenta-fg">62.472 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span> 0.00% … 98.78%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">933.091 ns              </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span> 0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">950.106 ns</span> ± <span class="ansi-green-fg"> 2.859 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>14.09% ±  4.62%
-  ▁▂                                                  ▃<span class="ansi-blue-fg">█</span>▆<span class="ansi-green-fg">▂</span>      
-  ██▇▃▂▂▂▂▂▂▂▂▁▁▁▂▂▂▂▂▂▂▁▁▂▂▁▂▁▂▁▂▂▁▁▁▁▁▁▂▁▁▂▂▂▂▂▂▂▂▂▄█<span class="ansi-blue-fg">█</span>█<span class="ansi-green-fg">█</span>▆▃▃▃ ▃
-  505 ns<span class="ansi-bright-black-fg">          Histogram: frequency by time</span>          987 ns <span class="ansi-bold">&lt;</span>
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">507.596 ns</span> … <span class="ansi-magenta-fg">79.731 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span> 0.00% … 99.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">943.013 ns              </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span> 0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">987.946 ns</span> ± <span class="ansi-green-fg"> 3.289 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>14.11% ±  4.19%
+   ▁                                         ▂<span class="ansi-blue-fg">█</span>▆   <span class="ansi-green-fg"> </span>            
+  ▇█▃▂▂▂▂▂▂▂▁▂▂▂▁▂▂▂▁▁▁▁▁▂▁▁▂▂▁▁▁▂▁▁▁▁▂▂▂▂▂▂▃█<span class="ansi-blue-fg">█</span>██▄▃<span class="ansi-green-fg">▂</span>▂▂▂▂▂▂▂▂▂▂ ▃
+  508 ns<span class="ansi-bright-black-fg">          Histogram: frequency by time</span>          1.1 μs <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">1.92 KiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">4</span>.</pre>
 </div>
 </div>
@@ -881,17 +877,17 @@ Augmented interval trees
 <section id="intervaltree" class="level3">
 <h3 class="anchored" data-anchor-id="intervaltree">IntervalTree</h3>
 <div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect!</span>(res, tar, ref) setup <span class="op">=</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  (res <span class="op">=</span> result; tar <span class="op">=</span> target; ref <span class="op">=</span> intvltree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect!</span>(res, tar, ref) setup <span class="op">=</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  (res <span class="op">=</span> result; tar <span class="op">=</span> target; ref <span class="op">=</span> intvltree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="62">
 <div class="ansi-escaped-output">
 <pre>BenchmarkTools.Trial: 10000 samples with 10 evaluations.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">1.363 μs</span> … <span class="ansi-magenta-fg"> 6.076 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">1.386 μs              </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">1.399 μs</span> ± <span class="ansi-green-fg">63.238 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
-     ▁▇█▅▁<span class="ansi-blue-fg"> </span>   <span class="ansi-green-fg"> </span>                                               
-  ▁▂▄█████<span class="ansi-blue-fg">▆</span>▅▅▅<span class="ansi-green-fg">▅</span>▄▅▅▆▅▄▃▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ ▂
-  1.36 μs<span class="ansi-bright-black-fg">        Histogram: frequency by time</span>        1.54 μs <span class="ansi-bold">&lt;</span>
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">1.347 μs</span> … <span class="ansi-magenta-fg"> 3.226 μs</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">1.399 μs              </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">1.409 μs</span> ± <span class="ansi-green-fg">68.572 ns</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.00% ± 0.00%
+   ▅▆▆▅▄▇█<span class="ansi-blue-fg">█</span><span class="ansi-green-fg">▆</span>▅▅▅▄▃▂▁      ▁▂▂▁                                ▃
+  ████████<span class="ansi-blue-fg">█</span><span class="ansi-green-fg">█</span>███████████████████▇▇▇▆▅▅▅▅▅▃▆▆▅▆▅▅▅▅▅▃▃▃▃▃▁▄▁▄▄ █
+  1.35 μs<span class="ansi-bright-black-fg">      </span><span class="ansi-bright-black-fg">Histogram: </span><span class="ansi-bright-black-fg ansi-bold">log(</span><span class="ansi-bright-black-fg">frequency</span><span class="ansi-bright-black-fg ansi-bold">)</span><span class="ansi-bright-black-fg"> by time</span>     1.73 μs <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">80 bytes</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">3</span>.</pre>
 </div>
 </div>
@@ -934,21 +930,21 @@ Bug in <code>union!</code> for <code>BitSet</code>
 <li><p>The idea is to “keep moving the goalposts”. When evaluating the coverage count, add the length of the current reference interval’s intersection with only the part to the right of what has already been covered. The thing we know about the intersecting intervals is that each successive intervals’s <code>first</code> position is greater than or equal to the <code>first</code> position of all the intervals preceding it. That is, the intervals can’t “move left” as we iterate through them.</p></li>
 </ul>
 <div class="cell" data-execution_count="30">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">coveragecount</span>(</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  target<span class="op">::</span><span class="dt">AbstractUnitRange</span>,</span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  isects<span class="op">::</span><span class="dt">Vector{UnitRange{T}}</span>,</span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>) <span class="kw">where</span> {T}</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  goalposts <span class="op">=</span> <span class="fu">eltype</span>(isects)(target) <span class="co"># coerce the type, if necessary</span></span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  rightpost <span class="op">=</span> <span class="fu">last</span>(goalposts)</span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  coverage <span class="op">=</span> <span class="fl">0</span></span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> isect <span class="kw">in</span> isects</span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>    coverage <span class="op">+=</span> <span class="fu">length</span>(<span class="fu">intersect</span>(goalposts, isect))</span>
-<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>    goalposts <span class="op">=</span> (<span class="fu">last</span>(isect) <span class="op">+</span> <span class="fu">one</span>(T))<span class="op">:</span>rightpost</span>
-<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
-<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> coverage</span>
-<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a><span class="fu">coveragecount</span>(target, savedresult)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">coveragecount</span>(</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  target<span class="op">::</span><span class="dt">AbstractUnitRange</span>,</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  isects<span class="op">::</span><span class="dt">Vector{UnitRange{T}}</span>,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>) <span class="kw">where</span> {T}</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  goalposts <span class="op">=</span> <span class="fu">eltype</span>(isects)(target) <span class="co"># coerce the type, if necessary</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  rightpost <span class="op">=</span> <span class="fu">last</span>(goalposts)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  coverage <span class="op">=</span> <span class="fl">0</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> isect <span class="kw">in</span> isects</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>    coverage <span class="op">+=</span> <span class="fu">length</span>(<span class="fu">intersect</span>(goalposts, isect))</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>    goalposts <span class="op">=</span> (<span class="fu">last</span>(isect) <span class="op">+</span> <span class="fu">one</span>(T))<span class="op">:</span>rightpost</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> coverage</span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a><span class="fu">coveragecount</span>(target, savedresult)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="63">
 <pre><code>5639</code></pre>
 </div>
 </div>
@@ -956,35 +952,35 @@ Bug in <code>union!</code> for <code>BitSet</code>
 <section id="iterating-over-a-collection-of-targets" class="level1">
 <h1>Iterating over a collection of targets</h1>
 <div class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">overlaps</span>(targets<span class="op">::</span><span class="dt">Vector{UnitRange{T}}</span>, refs<span class="op">::</span><span class="dt">RangeNode{T}</span>) <span class="kw">where</span> {T}</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  ntargets <span class="op">=</span> <span class="fu">length</span>(targets)</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  nover <span class="op">=</span> <span class="fu">sizehint!</span>(<span class="dt">Int</span>[], ntargets)</span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  covcount <span class="op">=</span> <span class="fu">sizehint!</span>(T[], ntargets)</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  result <span class="op">=</span> <span class="fu">sizehint!</span>(<span class="dt">UnitRange</span>{T}[], <span class="fu">Int</span>(<span class="fu">round</span>(<span class="fu">sqrt</span>(ntargets))))</span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> tar <span class="kw">in</span> targets</span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(nover, <span class="fu">length</span>(<span class="fu">intersect!</span>(result, tar, refs)))</span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(covcount, <span class="fu">coveragecount</span>(tar, result))</span>
-<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
-<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(targets <span class="op">=</span> targets, nover <span class="op">=</span> nover, covcount <span class="op">=</span> covcount)</span>
-<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a><span class="fu">overlaps</span>(tarrngvec01, rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">overlaps</span>(targets<span class="op">::</span><span class="dt">Vector{UnitRange{T}}</span>, refs<span class="op">::</span><span class="dt">RangeNode{T}</span>) <span class="kw">where</span> {T}</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  ntargets <span class="op">=</span> <span class="fu">length</span>(targets)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  nover <span class="op">=</span> <span class="fu">sizehint!</span>(<span class="dt">Int</span>[], ntargets)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  covcount <span class="op">=</span> <span class="fu">sizehint!</span>(T[], ntargets)</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  result <span class="op">=</span> <span class="fu">similar</span>(targets, <span class="fu">Int</span>(<span class="fu">round</span>(<span class="fu">sqrt</span>(<span class="fu">length</span>(refs.maxlast)))))</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> tar <span class="kw">in</span> targets</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(nover, <span class="fu">length</span>(<span class="fu">intersect!</span>(result, tar, refs)))</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">push!</span>(covcount, <span class="fu">coveragecount</span>(tar, result))</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(targets <span class="op">=</span> targets, nover <span class="op">=</span> nover, covcount <span class="op">=</span> covcount)</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a><span class="fu">overlaps</span>(tarrngvec01, rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="64">
 
 <div class="data-frame"><p>453,114 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>targets</th><th>nover</th><th>covcount</th></tr><tr><th></th><th title="UnitRange{Int32}">UnitRang…</th><th title="Int64">Int64</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>165655371:165655620</td><td>3</td><td>250</td></tr><tr><th>2</th><td>84498368:84506172</td><td>6</td><td>676</td></tr><tr><th>3</th><td>44777749:44778638</td><td>11</td><td>944</td></tr><tr><th>4</th><td>23692611:23696418</td><td>9</td><td>1398</td></tr><tr><th>5</th><td>23692608:23696418</td><td>9</td><td>1401</td></tr><tr><th>6</th><td>23962516:23963450</td><td>1</td><td>935</td></tr><tr><th>7</th><td>23692686:23696419</td><td>9</td><td>1324</td></tr><tr><th>8</th><td>114717978:114720613</td><td>15</td><td>1127</td></tr><tr><th>9</th><td>116392931:116404775</td><td>19</td><td>2762</td></tr><tr><th>10</th><td>25567642:25568695</td><td>2</td><td>1054</td></tr><tr><th>11</th><td>23961575:23962496</td><td>2</td><td>922</td></tr><tr><th>12</th><td>8861023:8870500</td><td>14</td><td>1777</td></tr><tr><th>13</th><td>96678807:96679446</td><td>1</td><td>573</td></tr><tr><th>14</th><td>37536543:37554276</td><td>12</td><td>4139</td></tr><tr><th>15</th><td>155308882:155320663</td><td>56</td><td>5929</td></tr><tr><th>16</th><td>65230872:65232127</td><td>2</td><td>1256</td></tr><tr><th>17</th><td>23692609:23696399</td><td>9</td><td>1381</td></tr><tr><th>18</th><td>181089237:181090826</td><td>1</td><td>1590</td></tr><tr><th>19</th><td>185118995:185120707</td><td>4</td><td>1602</td></tr><tr><th>20</th><td>203861621:203870081</td><td>15</td><td>1134</td></tr><tr><th>21</th><td>153990779:153992127</td><td>10</td><td>903</td></tr><tr><th>22</th><td>42658437:42676757</td><td>19</td><td>1431</td></tr><tr><th>23</th><td>2309508:2310113</td><td>1</td><td>606</td></tr><tr><th>24</th><td>173863895:173866795</td><td>42</td><td>6089</td></tr><tr><th>25</th><td>209768622:209782307</td><td>33</td><td>8753</td></tr><tr><th>26</th><td>45511237:45521873</td><td>15</td><td>2955</td></tr><tr><th>27</th><td>8861009:8861287</td><td>2</td><td>279</td></tr><tr><th>28</th><td>43974941:43978232</td><td>32</td><td>3868</td></tr><tr><th>29</th><td>89052317:89052623</td><td>1</td><td>305</td></tr><tr><th>30</th><td>109593271:109593512</td><td>1</td><td>242</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
 <div class="cell" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">overlaps</span>(targets, refs) setup <span class="op">=</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  (targets <span class="op">=</span> tarrngvec01; refs <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">overlaps</span>(targets, refs) setup <span class="op">=</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  (targets <span class="op">=</span> tarrngvec01; refs <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="65">
 <div class="ansi-escaped-output">
 <pre>BenchmarkTools.Trial: 39 samples with 1 evaluation.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">126.392 ms</span> … <span class="ansi-magenta-fg">132.719 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 1.10%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">127.673 ms               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">128.816 ms</span> ± <span class="ansi-green-fg">  2.016 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.09% ± 0.30%
-  ▁▁▁  ▁ ▄▁   <span class="ansi-blue-fg"> </span>          <span class="ansi-green-fg"> </span>                █                      
-  ███▆▆█▆██▆▆▆<span class="ansi-blue-fg">▆</span>▁▁▁▁▁▁▁▁▁▁<span class="ansi-green-fg">▁</span>▁▁▆▆▁▁▆▁▁▆▁▁▆▆▆▁█▁▁▆▆▁▆▆▆▁▁▁▁▁▆▆▁▁▁▁▆ ▁
-  126 ms<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          133 ms <span class="ansi-bold">&lt;</span>
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">128.772 ms</span> … <span class="ansi-magenta-fg">134.556 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">129.478 ms               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">130.475 ms</span> ± <span class="ansi-green-fg">  1.599 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.06% ± 0.26%
+     ▅ █▅<span class="ansi-blue-fg"> </span>          <span class="ansi-green-fg"> </span>              ▂                             
+  █▅▅████<span class="ansi-blue-fg">█</span>▁▁▁▁▅▁▅▁▁▁<span class="ansi-green-fg">▁</span>▁▅▁▁█▁▁▁▁▅▁▁▅██▁▁▅▁▁▁▁▁▅▅▁▁▁▁▅▅▁▁▁▁▁▁▁▁▁▁▅ ▁
+  129 ms<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          135 ms <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">13.84 MiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">39</span>.</pre>
 </div>
 </div>
@@ -996,36 +992,36 @@ Bug in <code>union!</code> for <code>BitSet</code>
 <li>The computations on different chromosome are independent of each other and can be assigned to different threads when Julia is started with multiple threads.</li>
 </ul>
 <div class="cell" data-execution_count="33">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">overlaps</span>(</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  targets<span class="op">::</span><span class="dt">Dict{Symbol,Vector{UnitRange{T}}}</span>,</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  refdict<span class="op">::</span><span class="dt">Dict{Symbol,RangeNode{T,R}}</span>,</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>) <span class="kw">where</span> {T,R}</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  value <span class="op">=</span> <span class="fu">Dict</span><span class="dt">{Symbol,DataFrame}</span>()</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@sync</span> <span class="cf">for</span> k <span class="kw">in</span> <span class="fu">intersect</span>(<span class="fu">keys</span>(targets), <span class="fu">keys</span>(refdict))</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">Threads</span>.<span class="pp">@spawn</span> value[k] <span class="op">=</span> <span class="fu">overlaps</span>(targets[k], refdict[k])</span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> value</span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>bigresult <span class="op">=</span> <span class="fu">overlaps</span>(tarrngvecs, refrngtrees);</span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>bigresult[<span class="op">:</span>chrY]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">overlaps</span>(</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  targets<span class="op">::</span><span class="dt">Dict{Symbol,Vector{UnitRange{T}}}</span>,</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  refdict<span class="op">::</span><span class="dt">Dict{Symbol,RangeNode{T,R}}</span>,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>) <span class="kw">where</span> {T,R}</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  value <span class="op">=</span> <span class="fu">Dict</span><span class="dt">{Symbol,DataFrame}</span>()</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="pp">@sync</span> <span class="cf">for</span> k <span class="kw">in</span> <span class="fu">intersect</span>(<span class="fu">keys</span>(targets), <span class="fu">keys</span>(refdict))</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">Threads</span>.<span class="pp">@spawn</span> value[k] <span class="op">=</span> <span class="fu">overlaps</span>(targets[k], refdict[k])</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> value</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>bigresult <span class="op">=</span> <span class="fu">overlaps</span>(tarrngvecs, refrngtrees);</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>bigresult[<span class="op">:</span>chrY]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="66">
 
 <div class="data-frame"><p>89 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>targets</th><th>nover</th><th>covcount</th></tr><tr><th></th><th title="UnitRange{Int32}">UnitRang…</th><th title="Int64">Int64</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>13286599:13287476</td><td>1</td><td>741</td></tr><tr><th>2</th><td>13286598:13287541</td><td>1</td><td>741</td></tr><tr><th>3</th><td>13286599:13287542</td><td>1</td><td>741</td></tr><tr><th>4</th><td>13286648:13287509</td><td>1</td><td>731</td></tr><tr><th>5</th><td>13286679:13287469</td><td>1</td><td>700</td></tr><tr><th>6</th><td>5793260:5793463</td><td>1</td><td>164</td></tr><tr><th>7</th><td>5793274:5793472</td><td>1</td><td>173</td></tr><tr><th>8</th><td>10200166:10200308</td><td>1</td><td>141</td></tr><tr><th>9</th><td>13287196:13287541</td><td>1</td><td>183</td></tr><tr><th>10</th><td>18992142:18992375</td><td>0</td><td>0</td></tr><tr><th>11</th><td>18992104:18992424</td><td>0</td><td>0</td></tr><tr><th>12</th><td>24362036:24362135</td><td>0</td><td>0</td></tr><tr><th>13</th><td>13287300:13287543</td><td>1</td><td>79</td></tr><tr><th>14</th><td>18992170:18992298</td><td>0</td><td>0</td></tr><tr><th>15</th><td>13286570:13287469</td><td>1</td><td>741</td></tr><tr><th>16</th><td>13286566:13287413</td><td>1</td><td>741</td></tr><tr><th>17</th><td>13287043:13287440</td><td>1</td><td>336</td></tr><tr><th>18</th><td>11336248:11442584</td><td>15</td><td>4284</td></tr><tr><th>19</th><td>13286619:13287467</td><td>1</td><td>741</td></tr><tr><th>20</th><td>13286571:13287542</td><td>1</td><td>741</td></tr><tr><th>21</th><td>13286659:13287547</td><td>1</td><td>720</td></tr><tr><th>22</th><td>13286587:13287543</td><td>1</td><td>741</td></tr><tr><th>23</th><td>5793255:5793467</td><td>1</td><td>168</td></tr><tr><th>24</th><td>13287260:13287542</td><td>1</td><td>119</td></tr><tr><th>25</th><td>13286762:13287408</td><td>1</td><td>617</td></tr><tr><th>26</th><td>13286725:13287522</td><td>1</td><td>654</td></tr><tr><th>27</th><td>5337673:5338106</td><td>1</td><td>362</td></tr><tr><th>28</th><td>13286617:13287543</td><td>1</td><td>741</td></tr><tr><th>29</th><td>18992107:18992666</td><td>1</td><td>200</td></tr><tr><th>30</th><td>13286699:13287435</td><td>1</td><td>680</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
 <div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">overlaps</span>(targets, refs) setup <span class="op">=</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  (targets <span class="op">=</span> tarrngvecs; refs <span class="op">=</span> refrngtrees)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">overlaps</span>(targets, refs) setup <span class="op">=</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  (targets <span class="op">=</span> tarrngvecs; refs <span class="op">=</span> refrngtrees)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="67">
 <div class="ansi-escaped-output">
-<pre>BenchmarkTools.Trial: 12 samples with 1 evaluation.
- Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">408.316 ms</span> … <span class="ansi-magenta-fg">476.789 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.44%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">429.736 ms               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
- Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">435.481 ms</span> ± <span class="ansi-green-fg"> 26.219 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.04% ± 0.13%
-  ▁█ ▁ ▁        ▁<span class="ansi-blue-fg"> </span>       ▁<span class="ansi-green-fg"> </span>    ▁      ▁              ▁       ▁▁  
-  ██▁█▁█▁▁▁▁▁▁▁▁█<span class="ansi-blue-fg">▁</span>▁▁▁▁▁▁▁█<span class="ansi-green-fg">▁</span>▁▁▁▁█▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁██ ▁
-  408 ms<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          477 ms <span class="ansi-bold">&lt;</span>
- Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">143.16 MiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">1110</span>.</pre>
+<pre>BenchmarkTools.Trial: 11 samples with 1 evaluation.
+ Range <span class="ansi-bright-black-fg">(</span><span class="ansi-cyan-fg ansi-bold">min</span> … <span class="ansi-magenta-fg">max</span><span class="ansi-bright-black-fg">):  </span><span class="ansi-cyan-fg ansi-bold">425.102 ms</span> … <span class="ansi-magenta-fg">532.643 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>min … max<span class="ansi-bright-black-fg">): </span>0.00% … 0.42%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-blue-fg ansi-bold">median</span><span class="ansi-bright-black-fg">):     </span><span class="ansi-blue-fg ansi-bold">454.554 ms               </span><span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>median<span class="ansi-bright-black-fg">):    </span>0.00%
+ Time  <span class="ansi-bright-black-fg">(</span><span class="ansi-green-fg ansi-bold">mean</span> ± <span class="ansi-green-fg">σ</span><span class="ansi-bright-black-fg">):   </span><span class="ansi-green-fg ansi-bold">461.360 ms</span> ± <span class="ansi-green-fg"> 36.702 ms</span>  <span class="ansi-bright-black-fg">┊</span> GC <span class="ansi-bright-black-fg">(</span>mean ± σ<span class="ansi-bright-black-fg">):  </span>0.04% ± 0.13%
+  █▁ ▁      <span class="ansi-blue-fg">▁</span>     ▁▁   <span class="ansi-green-fg"> </span>        ▁        ▁      ▁             ▁  
+  ██▁█▁▁▁▁▁▁<span class="ansi-blue-fg">█</span>▁▁▁▁▁██▁▁▁<span class="ansi-green-fg">▁</span>▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁█▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+  425 ms<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          533 ms <span class="ansi-bold">&lt;</span>
+ Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">143.20 MiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">1103</span>.</pre>
 </div>
 </div>
 </div>
@@ -1042,7 +1038,7 @@ Bug in <code>union!</code> for <code>BitSet</code>
 <section id="version-information" class="level1">
 <h1>Version information</h1>
 <div class="cell" data-execution_count="35">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">versioninfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">versioninfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Julia Version 1.8.0-rc1
 Commit 6368fdc656 (2022-05-27 18:33 UTC)

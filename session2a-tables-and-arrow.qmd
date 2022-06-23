@@ -288,7 +288,7 @@ In the calls to `CSV.read` and `Arrow.write`, the semicolon after the positional
 ## Reading Arrow files in Julia
 
 ```{julia}
-annotbl = Arrow.Table("./biofast-data-v1/ex-anno.arrow")
+annotbl = Arrow.Table(joinpath(datadir, "ex-anno.arrow"))
 ```
 
   - Although the schema describes the `chromo` column as `String`s the values are dictionary encoded such that each value is represented by one byte.
@@ -313,8 +313,8 @@ innerjoin(
 )
 ```
 
-  - In the next section we will use data from `chr21` for comparative timings, because there are small, but nontrivial, number of intervals in both the reference and target groups.
-
+  - In the next section we will use data from `chr01` for comparative timings.  It has the greatest number of intervals in both the reference and target groups.
+  
 ## Reading Arrow files in R
 
   - In R (and in Python) the Arrow file format is confounded with an earlier file format called Feather and referred to as `Feather V2`.
