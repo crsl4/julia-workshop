@@ -48,6 +48,8 @@ format:
     css: styles.css
     toc: true
 
+callout-appearance: simple
+
 date: today
 date-format: iso
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Claudia Solis-Lemus and Douglas Bates">
-<meta name="dcterms.date" content="2022-06-20">
+<meta name="dcterms.date" content="2022-06-23">
 
 <title>Julia Workshop - Session 1: Getting started with Julia</title>
 <style>
@@ -238,7 +238,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#working-on-an-existing-project-environment" id="toc-working-on-an-existing-project-environment" class="nav-link" data-scroll-target="#working-on-an-existing-project-environment">1. Working on an existing project environment</a></li>
   <li><a href="#creating-a-new-project-environment" id="toc-creating-a-new-project-environment" class="nav-link" data-scroll-target="#creating-a-new-project-environment">2. Creating a new project environment</a></li>
   </ul></li>
-  <li><a href="#easy-share-with-collaborators" id="toc-easy-share-with-collaborators" class="nav-link" data-scroll-target="#easy-share-with-collaborators">Easy share with collaborators</a></li>
+  <li><a href="#easily-share-with-collaborators" id="toc-easily-share-with-collaborators" class="nav-link" data-scroll-target="#easily-share-with-collaborators">Easily share with collaborators</a></li>
   </ul></li>
   <li><a href="#opening-the-julia-code" id="toc-opening-the-julia-code" class="nav-link" data-scroll-target="#opening-the-julia-code">Opening the julia code</a></li>
   </ul>
@@ -267,7 +267,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-06-20</p>
+      <p class="date">2022-06-23</p>
     </div>
   </div>
     
@@ -323,7 +323,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>Workshop topics</h1>
 <p>In this workshop, we will focus on three main topics:</p>
 <ol type="1">
-<li>Data tools: <code>Arrow.jl</code>, <code>Tables.jl</code></li>
+<li>Data tools: <code>Arrow.jl</code>, <code>Tables.jl</code>, <code>DataFrames.jl</code></li>
 <li>Model fitting: <code>MixedModels.jl</code></li>
 <li>Package system and important packages for Data Science:
 <ol type="a">
@@ -421,8 +421,8 @@ cd myProject</code></pre>
 <p>More on the <code>Project.toml</code> and <code>Manifest.toml</code> files <a href="https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1">here</a>.</p>
 </section>
 </section>
-<section id="easy-share-with-collaborators" class="level2">
-<h2 class="anchored" data-anchor-id="easy-share-with-collaborators">Easy share with collaborators</h2>
+<section id="easily-share-with-collaborators" class="level2">
+<h2 class="anchored" data-anchor-id="easily-share-with-collaborators">Easily share with collaborators</h2>
 <p>Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>julia<span class="op">&gt;</span> <span class="fu">cd</span>(<span class="st">"path/to/project"</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pkg<span class="op">&gt;</span> activate .</span>

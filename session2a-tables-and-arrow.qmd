@@ -25,8 +25,11 @@ using Tar               # tar archive utilities
   - You can instead use your favorite environment, such as [jupyterlab](https://jupyter.org) or [RStudio](https://www.rstudio.com/products/rstudio/), to run Python or R
   - Note that the [quarto notebooks](https://quarto.org) for these notes are easily converted, e.g. `quarto convert notebookname.qmd`, to Jupyter notebooks.
 
-::: {.callout-note}
+::: {.callout-note collapse="false"}
+### Notes on Julia syntax
+
 Boxes like this contain comments on Julia syntax and semantics in code examples.
+The character in the upper right corner of the box is a toggle to expand or collapse the contents of the box.
 :::
 
 # Objectives
@@ -67,11 +70,15 @@ end
 run(`ls -lh $tarball`);
 ```
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### String interpolation
+
 An expression like `"$datadir.tar.gz"` interpolates the value of `datadir` into the string, producing the name shown in the output.
 :::
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Redundant commas in argument lists
+
 Redundant commas are allowed at the end of the list of arguments before the `)` in a function call.
 :::
 
@@ -94,11 +101,15 @@ end
 filter(endswith(".bed"), readdir(datadir))
 ```
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Dot vectorization
+
 The call `joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])` is an example of [dot vectorization](https://docs.julialang.org/en/v1/manual/functions/#man-vectorized).
 :::
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Stabby lambda syntax for anonymous functions
+
 The expression `h -> in(h.path, toextract)` defines an anonymous function, in the "stabby lambda" syntax, to be used as a predicate in `Tar.extract`.
 
 ```{julia}
@@ -107,7 +118,9 @@ methods(Tar.extract)
 
 :::
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### do/end blocks
+
 The 'do/end' block is yet another way of writing an anonymous function passed as the first argument in the call to `gzopen`, even though it occurs after that call in the code.
 
 ```{julia}
@@ -117,11 +130,14 @@ methods(gzopen)
 The effect is to uncompress the file into a stream, process the stream in this anonymous function, then close the stream.
 :::
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Extract to temporary directory
+
 Because `Tar.extract` is conservative about overwriting files and requires that the directory into which the files are extracted be empty, we extract to a freshly-created temporary directory then move the files to the desired location.
 :::
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Fully qualified names for many packages of utilities
 
   - It is common for packages providing utilities to avoid name conflicts by not exporting any names from their namespace (or Module).
   - The fully qualified name, `Tar.extract`, can always be used - similar to Python naming conventions.
@@ -158,7 +174,9 @@ annodf = CSV.read(
 )
 ```
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Positional versus named arguments
+
   - Positional arguments must come before named arguments.
 
   - Optionally, the comma after the last positional argument can be replace by a semicolon, as shown above.
@@ -166,7 +184,9 @@ annodf = CSV.read(
 
   - It turns out that both of the `.bed` files contain many duplicate rows - probably not intentionally. We eliminate the duplicates with `unique!`.
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Names of mutating functions
+
 A function's name ending in `!` is a hint that it is a *mutating* function, which can modify one or more of its arguments.
 :::
 
@@ -178,7 +198,9 @@ A function's name ending in `!` is a hint that it is a *mutating* function, whic
 replacements = ["chr$i" => "chr0$i" for i = 1:9]
 ```
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Comprehensions
+
 The expression on the right of the `=` is called a "comprehension".  I think of it as an inside-out loop.
 :::
 
@@ -186,7 +208,9 @@ The expression on the right of the `=` is called a "comprehension".  I think of 
 show(unique(replace!(annodf.chromo, replacements...)))
 ```
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Ellipsis in argument list
+
 The ellipsis (`...`) after `replacements` in this call "splats" the single name into, in this case, 9 different arguments of pairs.  That is, this call is the equivalent of a call to `replace!` with 10 arguments: `annodf.chromo`, `"chr1" => "chr01"`, `"chr2" => "chr02"`, and so on.
 :::
 
@@ -196,7 +220,9 @@ annodf.chromo = categorical(annodf.chromo)
 annodf
 ```
 
-::: {.callout-note}
+::: {.callout-note collapse="true"}
+### Categorical arrays
+
 Representing the `chromo` column as a `CategoricalArray` converts the individual values to indices into a vector of `String`s, like a `factor` in `R`.
 :::
 
@@ -253,7 +279,9 @@ rnaarrownm = bed2arrow("ex-rna")
 run(`ls -lh $datadir`);
 ```
 
-:::{.callout-note}
+:::{.callout-note collapse="true"}
+### Semicolon separating positional and named arguments
+
 In the calls to `CSV.read` and `Arrow.write`, the semicolon after the positional arguments followed by argument names only indicates that the value passed for the named argument is the object of the same name in the current namespace.  That is, `Arrow.write(arrownm, df; compress, metadata)` is equivalent to `Arrow.write(arrownm, df; compress=compress, metadata=metadata)`.
 :::
 

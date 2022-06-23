@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-06-20">
+<meta name="dcterms.date" content="2022-06-23">
 
 <title>Julia Workshop - Session 2a: Data Tables and Arrow files</title>
 <style>
@@ -270,7 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-06-20</p>
+      <p class="date">2022-06-23</p>
     </div>
   </div>
     
@@ -300,17 +300,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>You can instead use your favorite environment, such as <a href="https://jupyter.org">jupyterlab</a> or <a href="https://www.rstudio.com/products/rstudio/">RStudio</a>, to run Python or R</li>
 <li>Note that the <a href="https://quarto.org">quarto notebooks</a> for these notes are easily converted, e.g.&nbsp;<code>quarto convert notebookname.qmd</code>, to Jupyter notebooks.</li>
 </ul>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Notes on Julia syntax
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
 <div class="callout-body-container callout-body">
-<p>Boxes like this contain comments on Julia syntax and semantics in code examples.</p>
+<p>Boxes like this contain comments on Julia syntax and semantics in code examples. The character in the upper right corner of the box is a toggle to expand or collapse the contents of the box.</p>
+</div>
 </div>
 </div>
 </section>
@@ -357,30 +360,36 @@ Note
 <pre><code>-rw-rw-r-- 1 bates bates 541M Jun 16 16:18 biofast-data-v1.tar.gz</code></pre>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+String interpolation
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>An expression like <code>"$datadir.tar.gz"</code> interpolates the value of <code>datadir</code> into the string, producing the name shown in the output.</p>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+</div>
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Redundant commas in argument lists
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Redundant commas are allowed at the end of the list of arguments before the <code>)</code> in a function call.</p>
+</div>
 </div>
 </div>
 <ul>
@@ -407,28 +416,33 @@ Note
  "ex-rna.bed"</code></pre>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Dot vectorization
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The call <code>joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])</code> is an example of <a href="https://docs.julialang.org/en/v1/manual/functions/#man-vectorized">dot vectorization</a>.</p>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+</div>
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Stabby lambda syntax for anonymous functions
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The expression <code>h -&gt; in(h.path, toextract)</code> defines an anonymous function, in the “stabby lambda” syntax, to be used as a predicate in <code>Tar.extract</code>.</p>
 <div class="cell" data-execution_count="4">
@@ -439,15 +453,18 @@ Note
 </div>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+</div>
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+do/end blocks
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The ‘do/end’ block is yet another way of writing an anonymous function passed as the first argument in the call to <code>gzopen</code>, even though it occurs after that call in the code.</p>
 <div class="cell" data-execution_count="5">
@@ -459,28 +476,34 @@ Note
 <p>The effect is to uncompress the file into a stream, process the stream in this anonymous function, then close the stream.</p>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+</div>
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Extract to temporary directory
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Because <code>Tar.extract</code> is conservative about overwriting files and requires that the directory into which the files are extracted be empty, we extract to a freshly-created temporary directory then move the files to the desired location.</p>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+</div>
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Fully qualified names for many packages of utilities
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>It is common for packages providing utilities to avoid name conflicts by not exporting any names from their namespace (or Module).</li>
@@ -501,11 +524,12 @@ Note
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Tar</td>
-<td style="text-align: right;">856.961 KiB</td>
+<td style="text-align: right;">857.102 KiB</td>
 <td style="text-align: left;">Module</td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 </section>
@@ -537,15 +561,17 @@ Note
 <div class="data-frame"><p>1,193,657 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="String">String</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr1</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr1</td><td>12612</td><td>12721</td></tr><tr><th>3</th><td>chr1</td><td>13220</td><td>14409</td></tr><tr><th>4</th><td>chr1</td><td>12009</td><td>12057</td></tr><tr><th>5</th><td>chr1</td><td>12178</td><td>12227</td></tr><tr><th>6</th><td>chr1</td><td>12612</td><td>12697</td></tr><tr><th>7</th><td>chr1</td><td>12974</td><td>13052</td></tr><tr><th>8</th><td>chr1</td><td>13220</td><td>13374</td></tr><tr><th>9</th><td>chr1</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr1</td><td>29533</td><td>29570</td></tr><tr><th>11</th><td>chr1</td><td>24737</td><td>24891</td></tr><tr><th>12</th><td>chr1</td><td>18267</td><td>18366</td></tr><tr><th>13</th><td>chr1</td><td>17914</td><td>18061</td></tr><tr><th>14</th><td>chr1</td><td>17605</td><td>17742</td></tr><tr><th>15</th><td>chr1</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr1</td><td>16857</td><td>17055</td></tr><tr><th>17</th><td>chr1</td><td>16606</td><td>16765</td></tr><tr><th>18</th><td>chr1</td><td>15795</td><td>15947</td></tr><tr><th>19</th><td>chr1</td><td>15004</td><td>15038</td></tr><tr><th>20</th><td>chr1</td><td>14403</td><td>14501</td></tr><tr><th>21</th><td>chr1</td><td>17368</td><td>17436</td></tr><tr><th>22</th><td>chr1</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr1</td><td>30563</td><td>30667</td></tr><tr><th>24</th><td>chr1</td><td>30975</td><td>31097</td></tr><tr><th>25</th><td>chr1</td><td>30266</td><td>30667</td></tr><tr><th>26</th><td>chr1</td><td>30975</td><td>31109</td></tr><tr><th>27</th><td>chr1</td><td>30365</td><td>30503</td></tr><tr><th>28</th><td>chr1</td><td>35720</td><td>36081</td></tr><tr><th>29</th><td>chr1</td><td>35276</td><td>35481</td></tr><tr><th>30</th><td>chr1</td><td>34553</td><td>35174</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Positional versus named arguments
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><p>Positional arguments must come before named arguments.</p></li>
@@ -553,20 +579,24 @@ Note
 </ul>
 </div>
 </div>
+</div>
 <ul>
 <li>It turns out that both of the <code>.bed</code> files contain many duplicate rows - probably not intentionally. We eliminate the duplicates with <code>unique!</code>.</li>
 </ul>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Names of mutating functions
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>A function’s name ending in <code>!</code> is a hint that it is a <em>mutating</em> function, which can modify one or more of its arguments.</p>
+</div>
 </div>
 </div>
 <ul>
@@ -588,17 +618,20 @@ Note
  "chr9" =&gt; "chr09"</code></pre>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Comprehensions
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The expression on the right of the <code>=</code> is called a “comprehension”. I think of it as an inside-out loop.</p>
+</div>
 </div>
 </div>
 <div class="cell" data-execution_count="9">
@@ -607,17 +640,20 @@ Note
 <pre><code>["chr01", "chr02", "chr03", "chr04", "chr05", "chr06", "chr07", "chrX", "chr08", "chr09", "chr11", "chr10", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr20", "chr19", "chrY", "chr22", "chr21"]</code></pre>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Ellipsis in argument list
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The ellipsis (<code>...</code>) after <code>replacements</code> in this call “splats” the single name into, in this case, 9 different arguments of pairs. That is, this call is the equivalent of a call to <code>replace!</code> with 10 arguments: <code>annodf.chromo</code>, <code>"chr1" =&gt; "chr01"</code>, <code>"chr2" =&gt; "chr02"</code>, and so on.</p>
+</div>
 </div>
 </div>
 <div class="cell" data-execution_count="10">
@@ -629,17 +665,20 @@ Note
 <div class="data-frame"><p>573,806 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="CategoricalValue{String, UInt32}">Cat…</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr01</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr01</td><td>12612</td><td>12721</td></tr><tr><th>3</th><td>chr01</td><td>13220</td><td>14409</td></tr><tr><th>4</th><td>chr01</td><td>12009</td><td>12057</td></tr><tr><th>5</th><td>chr01</td><td>12178</td><td>12227</td></tr><tr><th>6</th><td>chr01</td><td>12612</td><td>12697</td></tr><tr><th>7</th><td>chr01</td><td>12974</td><td>13052</td></tr><tr><th>8</th><td>chr01</td><td>13220</td><td>13374</td></tr><tr><th>9</th><td>chr01</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr01</td><td>29533</td><td>29570</td></tr><tr><th>11</th><td>chr01</td><td>24737</td><td>24891</td></tr><tr><th>12</th><td>chr01</td><td>18267</td><td>18366</td></tr><tr><th>13</th><td>chr01</td><td>17914</td><td>18061</td></tr><tr><th>14</th><td>chr01</td><td>17605</td><td>17742</td></tr><tr><th>15</th><td>chr01</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr01</td><td>16857</td><td>17055</td></tr><tr><th>17</th><td>chr01</td><td>16606</td><td>16765</td></tr><tr><th>18</th><td>chr01</td><td>15795</td><td>15947</td></tr><tr><th>19</th><td>chr01</td><td>15004</td><td>15038</td></tr><tr><th>20</th><td>chr01</td><td>14403</td><td>14501</td></tr><tr><th>21</th><td>chr01</td><td>17368</td><td>17436</td></tr><tr><th>22</th><td>chr01</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr01</td><td>30563</td><td>30667</td></tr><tr><th>24</th><td>chr01</td><td>30975</td><td>31097</td></tr><tr><th>25</th><td>chr01</td><td>30266</td><td>30667</td></tr><tr><th>26</th><td>chr01</td><td>30975</td><td>31109</td></tr><tr><th>27</th><td>chr01</td><td>30365</td><td>30503</td></tr><tr><th>28</th><td>chr01</td><td>35720</td><td>36081</td></tr><tr><th>29</th><td>chr01</td><td>35276</td><td>35481</td></tr><tr><th>30</th><td>chr01</td><td>34553</td><td>35174</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Categorical arrays
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Representing the <code>chromo</code> column as a <code>CategoricalArray</code> converts the individual values to indices into a vector of <code>String</code>s, like a <code>factor</code> in <code>R</code>.</p>
+</div>
 </div>
 </div>
 </section>
@@ -701,23 +740,26 @@ Note
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>total 273M
--rw-rw-r-- 1 bates bates 3.9M Jun 20 14:56 ex-anno.arrow
+-rw-rw-r-- 1 bates bates 3.9M Jun 23 09:16 ex-anno.arrow
 -rw-r--r-- 1 bates bates  28M Jun 16 16:18 ex-anno.bed
 -rw-rw-r-- 1 bates bates  39M Jun 16 16:19 ex-rna.arrow
 -rw-r--r-- 1 bates bates 203M Jun 16 16:18 ex-rna.bed</code></pre>
 </div>
 </div>
-<div class="callout-note callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-note callout callout-style-simple callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Semicolon separating positional and named arguments
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>In the calls to <code>CSV.read</code> and <code>Arrow.write</code>, the semicolon after the positional arguments followed by argument names only indicates that the value passed for the named argument is the object of the same name in the current namespace. That is, <code>Arrow.write(arrownm, df; compress, metadata)</code> is equivalent to <code>Arrow.write(arrownm, df; compress=compress, metadata=metadata)</code>.</p>
+</div>
 </div>
 </div>
 <section id="reading-arrow-files-in-julia" class="level2">
@@ -746,7 +788,7 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  0.074396 seconds (326 allocations: 77.842 MiB)</code></pre>
+<pre><code>  0.043500 seconds (322 allocations: 77.842 MiB)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>Arrow.Table with 4685080 rows, 3 columns, and schema:

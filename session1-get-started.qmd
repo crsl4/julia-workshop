@@ -44,7 +44,7 @@ Julia offers many advantages to data science programmers such as avoid the two-l
 
 In this workshop, we will focus on three main topics:
 
-1. Data tools: `Arrow.jl`, `Tables.jl`
+1. Data tools: `Arrow.jl`, `Tables.jl`, `DataFrames.jl`
 2. Model fitting: `MixedModels.jl`
 3. Package system and important packages for Data Science: 
     a. interoperability with R and python ([RCall.jl](https://github.com/JuliaInterop/RCall.jl) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl)), 
@@ -166,7 +166,7 @@ The packages have a [uuid](https://en.wikipedia.org/wiki/Universally_unique_iden
 More on the `Project.toml` and `Manifest.toml` files [here](https://julialang.github.io/Pkg.jl/v1/toml-files/#Project-and-Manifest-1).
 
 
-## Easy share with collaborators
+## Easily share with collaborators
 
 Share your project to colleagues. Send your entire project folder to your colleague, and all they need to do is:
 

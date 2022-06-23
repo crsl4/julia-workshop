@@ -1,6 +1,5 @@
 ---
 title: "About"
-jupyter: julia-1.8
 ---
 
 Julia has been called the programming language of the 21st century for scientific computing, data science, and machine learning. As a high-level, high-performance, dynamic language, Julia is faster than other scripting languages because of smart design decisions like type-stability through specialization via multiple-dispatch. Julia's code can be efficient and concise, which leads to clear performance gains. In addition, Julia's environments are fully reproducible and it is easy to express object-oriented and functional programming patterns.
