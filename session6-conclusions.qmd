@@ -48,5 +48,9 @@ Among the main Julia tools, we focused on five:
 - [Jupyter](https://jupyter.org)
 - [Pluto.jl](https://github.com/fonsp/Pluto.jl)
 
+# Tutorial feedback form
+
+Please don't forget to fill out the [ISMB/ECCB 2022 Tutorial Feedback](https://docs.google.com/forms/d/e/1FAIpQLSftVbI5O-P6EidL-PBgmqjdVE9QX3SfsgGKqkX6DDxJzGvrfQ/viewform).
+
 
 <div style="text-align:center"><img src="docs/pics/julia-logo.png" width="350"/></div>
