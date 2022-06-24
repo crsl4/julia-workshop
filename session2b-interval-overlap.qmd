@@ -75,20 +75,20 @@ typeof(st + one(st)) # type not promoted
 
 :::
 
-  - Create a utility, `chromodict` to take a `rowtable` (a data structure designed to allow efficient iteration over the rows of a table) and convert it to a `Dict{Symbol, Vector{UnitRange{T}}}`.
+  - Create a utility, `chromodict` to take an `Arrow.Table` and convert it to a `Dict{Symbol, Vector{UnitRange{T}}}`, assuming that the table contains columns named "chromo", "start", and "stop".
 
 ```{julia}
-function chromodict(rtbl::Vector{<:NamedTuple})
-  vtype = Vector{UnitRange{typeof(first(rtbl).start)}}
+function chromodict(tbl::Arrow.Table)
+  vtype = Vector{UnitRange{Tables.columntype(tbl, :start)}}
   dict = Dict{Symbol,vtype}()
-  for r in rtbl
+  for r in Tables.rows(tbl)
     (; chromo, start, stop) = r
     push!(get!(dict, Symbol(chromo), vtype()), asrange(start, stop))
   end
   return dict
 end
-tarrngvecs = chromodict(rowtable(Arrow.Table(joinpath(datadir, "ex-rna.arrow"))))
-refrngvecs = chromodict(rowtable(Arrow.Table(joinpath(datadir, "ex-anno.arrow"))))
+tarrngvecs = chromodict(Arrow.Table(joinpath(datadir, "ex-rna.arrow")))
+refrngvecs = chromodict(Arrow.Table(joinpath(datadir, "ex-anno.arrow")))
 ```
 
 ::: {.callout-note collapse="true"}
@@ -102,6 +102,24 @@ For the case of the default, it also installs that key/value pair in `dict`.
 ### `Symbol`s versus `String`s for `Dict` keys
 
 We use `Symbol`s for the keys in these `Dict`s because they are easier to type and because symbol table lookup is very fast, although that doesn't really matter when we only have 24 distinct keys.
+:::
+
+::: {.callout-note collapse="true"}
+### Destructuring a struct or NamedTuple
+
+The expression `(; chromo, start, stop) = r` is equivalent to three local assignments
+```julia
+chromo = r.chromo
+start = r.start
+stop = r.stop
+```
+In other words, it is equivalent to taking the named fields of a `NamedTuple` or a `struct` and making them available in the local namespace under the same names.
+:::
+
+::: {.callout-note collapse="true"}
+### Interfaces to row- and column-oriented tables in `Tables.jl`
+
+[Tables.jl](https://github.com/JuliaData/Tables.jl) provides interfaces for row- and column-oriented tables, allowing for one orientation to be viewed as the other.  In this case an `Arrow.Table` is column-oriented but the `Tables.rows` method returns a low-overhead iterator over the rows.
 :::
 
   - In `refrngvecs`, each of the values, which is a `Vector{UnitRange}`, should be sorted by the `first` element of the `UnitRange`.
@@ -188,7 +206,12 @@ savedresult == intersect!(result, target, refrngvec01)
 
 ```{julia}
 refrngtrees = Dict(k => RangeNode(v) for (k, v) in refrngvecs)
-rangetree01 = refrngtrees[:chr01]  # tree represented by its root node
+rangetree01 = refrngtrees[:chr01]
+print_tree(rangetree01; maxdepth=3)
+```
+
+```{julia}
+treesize(rangetree01), treeheight(rangetree01), treebreadth(rangetree01)  # number of leaves
 ```
 
 ::: {.callout-note collapse="true"}
@@ -231,14 +254,6 @@ The root of the tree can be obtained from any node using `getroot`.  The combina
 
 ```{julia}
 getroot(first(children(first(children(rangetree01))))) # get the root from its grandchild
-```
-
-```{julia}
-treesize(rangetree01), treeheight(rangetree01), treebreadth(rangetree01)  # number of leaves
-```
-
-```{julia}
-print_tree(rangetree01; maxdepth = 3)
 ```
 
 :::
