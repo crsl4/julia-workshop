@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-06-23">
+<meta name="dcterms.date" content="2022-06-24">
 
 <title>Julia Workshop - Session 2a: Data Tables and Arrow files</title>
 <style>
@@ -270,7 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-06-23</p>
+      <p class="date">2022-06-24</p>
     </div>
   </div>
     
@@ -410,7 +410,7 @@ Redundant commas in argument lists
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">end</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(<span class="fu">endswith</span>(<span class="st">".bed"</span>), <span class="fu">readdir</span>(datadir))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>2-element Vector{String}:
  "ex-anno.bed"
  "ex-rna.bed"</code></pre>
@@ -447,7 +447,7 @@ Stabby lambda syntax for anonymous functions
 <p>The expression <code>h -&gt; in(h.path, toextract)</code> defines an anonymous function, in the “stabby lambda” syntax, to be used as a predicate in <code>Tar.extract</code>.</p>
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">methods</span>(Tar.extract)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell-output cell-output-display" data-execution_count="5">
 # 4 methods for generic function <b>extract</b>:<ul><li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> </ul>
 </div>
 </div>
@@ -469,7 +469,7 @@ do/end blocks
 <p>The ‘do/end’ block is yet another way of writing an anonymous function passed as the first argument in the call to <code>gzopen</code>, even though it occurs after that call in the code.</p>
 <div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">methods</span>(gzopen)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
+<div class="cell-output cell-output-display" data-execution_count="6">
 # 4 methods for generic function <b>gzopen</b>:<ul><li> gzopen(fname::<b>AbstractString</b>) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:264</a></li> <li> gzopen(fname::<b>AbstractString</b>, gzmode::<b>AbstractString</b>) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:263</a></li> <li> gzopen(fname::<b>AbstractString</b>, gzmode::<b>AbstractString</b>, gz_buf_size::<b>Integer</b>) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:236</a></li> <li> gzopen(f::<b>Function</b>, args...) in GZip at <a href="file:///home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl" target="_blank">/home/bates/.julia/packages/GZip/JNmGn/src/GZip.jl:267</a></li> </ul>
 </div>
 </div>
@@ -524,7 +524,7 @@ Fully qualified names for many packages of utilities
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Tar</td>
-<td style="text-align: right;">893.188 KiB</td>
+<td style="text-align: right;">857.165 KiB</td>
 <td style="text-align: left;">Module</td>
 </tr>
 </tbody>
@@ -556,7 +556,7 @@ Fully qualified names for many packages of utilities
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  types <span class="op">=</span> [<span class="dt">String</span>, <span class="dt">Int32</span>, <span class="dt">Int32</span>],</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  header <span class="op">=</span> [<span class="st">"chromo"</span>, <span class="st">"start"</span>, <span class="st">"stop"</span>],</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
+<div class="cell-output cell-output-display" data-execution_count="8">
 
 <div class="data-frame"><p>1,193,657 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="String">String</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr1</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr1</td><td>12612</td><td>12721</td></tr><tr><th>3</th><td>chr1</td><td>13220</td><td>14409</td></tr><tr><th>4</th><td>chr1</td><td>12009</td><td>12057</td></tr><tr><th>5</th><td>chr1</td><td>12178</td><td>12227</td></tr><tr><th>6</th><td>chr1</td><td>12612</td><td>12697</td></tr><tr><th>7</th><td>chr1</td><td>12974</td><td>13052</td></tr><tr><th>8</th><td>chr1</td><td>13220</td><td>13374</td></tr><tr><th>9</th><td>chr1</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr1</td><td>29533</td><td>29570</td></tr><tr><th>11</th><td>chr1</td><td>24737</td><td>24891</td></tr><tr><th>12</th><td>chr1</td><td>18267</td><td>18366</td></tr><tr><th>13</th><td>chr1</td><td>17914</td><td>18061</td></tr><tr><th>14</th><td>chr1</td><td>17605</td><td>17742</td></tr><tr><th>15</th><td>chr1</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr1</td><td>16857</td><td>17055</td></tr><tr><th>17</th><td>chr1</td><td>16606</td><td>16765</td></tr><tr><th>18</th><td>chr1</td><td>15795</td><td>15947</td></tr><tr><th>19</th><td>chr1</td><td>15004</td><td>15038</td></tr><tr><th>20</th><td>chr1</td><td>14403</td><td>14501</td></tr><tr><th>21</th><td>chr1</td><td>17368</td><td>17436</td></tr><tr><th>22</th><td>chr1</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr1</td><td>30563</td><td>30667</td></tr><tr><th>24</th><td>chr1</td><td>30975</td><td>31097</td></tr><tr><th>25</th><td>chr1</td><td>30266</td><td>30667</td></tr><tr><th>26</th><td>chr1</td><td>30975</td><td>31109</td></tr><tr><th>27</th><td>chr1</td><td>30365</td><td>30503</td></tr><tr><th>28</th><td>chr1</td><td>35720</td><td>36081</td></tr><tr><th>29</th><td>chr1</td><td>35276</td><td>35481</td></tr><tr><th>30</th><td>chr1</td><td>34553</td><td>35174</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
@@ -605,7 +605,7 @@ Names of mutating functions
 </ul>
 <div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>replacements <span class="op">=</span> [<span class="st">"chr</span><span class="sc">$</span>i<span class="st">"</span> <span class="op">=&gt;</span> <span class="st">"chr0</span><span class="sc">$</span>i<span class="st">"</span> for i <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">9</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>9-element Vector{Pair{String, String}}:
  "chr1" =&gt; "chr01"
  "chr2" =&gt; "chr02"
@@ -660,7 +660,7 @@ Ellipsis in argument list
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique!</span>(annodf)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>annodf.chromo <span class="op">=</span> <span class="fu">categorical</span>(annodf.chromo)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>annodf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="11">
 
 <div class="data-frame"><p>573,806 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>start</th><th>stop</th></tr><tr><th></th><th title="CategoricalValue{String, UInt32}">Cat…</th><th title="Int32">Int32</th><th title="Int32">Int32</th></tr></thead><tbody><tr><th>1</th><td>chr01</td><td>11868</td><td>12227</td></tr><tr><th>2</th><td>chr01</td><td>12612</td><td>12721</td></tr><tr><th>3</th><td>chr01</td><td>13220</td><td>14409</td></tr><tr><th>4</th><td>chr01</td><td>12009</td><td>12057</td></tr><tr><th>5</th><td>chr01</td><td>12178</td><td>12227</td></tr><tr><th>6</th><td>chr01</td><td>12612</td><td>12697</td></tr><tr><th>7</th><td>chr01</td><td>12974</td><td>13052</td></tr><tr><th>8</th><td>chr01</td><td>13220</td><td>13374</td></tr><tr><th>9</th><td>chr01</td><td>13452</td><td>13670</td></tr><tr><th>10</th><td>chr01</td><td>29533</td><td>29570</td></tr><tr><th>11</th><td>chr01</td><td>24737</td><td>24891</td></tr><tr><th>12</th><td>chr01</td><td>18267</td><td>18366</td></tr><tr><th>13</th><td>chr01</td><td>17914</td><td>18061</td></tr><tr><th>14</th><td>chr01</td><td>17605</td><td>17742</td></tr><tr><th>15</th><td>chr01</td><td>17232</td><td>17368</td></tr><tr><th>16</th><td>chr01</td><td>16857</td><td>17055</td></tr><tr><th>17</th><td>chr01</td><td>16606</td><td>16765</td></tr><tr><th>18</th><td>chr01</td><td>15795</td><td>15947</td></tr><tr><th>19</th><td>chr01</td><td>15004</td><td>15038</td></tr><tr><th>20</th><td>chr01</td><td>14403</td><td>14501</td></tr><tr><th>21</th><td>chr01</td><td>17368</td><td>17436</td></tr><tr><th>22</th><td>chr01</td><td>29553</td><td>30039</td></tr><tr><th>23</th><td>chr01</td><td>30563</td><td>30667</td></tr><tr><th>24</th><td>chr01</td><td>30975</td><td>31097</td></tr><tr><th>25</th><td>chr01</td><td>30266</td><td>30667</td></tr><tr><th>26</th><td>chr01</td><td>30975</td><td>31109</td></tr><tr><th>27</th><td>chr01</td><td>30365</td><td>30503</td></tr><tr><th>28</th><td>chr01</td><td>35720</td><td>36081</td></tr><tr><th>29</th><td>chr01</td><td>35276</td><td>35481</td></tr><tr><th>30</th><td>chr01</td><td>34553</td><td>35174</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
@@ -698,7 +698,7 @@ Categorical arrays
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"url"</span> <span class="op">=&gt;</span> <span class="st">"https://github.com/lh3/biofast/releases/tag/biofast-data-v1"</span>,</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  ],</span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>"./biofast-data-v1/ex-anno.arrow"</code></pre>
 </div>
 </div>
@@ -732,7 +732,7 @@ Categorical arrays
 <span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> arrownm</span>
 <span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>rnaarrownm <span class="op">=</span> <span class="fu">bed2arrow</span>(<span class="st">"ex-rna"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>"biofast-data-v1/ex-rna.arrow"</code></pre>
 </div>
 </div>
@@ -740,7 +740,7 @@ Categorical arrays
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>total 273M
--rw-rw-r-- 1 bates bates 3.9M Jun 23 14:37 ex-anno.arrow
+-rw-rw-r-- 1 bates bates 3.9M Jun 24 13:37 ex-anno.arrow
 -rw-r--r-- 1 bates bates  28M Jun 16 16:18 ex-anno.bed
 -rw-rw-r-- 1 bates bates  39M Jun 16 16:19 ex-rna.arrow
 -rw-r--r-- 1 bates bates 203M Jun 16 16:18 ex-rna.bed</code></pre>
@@ -766,7 +766,7 @@ Semicolon separating positional and named arguments
 <h2 class="anchored" data-anchor-id="reading-arrow-files-in-julia">Reading Arrow files in Julia</h2>
 <div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>annotbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(<span class="fu">joinpath</span>(datadir, <span class="st">"ex-anno.arrow"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="36">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>Arrow.Table with 573806 rows, 3 columns, and schema:
  :chromo  String
  :start   Int32
@@ -781,16 +781,16 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 </ul>
 <div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(annotbl.chromo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="37">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>Arrow.DictEncoded{String, Int8, Arrow.List{String, Int32, Vector{UInt8}}}</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  0.041142 seconds (326 allocations: 77.842 MiB)</code></pre>
+<pre><code>  0.045910 seconds (325 allocations: 77.842 MiB)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="38">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>Arrow.Table with 4685080 rows, 3 columns, and schema:
  :chromo  String
  :start   Int32
@@ -811,7 +811,7 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">combine</span>(annogdf, nrow <span class="op">=&gt;</span> <span class="op">:</span>nanno);</span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  on <span class="op">=</span> <span class="op">:</span>chromo,</span>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div class="cell-output cell-output-display" data-execution_count="18">
 
 <div class="data-frame"><p>24 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>chromo</th><th>nrna</th><th>nanno</th></tr><tr><th></th><th title="String">String</th><th title="Int64">Int64</th><th title="Int64">Int64</th></tr></thead><tbody><tr><th>1</th><td>chr01</td><td>453114</td><td>52789</td></tr><tr><th>2</th><td>chr02</td><td>298278</td><td>42563</td></tr><tr><th>3</th><td>chr03</td><td>251858</td><td>34769</td></tr><tr><th>4</th><td>chr04</td><td>132781</td><td>22500</td></tr><tr><th>5</th><td>chr05</td><td>225898</td><td>26085</td></tr><tr><th>6</th><td>chr06</td><td>307747</td><td>24935</td></tr><tr><th>7</th><td>chr07</td><td>217038</td><td>27613</td></tr><tr><th>8</th><td>chr08</td><td>141205</td><td>21603</td></tr><tr><th>9</th><td>chr09</td><td>165181</td><td>20189</td></tr><tr><th>10</th><td>chr10</td><td>162256</td><td>20061</td></tr><tr><th>11</th><td>chr11</td><td>286584</td><td>34021</td></tr><tr><th>12</th><td>chr12</td><td>292002</td><td>33524</td></tr><tr><th>13</th><td>chr13</td><td>76779</td><td>9464</td></tr><tr><th>14</th><td>chr14</td><td>171402</td><td>19995</td></tr><tr><th>15</th><td>chr15</td><td>171736</td><td>22187</td></tr><tr><th>16</th><td>chr16</td><td>192595</td><td>28276</td></tr><tr><th>17</th><td>chr17</td><td>288348</td><td>35888</td></tr><tr><th>18</th><td>chr18</td><td>60429</td><td>10179</td></tr><tr><th>19</th><td>chr19</td><td>344775</td><td>35451</td></tr><tr><th>20</th><td>chr20</td><td>109979</td><td>12387</td></tr><tr><th>21</th><td>chr21</td><td>51720</td><td>6518</td></tr><tr><th>22</th><td>chr22</td><td>132956</td><td>12724</td></tr><tr><th>23</th><td>chrX</td><td>150330</td><td>17618</td></tr><tr><th>24</th><td>chrY</td><td>89</td><td>2467</td></tr></tbody></table></div>
 </div>
