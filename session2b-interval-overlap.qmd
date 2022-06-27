@@ -195,9 +195,9 @@ function Base.intersect!(
   target = eltype(refs)(target)  # coerce the type, if necessary
   lastt = last(target)
   for rng in refs
+    lastt < first(rng) && break
     isect = intersect(target, rng)
     !isempty(isect) && push!(result, isect)
-    lastt < first(rng) && break
   end
   return result
 end
