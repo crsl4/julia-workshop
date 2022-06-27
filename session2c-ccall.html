@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Session 2c: Interfacing with Compiled Code</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="session2c-ccall_files/libs/clipboard/clipboard.min.js"></script>
+<script src="session2c-ccall_files/libs/quarto-html/quarto.js"></script>
+<script src="session2c-ccall_files/libs/quarto-html/popper.min.js"></script>
+<script src="session2c-ccall_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="session2c-ccall_files/libs/quarto-html/anchor.min.js"></script>
+<link href="session2c-ccall_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="session2c-ccall_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="session2c-ccall_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="session2c-ccall_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="session2c-ccall_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Session 2c: Interfacing with Compiled Code</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</header>
+
+<p>Load packages to be used</p>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Arrow             </span><span class="co"># Arrow storage and file format</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Tables            </span><span class="co"># row- or column-oriented data tables</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>annotbl <span class="op">=</span> <span class="fu">rowtable</span>(Arrow.<span class="fu">Table</span>(<span class="st">"./biofast-data-v1/ex-anno.arrow"</span>));</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>rnatbl <span class="op">=</span> <span class="fu">rowtable</span>(Arrow.<span class="fu">Table</span>(<span class="st">"./biofast-data-v1/ex-rna.arrow"</span>));</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<ul>
+<li><a href="http://liheng.org">Li Heng</a> wrote the <a href="https://github.com/lh3/biofast">biofast</a> benchmarks to compare implementations of his <a href="https://github.com/lh3/cgranges">cgranges</a> interval tree method.</li>
+<li>The code in other languages imitates the C/C++ style of his original implementation.</li>
+<li>A line-by-line translation of C code into another language is not always an effective approach.</li>
+<li>What if, instead, we could just link into the C functions from within Julia? Well, we can.</li>
+</ul>
+</section>
+<section id="the-ccall-interface" class="level2">
+<h2 class="anchored" data-anchor-id="the-ccall-interface">The ccall interface</h2>
+<ul>
+<li>Like many projects coded in C, <code>cgranges</code> is divided into a header file, “cgranges.h”, that defines the API, and an implementation, “cgranges.c”.</li>
+<li>The JIT (Just-In-Time) compiler in Julia is build upon the <a href="https://llvm.org">LLVM</a> compiler back end, used by <a href="https://clang.llvm.org">Clang</a> and other projects.</li>
+<li>Julia function calls already use C-style linkage. Julia’s <code>ccall</code> function and several utilities allow for this without the need to write, compile and link “glue” code.</li>
+<li>It is not trivial to do this (the manual section is rather long) but it is easy and straightforward compared to what you need to do in other languages.</li>
+<li>The big obstacle in doing this for packages is cross-platform building of packages with binary dependencies. <a href="https://JuliaPackaging/BinaryBuilder.jl">BinaryBuilder.jl</a> simplifies that process.</li>
+</ul>
+</section>
+<section id="building-the-dll" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-dll">Building the DLL</h2>
+<ul>
+<li>I am just going to show this on Linux, because that is what I know.</li>
+<li>The lib directory contains “cgranges.c” and two header files, “cgranges.h” and “khash.h”</li>
+<li>A shell session to build “libcgranges.so” looks like</li>
+</ul>
+<pre><code>$ cd lib
+$ gcc -c -Wall -Werror -fpic cgranges.c
+$ gcc -shared -o libcgranges.so cgranges.o
+$ nm -g libcgranges.so 
+                 U __assert_fail@GLIBC_2.2.5
+                 U calloc@GLIBC_2.2.5
+00000000000028c3 T cr_add
+000000000000268f T cr_add_ctg
+0000000000003901 T cr_contain
+00000000000036cf T cr_contain_int
+000000000000260f T cr_destroy
+00000000000013f2 T cr_en
+0000000000001438 T cr_end
+0000000000002865 T cr_get_ctg
+0000000000002eae T cr_index
+0000000000002c61 T cr_index1
+0000000000002af3 T cr_index_prepare
+00000000000025dd T cr_init
+0000000000002a7d T cr_is_sorted
+0000000000001469 T cr_label
+0000000000003869 T cr_min_start
+0000000000002f50 T cr_min_start_int
+00000000000038a8 T cr_overlap
+0000000000003098 T cr_overlap_int
+0000000000002a28 T cr_sort
+00000000000013d9 T cr_st
+0000000000001407 T cr_start
+                 w __cxa_finalize@GLIBC_2.2.5
+                 U free@GLIBC_2.2.5
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 U malloc@GLIBC_2.2.5
+                 U memset@GLIBC_2.2.5
+0000000000001a97 T radix_sort_cr_intv
+                 U realloc@GLIBC_2.2.5
+00000000000014e2 T rs_insertsort_cr_intv
+000000000000159b T rs_sort_cr_intv
+                 U __stack_chk_fail@GLIBC_2.4
+                 U strcmp@GLIBC_2.2.5
+                 U strdup@GLIBC_2.2.5</code></pre>
+<ul>
+<li>The <a href="https://github.com/JuliaInterop/Clang.jl">Clang.jl</a> package allows for parsing the C header files and producing Julia code to mimic the structs and functions.</li>
+<li>The configuration file, cgranges.toml, and the resulting Julia interface, CGranges.jl, are in the lib directory.</li>
+<li>Normally CGranges.jl would be part of a Julia package and define a module that exports symbols but we will skip over that.</li>
+</ul>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">include</span>(<span class="st">"./lib/CGranges.jl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WARNING: replacing module CGranges.</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>Main.CGranges</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>crptr <span class="op">=</span> CGranges.<span class="fu">cr_init</span>()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unsafe_load</span>(crptr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>Main.CGranges.cgranges_t(0, 0, Ptr{Main.CGranges.cr_intv_t} @0x0000000000000000, 0, 0, Ptr{Main.CGranges.cr_ctg_t} @0x0000000000000000, Ptr{Nothing} @0x000000000755c6a0)</code></pre>
+</div>
+</div>
+<ul>
+<li>We can check the fields of this object with <code>propertynames</code>.</li>
+</ul>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">propertynames</span>(<span class="fu">unsafe_load</span>(crptr))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>(:n_r, :m_r, :r, :n_ctg, :m_ctg, :ctg, :hc)</code></pre>
+</div>
+</div>
+<ul>
+<li>The <code>cr_add</code> function inserts a new value into the interval tree.</li>
+<li>Define another method taking a <code>NamedTuple</code> so we can iterate over <code>annotbl</code></li>
+</ul>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> CGranges.<span class="fu">cr_add</span>(crptr<span class="op">::</span><span class="dt">Ptr{CGranges.cgranges_t}</span>, r<span class="op">::</span><span class="dt">NamedTuple</span>, i<span class="op">::</span><span class="dt">Integer</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  CGranges.<span class="fu">cr_add</span>(crptr, r.chromo, r.start, r.stop, i)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>The <code>CGranges.cr_add</code> function takes an extra integer argument that is stored as a label.</li>
+</ul>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i, r) <span class="kw">in</span> <span class="fu">enumerate</span>(annotbl)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  CGranges.<span class="fu">cr_add</span>(crptr, r, i)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>CGranges.<span class="fu">cr_index</span>(crptr)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">unsafe_load</span>(crptr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>Main.CGranges.cgranges_t(573806, 599104, Ptr{Main.CGranges.cr_intv_t} @0x000000000aac93d0, 24, 24, Ptr{Main.CGranges.cr_ctg_t} @0x0000000000f7ddb0, Ptr{Nothing} @0x000000000755c6a0)</code></pre>
+</div>
+</div>
+<ul>
+<li>To get the overlap we have to pass a reference to a vector of 64-bit integers and a reference to a 64-bit integer so they can be overwritten in the C code.</li>
+</ul>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>b_ <span class="op">=</span> <span class="fu">Ref</span>(<span class="fu">Ptr</span><span class="dt">{Int64}</span>(<span class="fl">0</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(b_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>Base.RefValue{Ptr{Int64}}</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>m_b_ <span class="op">=</span> <span class="fu">Ref</span>(<span class="fl">0</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="fu">first</span>(rnatbl)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>noverlap <span class="op">=</span> CGranges.<span class="fu">cr_overlap</span>(crptr, r.chromo, r.start, r.stop, b_, m_b_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>13</code></pre>
+</div>
+</div>
+<ul>
+<li>There are 13 overlapping reference intervals for this first target interval</li>
+<li>The 0-based indices into these positions are now in <code>b_</code></li>
+</ul>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>bcp <span class="op">=</span> [<span class="fu">unsafe_load</span>(b_[], i) for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>noverlap]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(bcp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[88358, 88364, 88366, 88368, 88369, 88370, 88371, 88372, 88373, 88374, 88375, 88376, 88377]</code></pre>
+</div>
+</div>
+<ul>
+<li>The exact representation of an interval in the <code>cg_intv_t</code> is, well, peculiar but there are extractors.</li>
+</ul>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(; start<span class="op">=</span>CGranges.<span class="fu">cr_start</span>(crptr, <span class="fl">88358</span>), stop<span class="op">=</span>CGranges.<span class="fu">cr_end</span>(crptr, <span class="fl">88358</span>), label<span class="op">=</span>CGranges.<span class="fu">cr_label</span>(crptr, <span class="fl">88358</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>(start = 216498824, stop = 216499398, label = 88362)</code></pre>
+</div>
+</div>
+<ul>
+<li>We see that this does indeed overlap with our row <code>r</code> from the <code>rnatbl</code></li>
+</ul>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>r</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>(chromo = "chr02", start = 216499331, stop = 216501458)</code></pre>
+</div>
+</div>
+<ul>
+<li>To get the count of the overlap we can use a comprehension</li>
+</ul>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>nover <span class="op">=</span> [CGranges.<span class="fu">cr_overlap</span>(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r <span class="kw">in</span> rnatbl]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="28">
+<pre><code>4685080-element Vector{Int64}:
+ 13
+ 16
+ 44
+ 21
+  2
+ 27
+  3
+  0
+  5
+  3
+ 27
+ 15
+ 15
+  ⋮
+ 12
+  9
+  4
+ 15
+ 15
+  5
+  2
+ 10
+ 11
+ 22
+ 14
+ 44</code></pre>
+</div>
+</div>
+<ul>
+<li>This is very fast (remember that this timing is for all the chromosomes).</li>
+</ul>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> [CGranges.<span class="fu">cr_overlap</span>(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r <span class="kw">in</span> rnatbl];</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  2.535447 seconds (9.42 M allocations: 181.075 MiB, 3.48% gc time, 0.86% compilation time)</code></pre>
+</div>
+</div>
+<ul>
+<li>Getting the proportion of the overlap would require more code.</li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
