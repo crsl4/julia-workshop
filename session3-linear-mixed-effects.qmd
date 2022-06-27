@@ -6,11 +6,16 @@ jupyter: julia-1.8
 
 # Linear Mixed Models in Julia
 
-A _mixed-effects model_ or, more simply, a _mixed model_ incorporates both _fixed-effects_ parameters and _random effects_.
-The random effects are associated with the levels of one or more _grouping factors_, which typically are _experimental units_ or _observational units_, such as `subject` or `item`.
-When we have several observations on each of several subjects, say, we may expect to see subject-to-subject variability in the response but assessing this variability is not the primary purpose of the data analysis.
-Instead we wish to control for this level of variability in assessing difference in experimental factors.
+- A _mixed-effects model_ or, more simply, a _mixed model_ incorporates both _fixed-effects_ parameters and _random effects_.
+- The random effects are associated with the levels of one or more _grouping factors_, which typically are _experimental units_ or _observational units_, such as `subject` or `item`.
+- From an experimental design point of view these are _blocking variables_: known sources of variability for which we wish to account but whose levels are not themselves of interest.
+- This is in contrast to _experimental_ or _observational_ factors with a known, fixed set of levels that we are seeking to compare.
+- [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) provides structures and methods for fitting and analyzing mixed-effects models.
+- Fitting Linear Mixed Models (LMMs) or Generalized Linear Mixed Models (GLMMs) is described [here](https://repsychling.github.io/SMLP2022) and [here]
+There are several places where the use of this package is described.  Here
+## Data sets to be used in examples
 
+### The sleepstudy data
 For example, the [`sleepstudy`](https://rdrr.io/cran/lme4/man/sleepstudy.html) dataset in the [`lme4`](https://github.com/lme4/lme4) package for `R` is from a study on the effect of sleep deprivation on reaction time.
 A sample from the population of interest (long-distance truck drivers) had their average response time measured when they were on their regular sleep schedule and after one up to nine days of sleep deprivation (allowed only 3 hours per day in which to sleep).
 

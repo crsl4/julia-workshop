@@ -7,16 +7,15 @@ Load packages to be used
 ```{julia}
 #| code-fold: show
 using Arrow             # Arrow storage and file format
-using DataFrames        # versatile tabular data format
 using Tables            # row- or column-oriented data tables
 
-annotbl = rowtable(DataFrame(Arrow.Table("./biofast-data-v1/ex-anno.arrow")));
-rnatbl = rowtable(DataFrame(Arrow.Table("./biofast-data-v1/ex-rna.arrow")));
+annotbl = rowtable(Arrow.Table("./biofast-data-v1/ex-anno.arrow"));
+rnatbl = rowtable(Arrow.Table("./biofast-data-v1/ex-rna.arrow"));
 ```
 
 ## Background
 
-- [Li Heng](https://liheng.org) wrote the [biofast](https://github.com/lh3/biofast) benchmarks to compare implementations of his [cgranges](https://github.com/lh3/cgranges) interval tree method.
+- [Li Heng](http://liheng.org) wrote the [biofast](https://github.com/lh3/biofast) benchmarks to compare implementations of his [cgranges](https://github.com/lh3/cgranges) interval tree method.
 - The code in other languages imitates the C/C++ style of his original implementation.
 - A line-by-line translation of C code into another language is not always an effective approach.
 - What if, instead, we could just link into the C functions from within Julia?  Well, we can.
@@ -84,12 +83,11 @@ $ nm -g libcgranges.so
 - Normally CGranges.jl would be part of a Julia package and define a module that exports symbols but we will skip over that.
 
 ```{julia}
-libcgranges = "./lib/libcgranges.so"
 include("./lib/CGranges.jl")
-crptr = cr_init()
 ```
 
 ```{julia}
+crptr = CGranges.cr_init()
 unsafe_load(crptr)
 ```
 
@@ -103,17 +101,17 @@ propertynames(unsafe_load(crptr))
 - Define another method taking a `NamedTuple` so we can iterate over `annotbl`
 
 ```{julia}
-function cr_add(crptr::Ptr{cgranges_t}, r::NamedTuple, i::Integer)
-  cr_add(crptr, r.chromo, r.start, r.stop, i)
+function CGranges.cr_add(crptr::Ptr{CGranges.cgranges_t}, r::NamedTuple, i::Integer)
+  CGranges.cr_add(crptr, r.chromo, r.start, r.stop, i)
 end
 ```
 
-- The `cr_add` function takes an extra integer argument that is stored as a label.
+- The `CGranges.cr_add` function takes an extra integer argument that is stored as a label.
 ```{julia}
 for (i, r) in enumerate(annotbl)
-  cr_add(crptr, r, i)
+  CGranges.cr_add(crptr, r, i)
 end
-cr_index(crptr)
+CGranges.cr_index(crptr)
 unsafe_load(crptr)
 ```
 
@@ -127,10 +125,10 @@ typeof(b_)
 ```{julia}
 m_b_ = Ref(0)
 r = first(rnatbl)
-noverlap = cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_)
+noverlap = CGranges.cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_)
 ```
 
-- There are 12 overlapping reference intervals for this first target interval
+- There are 13 overlapping reference intervals for this first target interval
 - The 0-based indices into these positions are now in `b_`
 
 ```{julia}
@@ -141,7 +139,7 @@ show(bcp)
 - The exact representation of an interval in the `cg_intv_t` is, well, peculiar but there are extractors.
 
 ```{julia}
-(; start=cr_start(crptr, 7), stop=cr_end(crptr, 7), label=cr_label(crptr, 7))
+(; start=CGranges.cr_start(crptr, 88358), stop=CGranges.cr_end(crptr, 88358), label=CGranges.cr_label(crptr, 88358))
 ```
 
 - We see that this does indeed overlap with our row `r` from the `rnatbl`
@@ -153,12 +151,12 @@ r
 - To get the count of the overlap we can use a comprehension
 
 ```{julia}
-nover = [cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r in rnatbl]
+nover = [CGranges.cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r in rnatbl]
 ```
 
 - This is very fast (remember that this timing is for all the chromosomes).
 ```{julia}
-@time [cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r in rnatbl];
+@time [CGranges.cr_overlap(crptr, r.chromo, r.start, r.stop, b_, m_b_) for r in rnatbl];
 ```
 
 - Getting the proportion of the overlap would require more code.
