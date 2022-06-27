@@ -178,7 +178,7 @@ pkg> instantiate
 
 All required packages and dependencies will be installed. Scripts that run in your computer will also run in their computer.
 
-# Opening the julia code
+# Editing julia code
 
 There are many ways to work on julia code depending on the editor.
 

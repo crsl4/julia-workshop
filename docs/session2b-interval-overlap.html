@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-99.9.9">
+<meta name="generator" content="quarto-0.9.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -82,14 +82,13 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
+<meta name="quarto:offset" content="./">
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
 <link href="./session4-exercise.html" rel="next">
 <link href="./session2a-tables-and-arrow.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
@@ -97,7 +96,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link id="quarto-text-highlighting-styles" href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -129,7 +128,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </head>
 
 <body class="nav-sidebar docked nav-fixed">
-
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -203,7 +201,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./session4-exercise.html" class="sidebar-item-text sidebar-link">Hands-on exercise</a>
+  <a href="./session4-exercise.html" class="sidebar-item-text sidebar-link">Session 4: Hands-on exercise</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -260,6 +258,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+
+
 <div class="quarto-title-meta">
 
     <div>
@@ -283,6 +283,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section id="load-packages-to-be-used" class="level2">
 <h2 class="anchored" data-anchor-id="load-packages-to-be-used">Load packages to be used</h2>
+<div class="cell" data-execution_count="1">
 <details open="">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Arrow          </span><span class="co"># Arrow storage and file format</span></span>
@@ -296,6 +297,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>datadir <span class="op">=</span> <span class="fu">joinpath</span>(<span class="pp">@__DIR__</span>, <span class="st">"biofast-data-v1"</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
 </section>
 <section id="strategy-for-computing-overlaps" class="level1">
 <h1>Strategy for computing overlaps</h1>
@@ -981,6 +983,19 @@ Augmented interval trees
   509 ns<span class="ansi-bright-black-fg">          Histogram: frequency by time</span>         1.01 μs <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">1.92 KiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">4</span>.</pre>
 </div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">intersect</span>(tar, ref) setup <span class="op">=</span> (tar <span class="op">=</span> target; ref <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>BenchmarkTools.Trial: 10000 samples with 166 evaluations.
+ Range [90m([39m[36m[1mmin[22m[39m … [35mmax[39m[90m):  [39m[36m[1m639.560 ns[22m[39m … [35m216.747 μs[39m  [90m┊[39m GC [90m([39mmin … max[90m): [39m 0.00% … 99.04%
+ Time  [90m([39m[34m[1mmedian[22m[39m[90m):     [39m[34m[1m710.630 ns               [22m[39m[90m┊[39m GC [90m([39mmedian[90m):    [39m 0.00%
+ Time  [90m([39m[32m[1mmean[22m[39m ± [32mσ[39m[90m):   [39m[32m[1m935.643 ns[22m[39m ± [32m  3.528 μs[39m  [90m┊[39m GC [90m([39mmean ± σ[90m):  [39m19.95% ±  6.02%
+
+  [39m▇[39m▇[39m▅[39m▆[39m▅[39m▄[34m▅[39m[39m█[39m▆[39m▃[39m▂[39m▁[39m [39m [39m▁[39m [39m [39m [39m [39m [39m [39m [39m [32m [39m[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m▂
+  [39m█[39m█[39m█[39m█[39m█[39m█[34m█[39m[39m█[39m█[39m█[39m█[39m█[39m█[39m█[39m█[39m█[39m█[39m▇[39m▇[39m█[39m▇[39m█[39m█[32m█[39m[39m▇[39m▇[39m█[39m█[39m▇[39m▆[39m▇[39m▇[39m▇[39m▇[39m▇[39m▆[39m▇[39m▇[39m▇[39m▆[39m▆[39m▆[39m▆[39m▆[39m▇[39m▇[39m▆[39m▇[39m▆[39m▆[39m▇[39m▄[39m▆[39m▆[39m▅[39m▅[39m▆[39m▅[39m▅[39m▆[39m▄[39m [39m█
+  640 ns[90m        [39m[90mHistogram: [39m[90m[1mlog([22m[39m[90mfrequency[39m[90m[1m)[22m[39m[90m by time[39m       1.42 μs [0m[1m&lt;[22m
+
+ Memory estimate[90m: [39m[33m1.92 KiB[39m, allocs estimate[90m: [39m[33m4[39m.</code></pre>
 </div>
 </div>
 </section>
@@ -1093,6 +1108,20 @@ Bug in <code>union!</code> for <code>BitSet</code>
   138 ms<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          148 ms <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">26.23 MiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">158533</span>.</pre>
 </div>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">overlaps</span>(targets, refs) setup <span class="op">=</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  (targets <span class="op">=</span> tarrngvec01; refs <span class="op">=</span> rangetree01)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<pre><code>BenchmarkTools.Trial: 28 samples with 1 evaluation.
+ Range [90m([39m[36m[1mmin[22m[39m … [35mmax[39m[90m):  [39m[36m[1m159.688 ms[22m[39m … [35m257.517 ms[39m  [90m┊[39m GC [90m([39mmin … max[90m): [39m0.00% … 0.00%
+ Time  [90m([39m[34m[1mmedian[22m[39m[90m):     [39m[34m[1m180.461 ms               [22m[39m[90m┊[39m GC [90m([39mmedian[90m):    [39m0.00%
+ Time  [90m([39m[32m[1mmean[22m[39m ± [32mσ[39m[90m):   [39m[32m[1m183.785 ms[22m[39m ± [32m 20.681 ms[39m  [90m┊[39m GC [90m([39mmean ± σ[90m):  [39m1.70% ± 2.69%
+
+  [39m█[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [34m▂[39m[39m [39m▂[32m [39m[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m 
+  [39m█[39m▁[39m▁[39m▁[39m▅[39m▁[39m▁[39m█[39m▅[39m▁[39m▅[39m▅[34m█[39m[39m█[39m█[32m▁[39m[39m▁[39m▅[39m▁[39m▁[39m▅[39m▅[39m▁[39m▁[39m█[39m▅[39m▁[39m▁[39m▁[39m▅[39m▁[39m▁[39m▁[39m▁[39m▁[39m▅[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▅[39m [39m▁
+  160 ms[90m           Histogram: frequency by time[39m          258 ms [0m[1m&lt;[22m
+
+ Memory estimate[90m: [39m[33m26.23 MiB[39m, allocs estimate[90m: [39m[33m158533[39m.</code></pre>
 </div>
 </div>
 </section>
@@ -1153,6 +1182,31 @@ Pre-assigning dictionary entries to avoid thread conflict
   444 ms<span class="ansi-bright-black-fg">           Histogram: frequency by time</span>          614 ms <span class="ansi-bold">&lt;</span>
  Memory estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">278.21 MiB</span>, allocs estimate<span class="ansi-bright-black-fg">: </span><span class="ansi-yellow-fg">1724563</span>.</pre>
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>The <code>result</code> is initialized with all the keys that will be in the result and with values that are empty <code>DataFrame</code>s.</li>
+<li>Individual tasks that are <code>@spawn</code>ed allocate their <code>DataFrame</code> value and merely update the pointer in <code>result</code> to that value, eliminating the possibility of collisions with other tasks.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@benchmark</span> <span class="fu">overlaps</span>(targets, refs) setup <span class="op">=</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  (targets <span class="op">=</span> tarrngvecs; refs <span class="op">=</span> refrngtrees)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="35">
+<pre><code>BenchmarkTools.Trial: 8 samples with 1 evaluation.
+ Range [90m([39m[36m[1mmin[22m[39m … [35mmax[39m[90m):  [39m[36m[1m621.020 ms[22m[39m … [35m939.689 ms[39m  [90m┊[39m GC [90m([39mmin … max[90m): [39m0.00% … 10.57%
+ Time  [90m([39m[34m[1mmedian[22m[39m[90m):     [39m[34m[1m658.504 ms               [22m[39m[90m┊[39m GC [90m([39mmedian[90m):    [39m0.00%
+ Time  [90m([39m[32m[1mmean[22m[39m ± [32mσ[39m[90m):   [39m[32m[1m711.906 ms[22m[39m ± [32m114.941 ms[39m  [90m┊[39m GC [90m([39mmean ± σ[90m):  [39m4.16% ±  4.90%
+
+  [39m▁[39m▁[39m█[34m [39m[39m [39m [39m [39m [39m [39m [39m [39m▁[39m [39m [39m [39m [39m [32m [39m[39m [39m [39m [39m [39m▁[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m▁[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m▁[39m [39m 
+  [39m█[39m█[39m█[34m▁[39m[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m█[39m▁[39m▁[39m▁[39m▁[39m▁[32m▁[39m[39m▁[39m▁[39m▁[39m▁[39m█[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m█[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m█[39m [39m▁
+  621 ms[90m           Histogram: frequency by time[39m          940 ms [0m[1m&lt;[22m
+
+ Memory estimate[90m: [39m[33m278.21 MiB[39m, allocs estimate[90m: [39m[33m1724564[39m.</code></pre>
 </div>
 </div>
 </section>
@@ -1171,14 +1225,14 @@ Pre-assigning dictionary entries to avoid thread conflict
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">versioninfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Julia Version 1.8.0-rc1
-Commit 6368fdc656 (2022-05-27 18:33 UTC)
+Commit 6368fdc6565 (2022-05-27 18:33 UTC)
 Platform Info:
-  OS: Linux (x86_64-pc-linux-gnu)
-  CPU: 8 × 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+  OS: macOS (x86_64-apple-darwin21.4.0)
+  CPU: 8 × Intel(R) Core(TM) i7-8569U CPU @ 2.80GHz
   WORD_SIZE: 64
   LIBM: libopenlibm
-  LLVM: libLLVM-13.0.1 (ORCJIT, tigerlake)
-  Threads: 6 on 8 virtual cores</code></pre>
+  LLVM: libLLVM-13.0.1 (ORCJIT, skylake)
+  Threads: 4 on 8 virtual cores</code></pre>
 </div>
 </div>
 
@@ -1265,7 +1319,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./session2a-tables-and-arrow.html" class="pagination-link">
@@ -1274,7 +1327,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./session4-exercise.html" class="pagination-link">
-        <span class="nav-page-text">Hands-on exercise</span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text">Session 4: Hands-on exercise</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

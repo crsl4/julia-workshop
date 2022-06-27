@@ -1,5 +1,5 @@
 ---
-title: "Hands-on exercise"
+title: "Session 4: Hands-on exercise"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
 ---
