@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-99.9.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
+<meta name="dcterms.date" content="2022-07-04">
+
+<title>Julia Workshop - Linear Mixed-effects Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./session4-exercise.html" rel="next">
+<link href="./session2b-interval-overlap.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Julia Workshop</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html">About</a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/crsl4/julia-workshop"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title">Linear Mixed-effects Models</h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation docked overflow-auto">
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Julia Workshop for Data Science</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session1-get-started.html" class="sidebar-item-text sidebar-link">Session 1: Getting started with Julia</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session2a-tables-and-arrow.html" class="sidebar-item-text sidebar-link">Session 2a: Data Tables and Arrow files</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session2b-interval-overlap.html" class="sidebar-item-text sidebar-link">Session 2b: Determining Interval Overlap</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session3-linear-mixed-effects.html" class="sidebar-item-text sidebar-link active">Linear Mixed-effects Models</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session4-exercise.html" class="sidebar-item-text sidebar-link">Session 4: Hands-on exercise</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session5-other-tools.html" class="sidebar-item-text sidebar-link">Session 5: Other tools for Data Science</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session6-conclusions.html" class="sidebar-item-text sidebar-link">Session 6: Conclusions</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#linear-mixed-models-in-julia" id="toc-linear-mixed-models-in-julia" class="nav-link active" data-scroll-target="#linear-mixed-models-in-julia">Linear Mixed Models in Julia</a>
+  <ul class="collapse">
+  <li><a href="#data-sets-to-be-used-in-examples" id="toc-data-sets-to-be-used-in-examples" class="nav-link" data-scroll-target="#data-sets-to-be-used-in-examples">Data sets to be used in examples</a>
+  <ul class="collapse">
+  <li><a href="#the-sleepstudy-data" id="toc-the-sleepstudy-data" class="nav-link" data-scroll-target="#the-sleepstudy-data">The sleepstudy data</a></li>
+  </ul></li>
+  <li><a href="#the-big-picture" id="toc-the-big-picture" class="nav-link" data-scroll-target="#the-big-picture">The Big Picture</a></li>
+  <li><a href="#spherical-random-effects" id="toc-spherical-random-effects" class="nav-link" data-scroll-target="#spherical-random-effects">Spherical random effects</a></li>
+  <li><a href="#mixed-models-and-shrinkage-of-estimates" id="toc-mixed-models-and-shrinkage-of-estimates" class="nav-link" data-scroll-target="#mixed-models-and-shrinkage-of-estimates">Mixed-models and shrinkage of estimates</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/crsl4/julia-workshop/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block">Linear Mixed-effects Models</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Douglas Bates and Claudia Solis-Lemus </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2022-07-04</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="linear-mixed-models-in-julia" class="level1">
+<h1>Linear Mixed Models in Julia</h1>
+<ul>
+<li>A <em>mixed-effects model</em> or, more simply, a <em>mixed model</em> incorporates both <em>fixed-effects</em> parameters and <em>random effects</em>.</li>
+<li>The random effects are associated with the levels of one or more <em>grouping factors</em>, which typically are <em>experimental units</em> or <em>observational units</em>, such as <code>subject</code> or <code>item</code>.</li>
+<li>From an experimental design point of view these are <em>blocking variables</em>: known sources of variability for which we wish to account but whose levels are not themselves of interest.</li>
+<li>This is in contrast to <em>experimental</em> or <em>observational</em> factors with a known, fixed set of levels that we are seeking to compare.</li>
+<li><a href="https://github.com/JuliaStats/MixedModels.jl">MixedModels.jl</a> provides structures and methods for fitting and analyzing mixed-effects models.</li>
+<li>Fitting Linear Mixed Models (LMMs) or Generalized Linear Mixed Models (GLMMs) is described in these <a href="https://repsychling.github.io/SMLP2022">notes</a> and in this <a href="https://juliamixedmodels.github.io/EmbraceUncertainty.">in-progress book</a></li>
+</ul>
+<section id="data-sets-to-be-used-in-examples" class="level2">
+<h2 class="anchored" data-anchor-id="data-sets-to-be-used-in-examples">Data sets to be used in examples</h2>
+<section id="the-sleepstudy-data" class="level3">
+<h3 class="anchored" data-anchor-id="the-sleepstudy-data">The sleepstudy data</h3>
+<p>For example, the <a href="https://rdrr.io/cran/lme4/man/sleepstudy.html"><code>sleepstudy</code></a> dataset in the <a href="https://github.com/lme4/lme4"><code>lme4</code></a> package for <code>R</code> is from a study on the effect of sleep deprivation on reaction time. A sample from the population of interest (long-distance truck drivers) had their average response time measured when they were on their regular sleep schedule and after one up to nine days of sleep deprivation (allowed only 3 hours per day in which to sleep).</p>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CairoMakie        </span><span class="co"># graphics backend</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">DataFrames</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">LinearAlgebra</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">MixedModels</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">MixedModelsMakie  </span><span class="co"># special graphics for mixed models</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">ProgressMeter</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">RCall</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">TypedTables</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>CairoMakie.<span class="fu">activate!</span>(; <span class="kw">type</span><span class="op">=</span><span class="st">"svg"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>RCall.<span class="fu">ijulia_setdevice</span>(<span class="fu">MIME</span>(<span class="st">"image/svg+xml"</span>), width<span class="op">=</span><span class="fl">7</span>, height<span class="op">=</span><span class="fl">5</span>);</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>ProgressMeter.<span class="fu">ijulia_behavior</span>(<span class="op">:</span>clear);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sleepstudy <span class="op">=</span> MixedModels.<span class="fu">dataset</span>(<span class="op">:</span>sleepstudy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>Arrow.Table with 180 rows, 3 columns, and schema:
+ :subj      String
+ :days      Int8
+ :reaction  Float64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>R<span class="st">"""</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">print(</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">  lattice::xyplot(</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="st">    reaction ~ days | subj,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="st">    </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="st">    type = c("g","p","r"), layout = c(9,2),</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="st">    index = function(x,y) coef(lm(y ~ x))[1],</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="st">    xlab = "Days of sleep deprivation",</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="st">    ylab = "Average reaction time (ms)",</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">    aspect = "xy"</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="st">  )</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-sleepxy" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="session3-linear-mixed-effects_files/figure-html/fig-sleepxy-output-1.svg" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 1: Average reaction time [ms.] versus days of sleep deprivation by participant. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li><p>Each panel shows the data from one subject as well as a simple linear regression line fit to that subject’s data only.</p></li>
+<li><p>The panels are ordered by increasing intercept of the within-subject line row-wise, starting at the bottom left.</p></li>
+<li><p>Some subjects, e.g.&nbsp;310 and 309, have fast reaction times and are almost unaffected by the sleep deprivation.</p></li>
+<li><p>Others, e.g.&nbsp;337, start with slow reaction times which then increase substantially after sleep depreivation.</p></li>
+<li><p>A suitable model for these data would include an intercept and slope for the “typical” subject and randomly distributed deviations from these values for each of the observed subjects.</p></li>
+<li><p>The assumed distribution of the random effects vector is multivariate Gaussian with mean zero (because they represent deviations from the population parameters) and an unknown covariance matrix, <span class="math inline">\(\Sigma\)</span>, to be estimated from the data.</p></li>
+<li><p>Because <span class="math inline">\(\Sigma\)</span> is a covariance matrix it must be symmetric and be positive-definite, a condition that is similar to the requirement that a scalar variance must be positive.</p></li>
+<li><p>In particular, a positive-definite matrix like <span class="math inline">\(\Sigma\)</span> has a “square root” in the sense that there is a matrix <span class="math inline">\(\mathbf{L}\)</span> such that <span class="math inline">\(\Sigma=\mathbf{L}\mathbf{L}^\prime\)</span>. (Multiplying by <span class="math inline">\(\mathbf{L}^\prime\)</span> instead of squaring <span class="math inline">\(\mathbf{L}\)</span> is necessary to ensure that the product is symmetric.)</p></li>
+<li><p>In fact, there are several such matrices <span class="math inline">\(\mathbf{L}\)</span>. If we require that <span class="math inline">\(\mathbf{L}\)</span> is lower triangular and that its diagonal entries be positive, there is only one such matrix, which is called the lower (or left) Cholesky factor.</p></li>
+<li><p>As shown later, some of the expressions for the likelihood can be simplified if any scale parameter in the distribution of the response, given the random effects, is incorporated into the covariance matrix of the random effects.</p></li>
+<li><p>Define <span class="math inline">\(\mathbf{\lambda}\)</span> to be the lower triangular matrix with non-negative diagonal entries such that</p></li>
+</ul>
+<p><span class="math display">\[
+\Sigma=\sigma^2{\bf\lambda}{\bf\lambda}^\prime
+\]</span></p>
+<ul>
+<li>Fit a model with fixed effects for the intercept and the slope with respect to days of sleep deprivation and, possibly correlated, random effects for each of these coefficients by <code>Subject</code>.</li>
+</ul>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> contrasts <span class="op">=</span> <span class="fu">Dict</span><span class="dt">{Symbol,Any}</span>(<span class="op">:</span>subj <span class="op">=&gt;</span> <span class="fu">Grouping</span>())</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>m1 <span class="op">=</span> <span class="kw">let</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span> reaction <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> days <span class="op">+</span> (<span class="fl">1</span><span class="op">+</span>days<span class="op">|</span>subj);</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, sleepstudy; contrasts)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Minimizing 58    Time: 0:00:00 ( 5.81 ms/it)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Est.</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">z</th>
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">σ_subj</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">251.4051</td>
+<td style="text-align: right;">6.6323</td>
+<td style="text-align: right;">37.91</td>
+<td style="text-align: right;">&lt;1e-99</td>
+<td style="text-align: right;">23.7805</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">days</td>
+<td style="text-align: right;">10.4673</td>
+<td style="text-align: right;">1.5022</td>
+<td style="text-align: right;">6.97</td>
+<td style="text-align: right;">&lt;1e-11</td>
+<td style="text-align: right;">5.7168</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Residual</td>
+<td style="text-align: right;">25.5918</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<table class="table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Column</th>
+<th style="text-align: right;">Variance</th>
+<th style="text-align: right;">Std.Dev</th>
+<th style="text-align: right;">Corr.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">subj</td>
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">565.51067</td>
+<td style="text-align: right;">23.78047</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">days</td>
+<td style="text-align: right;">32.68212</td>
+<td style="text-align: right;">5.71683</td>
+<td style="text-align: right;">+0.08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Residual</td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">654.94145</td>
+<td style="text-align: right;">25.59182</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>The “estimated” random effects from this model are eighteen vectors, one for each subject, and each of length two (deviation for the intercept and for the slope). These are returned as a <span class="math inline">\(2\times 18\)</span> matrix.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">first</span>(<span class="fu">ranef</span>(m1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>2×18 Matrix{Float64}:
+ 2.81582  -40.0484   -38.4331  22.8321   …  -24.7101   0.723262  12.1189
+ 9.07551   -8.64408   -5.5134  -4.65872       4.6597  -0.971053   1.3107</code></pre>
+</div>
+</div>
+<p>The fixed-effects coefficients are the typical values for the population - initial reaction time of about 250 ms. and about 10.5 ms. increase in reaction time per day of sleep deprivation.</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(<span class="fu">fixef</span>(m1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[251.40510484848375, 10.467285959595792]</code></pre>
+</div>
+</div>
+<p>For this model the matrix <span class="math inline">\(\mathbf{\lambda}\)</span> is estimated as</p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>λ <span class="op">=</span> <span class="fu">first</span>(m1.λ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>2×2 LowerTriangular{Float64, Matrix{Float64}}:
+ 0.929221    ⋅ 
+ 0.0181684  0.222645</code></pre>
+</div>
+</div>
+<p>and the (maximum likelihood) estimate of <span class="math inline">\(\sigma^2\)</span>, as shown in the “Variance components” table, is</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>σ² <span class="op">=</span> <span class="fu">varest</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>654.9414503759484</code></pre>
+</div>
+</div>
+<p>Thus the (maximum likelihood) estimate of the covariance matrix <span class="math inline">\(\Sigma\)</span> is</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>Σ <span class="op">=</span> σ² <span class="op">*</span> λ <span class="op">*</span> λ<span class="ch">'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>2×2 Matrix{Float64}:
+ 565.511  11.057
+  11.057  32.6821</code></pre>
+</div>
+</div>
+<p>The correlation shown in the “Variance components” table can be evaluated as</p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Σ[<span class="fl">2</span>,<span class="fl">1</span>] <span class="op">/</span> <span class="fu">sqrt</span>(Σ[<span class="fl">1</span>,<span class="fl">1</span>] <span class="op">*</span> Σ[<span class="fl">2</span>,<span class="fl">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>0.08133216669497845</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="the-big-picture" class="level2">
+<h2 class="anchored" data-anchor-id="the-big-picture">The Big Picture</h2>
+<p>Although it is tempting to construct the model on a per-subject basis it is ultimately easier to consider the entire set of responses and the collection of all of the random effects together. There are two reasons for this. First, the parameters must be estimated from the complete data set. Second, in situations where there is more than one grouping factor for the random effects it may not be possible to partition the responses according to the grouping factor. In the sleepstudy example the 180 observations can be partitioned into eighteen groups of ten observations on each of the eighteen subjects. However, in an example we will consider below each observation is on one of 56 subjects and one of 32 items and those classifications are <em>crossed</em>. That is, each subject is tested on each item and each item is tested on each subject. (Well, that was the plan at least. As often happens a few observations were erroneously recorded so the factors are not completely crossed in the data after cleaning.)</p>
+<p>In any case, we write <span class="math inline">\(\mathbf{b}\)</span> for the complete random-effects vector (in this case a 36-dimensional vector formed from the <span class="math inline">\(2\times 18\)</span> matrix in <em>column-major</em> order).</p>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">vec</span>(<span class="fu">first</span>(<span class="fu">ranef</span>(m1)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>36-element Vector{Float64}:
+   2.8158191325913045
+   9.07551171690184
+ -40.04844170604461
+  -8.644079452057246
+ -38.43306364816205
+  -5.513398016839489
+  22.832111878347245
+  -4.658717369983344
+  21.549840238279756
+  -2.944492887363264
+   8.815541327624107
+  -0.2352007017257725
+  16.441907752708154
+   ⋮
+   4.273998155877379
+  -2.955331793885193
+  20.622181380270188
+   3.561712799915034
+   3.2585352271136094
+   0.8717108026867305
+ -24.710141525318363
+   4.659700898746931
+   0.7232620377478233
+  -0.9710526342424729
+  12.118907799956531
+   1.31069806890679</code></pre>
+</div>
+</div>
+<p>In the model the unconditional distribution of the random variable <span class="math inline">\(\mathcal{B}\)</span> is</p>
+<p><span class="math display">\[
+\mathcal{B}\sim\mathcal{N}\left(\mathbf{0},\sigma^2\mathbf{\Lambda}\mathbf{\Lambda}^\prime\right)
+\]</span></p>
+<p>and the conditional distribution of the response vector, <span class="math inline">\(\mathcal{Y}\)</span>, is</p>
+<p><span class="math display">\[
+(\mathcal{Y}|\mathcal{B}=\mathbf{b})\sim\mathcal{N}\left(\mathbf{X\beta}+\mathbf{Zb}, \sigma^2\mathbf{I}_n\right)
+\]</span></p>
+<p>The model matrix <span class="math inline">\(\mathbf{X}\)</span> for the fixed-effects has the usual form</p>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Int</span>.(m1.X)  <span class="co"># display as Int to reduce clutter</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>180×2 Matrix{Int64}:
+ 1  0
+ 1  1
+ 1  2
+ 1  3
+ 1  4
+ 1  5
+ 1  6
+ 1  7
+ 1  8
+ 1  9
+ 1  0
+ 1  1
+ 1  2
+ ⋮  
+ 1  8
+ 1  9
+ 1  0
+ 1  1
+ 1  2
+ 1  3
+ 1  4
+ 1  5
+ 1  6
+ 1  7
+ 1  8
+ 1  9</code></pre>
+</div>
+</div>
+<p>but the model matrix <span class="math inline">\(\mathbf{Z}\)</span> for the random effects is very sparse. That is, most of the entries in <span class="math inline">\(\mathbf{Z}\)</span> are zero.</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Int</span>.(<span class="fu">first</span>(m1.reterms))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>180×36 Matrix{Int64}:
+ 1  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+ 1  1  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  2  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  3  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  4  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  5  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+ 1  6  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  7  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  8  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 1  9  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 0  0  1  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+ 0  0  1  1  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ 0  0  1  2  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+ ⋮              ⋮              ⋮        ⋱     ⋮              ⋮              ⋮
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  1  8  0  0
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  1  9  0  0
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  1  0
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  1
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  2
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  3
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  4
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  1  5
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  6
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  7
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  8
+ 0  0  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  1  9</code></pre>
+</div>
+</div>
+<p>In practice <span class="math inline">\(\mathbf{Z}\)</span> is stored and manipulated as a special type of sparse matrix.</p>
+<p>The matrix <span class="math inline">\(\Lambda\)</span> is block-diagonal consisting of 18 diagonal blocks of size <span class="math inline">\(2\times 2\)</span>, each of which is a copy of <span class="math inline">\(\lambda\)</span>. It could be written as a <a href="https://en.wikipedia.org/wiki/Kronecker_product">Kronecker product</a></p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>Λ <span class="op">=</span> <span class="fu">kron</span>(<span class="fu">I</span>(<span class="fl">18</span>), <span class="fu">first</span>(m1.λ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>36×36 Matrix{Float64}:
+ 0.929221   0.0       0.0        0.0       …  0.0       0.0        0.0
+ 0.0181684  0.222645  0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.929221   0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0181684  0.222645     0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0       …  0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0       …  0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ ⋮                                         ⋱                       ⋮
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0       …  0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0       …  0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.0        0.0
+ 0.0        0.0       0.0        0.0          0.222645  0.0        0.0
+ 0.0        0.0       0.0        0.0          0.0       0.929221   0.0
+ 0.0        0.0       0.0        0.0       …  0.0       0.0181684  0.222645</code></pre>
+</div>
+</div>
+<p>but there is no need to actually construct <span class="math inline">\(\mathbf{\Lambda}\)</span>. It is completely determined by <span class="math inline">\(\mathbf{\lambda}\)</span>.</p>
+</section>
+<section id="spherical-random-effects" class="level2">
+<h2 class="anchored" data-anchor-id="spherical-random-effects">Spherical random effects</h2>
+<p>One of the many useful properties of the normal distribution is that a scalar normal distribution, <span class="math inline">\(\mathcal{X}\sim\mathcal{N}(\mu,\sigma^2)\)</span>, can be expressed in terms of the <em>standard normal</em> distribution, <span class="math inline">\(\mathcal{Z}\sim\mathcal{N}(0,1)\)</span> as</p>
+<p><span class="math display">\[
+\mathcal{X} = \mu + \sigma \mathcal{Z}
+\]</span></p>
+<p>A similar result holds for the multivariate normal distribution. The random effects vector, <span class="math inline">\(\mathcal{B}\)</span>, with distribution <span class="math inline">\(\mathcal{N}(\mathbf{0},\Sigma)\)</span> can be generated from a “spherical” random effects vector, <span class="math inline">\(\mathcal{U}\)</span>, as</p>
+<p><span class="math display">\[
+\mathcal{B} = \Lambda \mathcal{U}\quad\mathrm{where}\quad\mathcal{U}\sim\mathcal{N}(\mathbf{0},\sigma^2\mathbf{I}_q)
+\]</span></p>
+<p>and <span class="math inline">\(q\)</span> is the dimension of the random-effects vector (36 in our example).</p>
+<p>(Recall that a multivariate normal distribution with covariance matrix <span class="math inline">\(\sigma^2\mathbf{I}\)</span> is called a “spherical normal” because the contours of constant probability density are spheres. The random effects vector <span class="math inline">\(\mathcal{U}\)</span> has such a spherical distribution.)</p>
+<p>Now the conditional distribution of the response, given the random effects, can be written in terms of <span class="math inline">\(\mathcal{U}\)</span> as</p>
+<p><span class="math display">\[
+(\mathcal{Y}|\mathcal{U}=\mathbf{u})\sim\mathcal{N}\left(\mathbf{X\beta}+\mathbf{Z\Lambda u}, \sigma^2\mathbf{I}_n\right)
+\]</span></p>
+<p>The joint probability density for <span class="math inline">\(\mathcal{Y}\)</span> and <span class="math inline">\(\mathcal{U}\)</span> is the product of the conditional density of <span class="math inline">\(\mathcal{Y}|\mathcal{U}=\mathbf{u}\)</span> and the unconditional density of <span class="math inline">\(\mathcal{U}\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+f_{\mathcal{Y},\mathcal{U}}(\mathbf{y},\mathbf{u})&amp;= \frac{1}{(2\pi\sigma^2)^{n/2}}\exp\left(-\frac{\|\mathbf{y}-\mathbf{X\beta}-\mathbf{Z\Lambda u}\|^2}{2\sigma^2}\right)\,\frac{1}{(2\pi\sigma^2)^{q/2}}\exp\left(-\frac{\|\mathbf{u}\|^2}{2\sigma^2}\right)\\
+&amp;=\frac{1}{(2\pi\sigma^2)^{(n+q)/2}}\exp\left(-\frac{\|\mathbf{y}-\mathbf{X\beta}-\mathbf{Z\Lambda u}\|^2+\|\mathbf{u}\|^2}{2\sigma^2}\right)
+\end{aligned}
+\]</span></p>
+<p>Evaluating the likelihood requires the marginal distribution of <span class="math inline">\(\mathcal{Y}\)</span>. This can be obtained by integrating the joint distribution, <span class="math inline">\(f_{\mathcal{Y},\mathcal{U}}(\mathbf{y},\mathbf{u})\)</span>, evaluated at the observed <span class="math inline">\(\mathbf{y}\)</span>, with respect to <span class="math inline">\(\mathbf{u}\)</span>. There is an analytic solution to this integral. To derive this solution, we first write the penalized sum of squared residuals in a somewhat unusual but very useful form. Let <span class="math inline">\(\mathbf{\theta}\)</span> be the vector of parameters that determine <span class="math inline">\(\mathbf{\lambda}\)</span>.</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(m1.θ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[0.9292213186823386, 0.018168380890783722, 0.22264487369155986]</code></pre>
+</div>
+</div>
+<p>In this case, <span class="math inline">\(\mathbf{\theta}\)</span> consists if the elements of the lower triangle of <span class="math inline">\(\mathbf{\lambda}\)</span>. What we will show is that, given a value of <span class="math inline">\(\mathbf{\theta}\)</span> the maximum of the log-likelihood for that value of <span class="math inline">\(\mathbf{\theta}\)</span> and any value of <span class="math inline">\(\mathbf{\beta}\)</span> and <span class="math inline">\(\sigma\)</span> can be determined from a matrix decomposition, specifically a Cholesky decomposition shown below. This is called <em>profiling</em> the log likelihood.</p>
+<p>For the purposes of the optimization the objective is on the <a href="https://en.wikipedia.org/wiki/Deviance_(statistics)"><em>deviance</em></a> scale, which is negative twice the log-likelihood. A summary of the optimization can be obtained as</p>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>m1.optsum</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<table class="table">
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Initialization</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Initial parameter vector</td>
+<td style="text-align: left;">[1.0, 0.0, 1.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Initial objective value</td>
+<td style="text-align: left;">1784.642296192473</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Optimizer settings</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Optimizer (from NLopt)</td>
+<td style="text-align: left;"><code>LN_BOBYQA</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lower bounds</td>
+<td style="text-align: left;">[0.0, -Inf, 0.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>ftol_rel</code></td>
+<td style="text-align: left;">1.0e-12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>ftol_abs</code></td>
+<td style="text-align: left;">1.0e-8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>xtol_rel</code></td>
+<td style="text-align: left;">0.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>xtol_abs</code></td>
+<td style="text-align: left;">[1.0e-10, 1.0e-10, 1.0e-10]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>initial_step</code></td>
+<td style="text-align: left;">[0.75, 1.0, 0.75]</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>maxfeval</code></td>
+<td style="text-align: left;">-1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>maxtime</code></td>
+<td style="text-align: left;">-1.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Result</strong></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Function evaluations</td>
+<td style="text-align: left;">57</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Final parameter vector</td>
+<td style="text-align: left;">[0.9292, 0.0182, 0.2226]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Final objective value</td>
+<td style="text-align: left;">1751.9393</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Return code</td>
+<td style="text-align: left;"><code>FTOL_REACHED</code></td>
+</tr>
+</tbody>
+</table>
+<p>It required fewer than 60 evaluations of the objective function to obtain the maximum likelihood estimates of <span class="math inline">\(\mathbf{\theta}\)</span> and, with them, the estimates of all the other parameters.</p>
+<p>To evaluate the log-likelihood we write the penalized sum of squared residuals in the joint density, <span class="math inline">\(f_{\mathcal{Y},\mathcal{U}}(\mathbf{y,u})\)</span>, as</p>
+<p><span class="math display">\[
+\begin{aligned}
+r^2_\mathbf{\theta}(\mathbf{u},\mathbf{\beta}) &amp;=  \|\mathbf{y}-\mathbf{X\beta}-\mathbf{Z\Lambda_\theta u}\|^2+\|\mathbf{u}\|^2\\
+&amp;=\left\|\begin{bmatrix}
+\mathbf{Z\Lambda}&amp;\mathbf{X}&amp;\mathbf{y}\\
+\mathbf{I}_q&amp;\mathbf{0}&amp;\mathbf{0}
+\end{bmatrix}\begin{bmatrix}-\mathbf{u}\\ -\mathbf{\beta} \\ 1\end{bmatrix}\right\|^2 \\
+&amp;= \begin{bmatrix}-\mathbf{u}&amp;-\mathbf{\beta}&amp;1\end{bmatrix}
+\begin{bmatrix}
+\mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{Z\Lambda}+\mathbf{I} &amp; \mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{X} &amp; \mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{y} \\
+\mathbf{X}^\prime\mathbf{Z\Lambda} &amp; \mathbf{X}^\prime\mathbf{X} &amp; \mathbf{X}^\prime\mathbf{y} \\
+\mathbf{y}^\prime\mathbf{Z\Lambda} &amp; \mathbf{y}^\prime\mathbf{X} &amp; \mathbf{y}^\prime\mathbf{y}
+\end{bmatrix}
+\begin{bmatrix}-\mathbf{u}\\ -\mathbf{\beta} \\ 1\end{bmatrix}\\
+&amp;=
+\begin{bmatrix}-\mathbf{u}&amp;-\mathbf{\beta}&amp;1\end{bmatrix}
+\begin{bmatrix}
+\mathbf{R}_{ZZ}^\prime &amp; \mathbf{0} &amp; \mathbf{0} \\
+\mathbf{R}_{ZX}^\prime &amp; \mathbf{R}_{XX}^\prime &amp; \mathbf{0} \\
+\mathbf{r}_{Zy}^\prime &amp; \mathbf{r}_{Xy}^\prime &amp; r_{yy}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{R}_{ZZ} &amp; \mathbf{R}_{ZX} &amp; \mathbf{r}_{Zy} \\
+\mathbf{0} &amp; \mathbf{R}_{XX} &amp; \mathbf{r}_{Xy} \\
+\mathbf{0} &amp; \mathbf{0} &amp; r_{yy}
+\end{bmatrix}
+\begin{bmatrix}-\mathbf{u}\\ -\mathbf{\beta} \\ 1\end{bmatrix}\\
+&amp;= \left\|
+\begin{bmatrix}
+\mathbf{R}_{ZZ} &amp; \mathbf{R}_{ZX} &amp; \mathbf{r}_{Zy} \\
+\mathbf{0} &amp; \mathbf{R}_{XX} &amp; \mathbf{r}_{Xy} \\
+\mathbf{0} &amp; \mathbf{0} &amp; r_{yy}
+\end{bmatrix}
+\begin{bmatrix}-\mathbf{u}\\ -\mathbf{\beta} \\ 1\end{bmatrix}\right\|^2\\
+&amp;=\|\mathbf{r}_{Zy}-\mathbf{R}_{ZX}\mathbf{\beta}-\mathbf{R}_{ZZ}\mathbf{u}\|^2+ \|\mathbf{r}_{Xy}-\mathbf{R}_{XX}\mathbf{\beta}\|^2 + r_{yy}^2\\
+&amp;=r_{yy}^2+\|\mathbf{R}_{XX}\mathbf{\beta}-\mathbf{r}_{Xy}\|^2+\|\mathbf{R}_{ZZ}\mathbf{u}+\mathbf{R}_{ZX}\mathbf{\beta}-\mathbf{r}_{Zy}\|^2
+\end{aligned}
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\mathbf{R}(\mathbf{\theta})=
+\begin{bmatrix}
+\mathbf{R}_{ZZ} &amp; \mathbf{R}_{ZX} &amp; \mathbf{r}_{Zy} \\
+\mathbf{0} &amp; \mathbf{R}_{XX} &amp; \mathbf{r}_{Xy} \\
+\mathbf{0} &amp; \mathbf{0} &amp; r_{yy}
+\end{bmatrix}
+\]</span></p>
+<p>is the upper triangular, right Cholesky factor of the symmetric, positive definite matrix</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{Z\Lambda}+\mathbf{I} &amp; \mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{X} &amp; \mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{y} \\
+\mathbf{X}^\prime\mathbf{Z\Lambda} &amp; \mathbf{X}^\prime\mathbf{X} &amp; \mathbf{X}^\prime\mathbf{y} \\
+\mathbf{y}^\prime\mathbf{Z\Lambda} &amp; \mathbf{y}^\prime\mathbf{X} &amp; \mathbf{y}^\prime\mathbf{y}
+\end{bmatrix}
+\]</span></p>
+<p>The sub-matrices on the diagonal, <span class="math inline">\(\mathbf{R}_{ZZ}\)</span> and <span class="math inline">\(\mathbf{R}_{XX}\)</span>, are upper triangular and <span class="math inline">\(\mathbf{R}_{ZZ}\)</span> is sparse. In our example, <span class="math inline">\(\mathbf{R}_{ZZ}\)</span> is <span class="math inline">\(36\times 36\)</span> but the only non-zeros are the upper triangles of <span class="math inline">\(18\)</span> blocks of size <span class="math inline">\(2\times 2\)</span> along the diagonal. Also, the diagonal elements are, by construction, positive. Because <span class="math inline">\(\mathbf{R}_{ZZ}\)</span> is triangular its determinant, <span class="math inline">\(|\mathbf{R}_{ZZ}|\)</span>, is the product of its diagonal elements which also must be positive.</p>
+<p>Furthermore, we can see that, for a fixed value of <span class="math inline">\(\mathbf{\theta}\)</span> the minimum <span class="math inline">\(r^2_\mathbf{\theta}(\mathbf{u},\mathbf{\beta})\)</span> is <span class="math inline">\(r_{yy}^2\)</span> and the conditional estimate of <span class="math inline">\(\mathbf{\beta}\)</span> satisfies</p>
+<p><span class="math display">\[
+\mathbf{R}_{XX}\widehat{\mathbf{\beta}}(\mathbf{\theta})=\mathbf{r}_{Xy} .
+\]</span></p>
+<p>The conditional mode, <span class="math inline">\(\tilde{\mathbf{u}}\)</span>, of <span class="math inline">\(\mathcal{U}\)</span> given <span class="math inline">\(\mathcal{Y}=\mathbf{y}\)</span> is the solution to</p>
+<p><span class="math display">\[
+\mathbf{R}_{ZZ}\tilde{\mathbf{u}}=\mathbf{r}_{Zy}-\mathbf{R}_{ZX}\mathbf{\beta}
+\]</span></p>
+<p>Technically, <span class="math inline">\(\mathbf{\beta}\)</span> and <span class="math inline">\(\mathbf{\theta}\)</span> are assumed known because this is a statement about distributions. In practice, the estimates, <span class="math inline">\(\widehat{\mathbf{\theta}}\)</span> and <span class="math inline">\(\widehat{\beta}\)</span>, are plugged in.</p>
+<p>A Cholesky decomposition can be written in terms of the lower triangular factor on the left, <span class="math inline">\(\mathbf{L}\)</span>, or in terms of <span class="math inline">\(\mathbf{R}\)</span> on the right. There is a slight technical advantage in evaluating <span class="math inline">\(\mathbf{L}\)</span> in the <code>MixedModels</code> package so it is <span class="math inline">\(\mathbf{L}\)</span> that is evaluated and stored. However, the theory is a bit easier to see in terms of <span class="math inline">\(\mathbf{R}\)</span>, which we can obtain as</p>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">UpperTriangular</span>(<span class="fu">Matrix</span>(<span class="fu">sparseL</span>(m1; full<span class="op">=</span><span class="cn">true</span>)<span class="ch">'))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>39×39 UpperTriangular{Float64, Matrix{Float64}}:
+ 3.35381  3.11966  0.0      0.0      …  3.01442   14.0118   1041.06
+  ⋅       2.3228   0.0      0.0         0.264786   8.49909   249.639
+  ⋅        ⋅       3.35381  3.11966     3.01442   14.0118    649.814
+  ⋅        ⋅        ⋅       2.3228      0.264786   8.49909    73.5188
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    699.068
+  ⋅        ⋅        ⋅        ⋅       …  0.264786   8.49909   105.851
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    915.382
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   102.27
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    935.125
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   120.416
+  ⋅        ⋅        ⋅        ⋅       …  3.01442   14.0118    930.614
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   151.279
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    957.121
+ ⋮                                   ⋱                      
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   188.483
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    927.589
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   163.961
+  ⋅        ⋅        ⋅        ⋅       …  3.01442   14.0118    887.382
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   209.185
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    893.313
+  ⋅        ⋅        ⋅        ⋅          0.264786   8.49909   145.253
+  ⋅        ⋅        ⋅        ⋅          3.01442   14.0118    963.292
+  ⋅        ⋅        ⋅        ⋅       …  0.264786   8.49909   166.733
+  ⋅        ⋅        ⋅        ⋅          3.89572    2.36568  1004.17
+  ⋅        ⋅        ⋅        ⋅           ⋅        17.0358    178.319
+  ⋅        ⋅        ⋅        ⋅           ⋅          ⋅        343.35</code></pre>
+</div>
+</div>
+<p>To evaluate the likelihood,</p>
+<p><span class="math display">\[
+L(\mathbf{\theta},\mathbf{\beta},\sigma|\mathbf{y}) = \int_\mathbf{u} f_{\mathcal{Y},\mathcal{U}}(\mathbf{y},\mathbf{u})\, d\mathbf{u}
+\]</span></p>
+<p>we isolate the part of the joint density that depends on <span class="math inline">\(\mathbf{u}\)</span> and perform a change of variable to</p>
+<p><span class="math display">\[
+\mathbf{v}=\mathbf{R}_{ZZ}\mathbf{u}+\mathbf{R}_{ZX}\mathbf{\beta}-\mathbf{r}_{Zy} .
+\]</span></p>
+<p>From the properties of the multivariate Gaussian distribution</p>
+<p><span class="math display">\[
+\begin{aligned}
+\int_{\mathbf{u}}\frac{1}{(2\pi\sigma^2)^{q/2}}\exp\left(-
+\frac{\|\mathbf{R}_{ZZ}\mathbf{u}+\mathbf{R}_{ZX}\mathbf{\beta}-\mathbf{r}_{Zy}\|^2}{2\sigma^2}\right)\,d\mathbf{u}
+&amp;=\int_{\mathbf{v}}\frac{1}{(2\pi\sigma^2)^{q/2}}\exp\left(-\frac{\|\mathbf{v}\|^2}{2\sigma^2}\right)|\mathbf{R}_{ZZ}|^{-1}\,d\mathbf{v}\\
+&amp;=|\mathbf{R}_{ZZ}|^{-1}
+\end{aligned}
+\]</span></p>
+<p>from which we obtain the likelihood as</p>
+<p><span class="math display">\[
+L(\mathbf{\theta},\mathbf{\beta},\sigma)=\frac{|\mathbf{R}_{ZZ}|^{-1}}{(2\pi\sigma^2)^{n/2}}\exp\left(-
+\frac{r_{yy}^2 + \|\mathbf{R}_{XX}(\mathbf{\beta}-\widehat{\mathbf{\beta}})\|^2}{2\sigma^2}\right)
+\]</span></p>
+<p>If we plug in <span class="math inline">\(\mathbf{\beta}=\widehat{\mathbf{\beta}}\)</span> and take the logarithm we can solve for the estimate of <span class="math inline">\(\sigma^2\)</span>, given <span class="math inline">\(\mathbf{\theta}\)</span></p>
+<p><span class="math display">\[
+\widehat{\sigma^2}=\frac{r_{yy}^2}{n}
+\]</span></p>
+<p>which gives the <em>profiled log-likelihood</em>, <span class="math inline">\(\ell(\mathbf{\theta}|\mathbf{y})=\log L(\mathbf{\theta},\widehat{\mathbf{\beta}},\widehat{\sigma})\)</span> as</p>
+<p><span class="math display">\[
+-2\ell(\mathbf{\theta}|\mathbf{y})=2\log(|\mathbf{R}_{ZZ}|) +
+    n\left(1+\log\left(\frac{2\pi r_{yy}^2(\mathbf{\theta})}{n}\right)\right)
+\]</span></p>
+<p>This may seem complicated but, relative to other formulations of the model, it is remarkably simple.</p>
+<p>One of the interesting aspects of this formulation is that it is not necessary to solve for the conditional estimate of <span class="math inline">\(\mathbf{\beta}\)</span> or the conditional modes of the random effects when evaluating the log-likelihood. The two values needed for the log-likelihood, <span class="math inline">\(2\log(|\mathbf{R}_{ZZ}|)\)</span> and <span class="math inline">\(r_{yy}^2\)</span> are obtained directly from the Cholesky factor. The logarithm of the determinant,</p>
+<p><span class="math display">\[
+2\log(|\mathbf{R}_{ZZ}|) = \log(|\mathbf{\Lambda}^\prime\mathbf{Z}^\prime\mathbf{Z}\mathbf{\Lambda}+\mathbf{I}_q|)
+\]</span></p>
+<p>is available as</p>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logdet</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>73.90322078886462</code></pre>
+</div>
+</div>
+<p>and <span class="math inline">\(r_{yy}^2\)</span> is available as</p>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pwrss</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>117889.46106767072</code></pre>
+</div>
+</div>
+<p>which is the square of the element in the lower right corner of either <span class="math inline">\(\mathbf{L}\)</span> or <span class="math inline">\(\mathbf{R}\)</span></p>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">abs2</span>(<span class="fu">last</span>(m1.L[<span class="fl">3</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>117889.46106767072</code></pre>
+</div>
+</div>
+<p>Alternatively, <code>varest</code> returns <span class="math inline">\(\widehat{\sigma^2}\)</span></p>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">varest</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>654.9414503759484</code></pre>
+</div>
+</div>
+<p>This gives the objective function as</p>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logdet</span>(m1) <span class="op">+</span> <span class="fu">dof_residual</span>(m1)<span class="fu">*</span>(<span class="fl">1</span> <span class="op">+</span> <span class="fu">log</span>(<span class="fl">2</span>π <span class="op">*</span> <span class="fu">varest</span>(m1)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>1696.004807008835</code></pre>
+</div>
+</div>
+<p>One last technical point, the update of the Cholesky factor, <span class="math inline">\(\mathbf{L}\)</span>, for a new value of <span class="math inline">\(\mathbf{\theta}\)</span>, which generates <span class="math inline">\(\mathbf{\lambda}\)</span> and, hence, <span class="math inline">\(\mathbf{\Lambda}\)</span> can start with the model matrices <span class="math inline">\(\mathbf{Z}\)</span> and <span class="math inline">\(\mathbf{X}\)</span> and the response, <span class="math inline">\(\mathbf{y}\)</span> or it can start with the products, <span class="math inline">\(\mathbf{Z}^\prime\mathbf{Z}\)</span>, etc. The package uses the second approach which is more efficient when the number of observations is large relative to the number of random effects. The non-redundant products are stored in the <code>A</code> field.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Symmetric</span>(m1.A, <span class="op">:</span>L)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Because the experiment is <em>balanced</em>, in the sense that each subject’s reaction time is measured the same number of times and after the same number of days of sleep deprivation, the diagonal blocks in <span class="math inline">\(\mathbf{Z}^\prime\mathbf{Z}\)</span> are repetitions of one another. The number in the lower right-hand corner of <code>A</code> is <span class="math inline">\(\mathbf{y}^\prime\mathbf{y}\)</span> or</p>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(abs2, sleepstudy.reaction)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>1.660720731910011e7</code></pre>
+</div>
+</div>
+</section>
+<section id="mixed-models-and-shrinkage-of-estimates" class="level2">
+<h2 class="anchored" data-anchor-id="mixed-models-and-shrinkage-of-estimates">Mixed-models and shrinkage of estimates</h2>
+<p><a href="https://en.wikipedia.org/wiki/John_Tukey">John Tukey</a> characterized the <em>regularization</em> or <em>shrinkage</em> aspects of mixed-effects models as <em>borrowing strength</em> from the estimates for other subjects in the experiment. The penalty term in the penalized least squares calculation has the effect of shrinking an individual’s coefficients in the predictor back toward the global estimates.</p>
+<div class="cell" data-execution_count="25">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>R<span class="st">"""</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="st">library(lme4)</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="st">library(lattice)</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="st">df &lt;- coef(lme4::lmList(reaction ~ days | subj, </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">))</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="st">fm2 &lt;- lme4::lmer(reaction ~ days + (days|subj), </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">)</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="st">fclow &lt;- subset(df, `(Intercept)` &lt; 251)</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="st">fchigh &lt;- subset(df, `(Intercept)` &gt; 251)</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="st">cc1 &lt;- as.data.frame(coef(fm2)</span><span class="sc">$</span>subj<span class="st">)</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="st">names(cc1) &lt;- c("A", "B")</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="st">df &lt;- cbind(df, cc1)</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="st">ff &lt;- lme4::fixef(fm2)</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="st">with(df,</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="st">     print(lattice::xyplot(`(Intercept)` ~ days, aspect = 1,</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="st">                  x1 = B, y1 = A,</span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="st">                  panel = function(x, y, x1, y1, subscripts, ...) {</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a><span class="st">                      panel.grid(h = -1, v = -1)</span></span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a><span class="st">                      x1 &lt;- x1[subscripts]</span></span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a><span class="st">                      y1 &lt;- y1[subscripts]</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a><span class="st">                      larrows(x, y, x1, y1, type = "closed", length = 0.1,</span></span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a><span class="st">                              angle = 15, ...)</span></span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(x, y,</span></span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[2],</span></span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[2])</span></span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(x1, y1,</span></span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[1],</span></span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[1])</span></span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(ff[2], ff[1],</span></span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[3],</span></span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[3])</span></span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a><span class="st">                      ltext(fclow[,2], fclow[,1], row.names(fclow),</span></span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a><span class="st">                            adj = c(0.5, 1.7))</span></span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a><span class="st">                      ltext(fchigh[,2], fchigh[,1], row.names(fchigh),</span></span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a><span class="st">                            adj = c(0.5, -0.6))</span></span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a><span class="st">                  },</span></span>
+<span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a><span class="st">                  key = list(space = "top", columns = 3,</span></span>
+<span id="cb46-36"><a href="#cb46-36" aria-hidden="true" tabindex="-1"></a><span class="st">                  text = list(c("Mixed model", "Within-group", "Population")),</span></span>
+<span id="cb46-37"><a href="#cb46-37" aria-hidden="true" tabindex="-1"></a><span class="st">                  points = list(col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[1:3],</span></span>
+<span id="cb46-38"><a href="#cb46-38" aria-hidden="true" tabindex="-1"></a><span class="st">                  pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[1:3]))</span></span>
+<span id="cb46-39"><a href="#cb46-39" aria-hidden="true" tabindex="-1"></a><span class="st">                  )))</span></span>
+<span id="cb46-40"><a href="#cb46-40" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>┌ Warning: RCall.jl: Loading required package: Matrix
+└ @ RCall /home/bates/.julia/packages/RCall/6kphM/src/io.jl:172</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="session3-linear-mixed-effects_files/figure-html/cell-26-output-2.svg" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shrinkageplot</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="session3-linear-mixed-effects_files/figure-html/cell-27-output-1.svg" class="img-fluid figure-img"></p>
+<p></p><figcaption aria-hidden="true" class="figure-caption">Shrinkage plot for model m1.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Comparing this plot to the original data plot with the lines from the various fits superimposed</p>
+<div class="cell" data-execution_count="27">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>R<span class="st">"""</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="st">print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="st">             layout = c(9,2), type = c("g", "p", "r"),</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="st">             coef.list = df[,3:4],</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="st">             panel = function(..., coef.list) {</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="st">                 panel.xyplot(...)</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="st">                 panel.abline(as.numeric(coef.list[packet.number(),]),</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="st">                              col.line = trellis.par.get("superpose.line")</span><span class="sc">$</span>col<span class="st">[2],</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a><span class="st">                              lty = trellis.par.get("superpose.line")</span><span class="sc">$</span>lty<span class="st">[2]</span></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="st">                              )</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="st">                 panel.abline(fixef(fm2),</span></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="st">                              col.line = trellis.par.get("superpose.line")</span><span class="sc">$</span>col<span class="st">[4],</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="st">                              lty = trellis.par.get("superpose.line")</span><span class="sc">$</span>lty<span class="st">[4]</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="st">                              )</span></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a><span class="st">             },</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a><span class="st">             index.cond = function(x,y) coef(lm(y ~ x))[1],</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="st">             xlab = "Days of sleep deprivation",</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a><span class="st">             ylab = "Average reaction time (ms)",</span></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a><span class="st">             key = list(space = "top", columns = 3,</span></span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a><span class="st">             text = list(c("Within-subject", "Mixed model", "Population")),</span></span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a><span class="st">             lines = list(col = trellis.par.get("superpose.line")</span><span class="sc">$</span>col<span class="st">[c(2:1,4)],</span></span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a><span class="st">             lty = trellis.par.get("superpose.line")</span><span class="sc">$</span>lty<span class="st">[c(2:1,4)]))))</span></span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="session3-linear-mixed-effects_files/figure-html/cell-28-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<p>shows that the fits for those subjects whose data shows a strong linear trend (e.g.&nbsp;308, 309, 310, 337) are not changed that much. But those whose data does not define a line well (e.g.&nbsp;330, 331) are shrunk toward the global fit.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./session2b-interval-overlap.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Session 2b: Determining Interval Overlap</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./session4-exercise.html" class="pagination-link">
+        <span class="nav-page-text">Session 4: Hands-on exercise</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

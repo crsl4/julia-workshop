@@ -195,7 +195,7 @@ A function's name ending in `!` is a hint that it is a *mutating* function, whic
   - This is done with a `replace!` method, which takes the object to modify and one or more `pair`s of values of the form `from => to`.  These pairs can be generated using string interpolation as
 
 ```{julia}
-replacements = ["chr$i" => "chr0$i" for i = 1:9]
+replacements = ["chr$i" => "chr0$i" for i in 1:9]
 ```
 
 ::: {.callout-note collapse="true"}

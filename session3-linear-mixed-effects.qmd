@@ -11,8 +11,8 @@ jupyter: julia-1.8
 - From an experimental design point of view these are _blocking variables_: known sources of variability for which we wish to account but whose levels are not themselves of interest.
 - This is in contrast to _experimental_ or _observational_ factors with a known, fixed set of levels that we are seeking to compare.
 - [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) provides structures and methods for fitting and analyzing mixed-effects models.
-- Fitting Linear Mixed Models (LMMs) or Generalized Linear Mixed Models (GLMMs) is described [here](https://repsychling.github.io/SMLP2022) and [here]
-There are several places where the use of this package is described.  Here
+- Fitting Linear Mixed Models (LMMs) or Generalized Linear Mixed Models (GLMMs) is described in these [notes](https://repsychling.github.io/SMLP2022) and in this [in-progress book](https://juliamixedmodels.github.io/EmbraceUncertainty.)
+
 ## Data sets to be used in examples
 
 ### The sleepstudy data
@@ -20,58 +20,81 @@ For example, the [`sleepstudy`](https://rdrr.io/cran/lme4/man/sleepstudy.html) d
 A sample from the population of interest (long-distance truck drivers) had their average response time measured when they were on their regular sleep schedule and after one up to nine days of sleep deprivation (allowed only 3 hours per day in which to sleep).
 
 ```{julia}
-using CairoMakie, LinearAlgebra, MixedModels, MixedModelsMakie, RCall
-RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=5)
+#| code-fold: show
+using CairoMakie        # graphics backend
+using DataFrames
+using LinearAlgebra
+using MixedModels
+using MixedModelsMakie  # special graphics for mixed models
+using ProgressMeter
+using RCall
+using TypedTables
+
+CairoMakie.activate!(; type="svg")
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=5);
+ProgressMeter.ijulia_behavior(:clear);
+```
+
+```{julia}
+sleepstudy = MixedModels.dataset(:sleepstudy)
 ```
 
 ```{julia}
 #| code-fold: true
 #| fig-cap: "Average reaction time [ms.] versus days of sleep deprivation by participant.  The panels are ordered according to increasing initial reaction time starting at the lower left."
-
+#| label: fig-sleepxy
 R"""
-require(lme4, quietly=TRUE)
-require(lattice, quietly=TRUE)
-xyplot(Reaction ~ Days | Subject, sleepstudy,
-       type = c("g","p","r"), layout = c(9,2),
-       index = function(x,y) coef(lm(y ~ x))[1],
-       xlab = "Days of sleep deprivation",
-       ylab = "Average reaction time (ms)",
-       aspect = "xy")
-"""
+print(
+  lattice::xyplot(
+    reaction ~ days | subj,
+    $(DataFrame(sleepstudy)),
+    type = c("g","p","r"), layout = c(9,2),
+    index = function(x,y) coef(lm(y ~ x))[1],
+    xlab = "Days of sleep deprivation",
+    ylab = "Average reaction time (ms)",
+    aspect = "xy"
+  )
+)
+""";
 ```
 
-Each panel shows the data from one subject as well as a simple linear regression line fit to that subject's data only.
-The panels are ordered by increasing intercept of the within-subject line row-wise, starting at the bottom left.Some subjects, e.g. 310 and 309, have fast reaction times and are almost unaffected by the sleep deprivation.  
-Others, e.g. 337, start with slow reaction times which then increase substantially after sleep depreivation.
+- Each panel shows the data from one subject as well as a simple linear regression line fit to that subject's data only.
 
-A suitable model for these data would include an intercept and slope for the "typical" subject and randomly distributed deviations from these values for each of the observed subjects.
-The assumed distribution of the random effects vector is multivariate Gaussian with mean zero (because they represent deviations from the population parameters) and an unknown covariance matrix, $\Sigma$, to be estimated from the data.
+- The panels are ordered by increasing intercept of the within-subject line row-wise, starting at the bottom left.
 
-Because $\Sigma$ is a covariance matrix it must be symmetric and be positive-definite, a condition that is similar to the requirement that a scalar variance must be positive.
-In particular, a positive-definite matrix like $\Sigma$ has a "square root" in the sense that there is a matrix $\mathbf{L}$ such that $\Sigma=\mathbf{L}\mathbf{L}^\prime$.
-(Multiplying by $\mathbf{L}^\prime$ instead of squaring $\mathbf{L}$ is necessary to ensure that the product is symmetric.)
-In fact, there are several such matrices $\mathbf{L}$.  If we require that $\mathbf{L}$ is lower triangular and that its diagonal entries be positive, there is only one such matrix, which is called the lower (or left) Cholesky factor.
+- Some subjects, e.g. 310 and 309, have fast reaction times and are almost unaffected by the sleep deprivation.  
 
-As shown later, some of the expressions for the likelihood can be simplified if any scale parameter in the distribution of the response, given the random effects, is incorporated into the covariance matrix of the random effects.
-We define $\mathbf{\lambda}$ to be the lower triangular matrix with non-negative diagonal entries such that
+- Others, e.g. 337, start with slow reaction times which then increase substantially after sleep depreivation.
+
+- A suitable model for these data would include an intercept and slope for the "typical" subject and randomly distributed deviations from these values for each of the observed subjects.
+
+- The assumed distribution of the random effects vector is multivariate Gaussian with mean zero (because they represent deviations from the population parameters) and an unknown covariance matrix, $\Sigma$, to be estimated from the data.
+
+- Because $\Sigma$ is a covariance matrix it must be symmetric and be positive-definite, a condition that is similar to the requirement that a scalar variance must be positive.
+
+- In particular, a positive-definite matrix like $\Sigma$ has a "square root" in the sense that there is a matrix $\mathbf{L}$ such that $\Sigma=\mathbf{L}\mathbf{L}^\prime$. (Multiplying by $\mathbf{L}^\prime$ instead of squaring $\mathbf{L}$ is necessary to ensure that the product is symmetric.)
+
+- In fact, there are several such matrices $\mathbf{L}$.  If we require that $\mathbf{L}$ is lower triangular and that its diagonal entries be positive, there is only one such matrix, which is called the lower (or left) Cholesky factor.
+
+- As shown later, some of the expressions for the likelihood can be simplified if any scale parameter in the distribution of the response, given the random effects, is incorporated into the covariance matrix of the random effects.
+
+- Define $\mathbf{\lambda}$ to be the lower triangular matrix with non-negative diagonal entries such that
 $$
 \Sigma=\sigma^2{\bf\lambda}{\bf\lambda}^\prime
 $$
 
-It helps to consider the example at this point to clarify these concepts.  Returning to the `sleepstudy` data shown above
+- Fit a model with fixed effects for the intercept and the slope with respect to days of sleep deprivation and, possibly correlated, random effects for each of these coefficients by `Subject`.
 
 ```{julia}
-sleepstudy = rcopy(R"lme4::sleepstudy")
+const contrasts = Dict{Symbol,Any}(:subj => Grouping())
+m1 = let
+  form = @formula reaction ~ 1 + days + (1+days|subj);
+  fit(MixedModel, form, sleepstudy; contrasts)
+end
 ```
 
-we fit a model with fixed effects for the intercept and the slope with respect to days of sleep deprivation and, possibly correlated, random effects for each of these coefficients by `Subject`.
-
 ```{julia}
-m1 = let
-  form = @formula Reaction ~ 1 + Days + (1+Days|Subject);
-  fit(MixedModel, form, sleepstudy; progress=false)
-end
-println(m1)
+VarCorr(m1)
 ```
 
 The "estimated" random effects from this model are eighteen vectors, one for each subject, and each of length two (deviation for the intercept and for the slope).  These are returned as a $2\times 18$ matrix.
@@ -354,7 +377,7 @@ Symmetric(m1.A, :L)
 Because the experiment is _balanced_, in the sense that each subject's reaction time is measured the same number of times and after the same number of days of sleep deprivation, the diagonal blocks in $\mathbf{Z}^\prime\mathbf{Z}$ are repetitions of one another.  The number in the lower right-hand corner of `A` is $\mathbf{y}^\prime\mathbf{y}$ or
 
 ```{julia}
-sum(abs2, sleepstudy.Reaction)
+sum(abs2, sleepstudy.reaction)
 ```
 
 ## Mixed-models and shrinkage of estimates
@@ -364,16 +387,18 @@ sum(abs2, sleepstudy.Reaction)
 ```{julia}
 #| code-fold: true
 R"""
-df <- coef(lmList(Reaction ~ Days | Subject, sleepstudy))
-fm2 <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
+library(lme4)
+library(lattice)
+df <- coef(lme4::lmList(reaction ~ days | subj, $(DataFrame(sleepstudy))))
+fm2 <- lme4::lmer(reaction ~ days + (days|subj), $(DataFrame(sleepstudy)))
 fclow <- subset(df, `(Intercept)` < 251)
 fchigh <- subset(df, `(Intercept)` > 251)
-cc1 <- as.data.frame(coef(fm2)$Subject)
+cc1 <- as.data.frame(coef(fm2)$subj)
 names(cc1) <- c("A", "B")
 df <- cbind(df, cc1)
-ff <- fixef(fm2)
+ff <- lme4::fixef(fm2)
 with(df,
-     print(xyplot(`(Intercept)` ~ Days, aspect = 1,
+     print(lattice::xyplot(`(Intercept)` ~ days, aspect = 1,
                   x1 = B, y1 = A,
                   panel = function(x, y, x1, y1, subscripts, ...) {
                       panel.grid(h = -1, v = -1)

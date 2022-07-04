@@ -2,34 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://crsl4.github.io/julia-workshop/index.html</loc>
-    <lastmod>2022-06-27T13:54:50.668Z</lastmod>
+    <lastmod>2022-07-04T20:03:57.944Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/about.html</loc>
-    <lastmod>2022-06-24T18:44:26.638Z</lastmod>
+    <lastmod>2022-07-04T19:59:25.402Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session1-get-started.html</loc>
-    <lastmod>2022-06-27T19:12:51.370Z</lastmod>
+    <lastmod>2022-07-04T19:59:25.826Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session2a-tables-and-arrow.html</loc>
-    <lastmod>2022-06-27T19:15:37.088Z</lastmod>
+    <lastmod>2022-07-04T20:00:31.593Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session2b-interval-overlap.html</loc>
-    <lastmod>2022-06-27T19:15:38.752Z</lastmod>
+    <lastmod>2022-07-04T20:02:08.885Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crsl4.github.io/julia-workshop/session3-linear-mixed-effects.html</loc>
+    <lastmod>2022-07-04T20:12:36.533Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session4-exercise.html</loc>
-    <lastmod>2022-06-27T19:12:51.602Z</lastmod>
+    <lastmod>2022-07-04T20:03:42.220Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session5-other-tools.html</loc>
-    <lastmod>2022-06-27T13:54:49.430Z</lastmod>
+    <lastmod>2022-07-04T20:03:42.628Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session6-conclusions.html</loc>
-    <lastmod>2022-06-27T19:12:51.806Z</lastmod>
+    <lastmod>2022-07-04T20:03:42.824Z</lastmod>
   </url>
 </urlset>
