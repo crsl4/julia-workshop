@@ -204,7 +204,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./session3-linear-mixed-effects.html" class="sidebar-item-text sidebar-link active">3a: Linear Mixed-effects Models</a>
+  <a href="./session3a-linear-mixed-effects.html" class="sidebar-item-text sidebar-link active">3a: Linear Mixed-effects Models</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -365,7 +365,7 @@ This data description is inaccurate
 <div class="cell-output cell-output-display">
 <div id="fig-sleepxy" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-sleepxy-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepxy-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 1: Average reaction time [ms.] versus days of sleep deprivation by participant. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
 </figure>
 </div>
@@ -505,7 +505,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="28">
 <div id="fig-sleepcaterpillar" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-sleepcaterpillar-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepcaterpillar-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 2: 95% prediction intervals on the conditional distribution of the random effects by subject, given the observed data. The subjects are ordered by increasing intercept in the conditional distributions.</figcaption><p></p>
 </figure>
 </div>
@@ -523,50 +523,49 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>RCall.<span class="fu">ijulia_setdevice</span>(<span class="fu">MIME</span>(<span class="st">"image/svg+xml"</span>), width<span class="op">=</span><span class="fl">7</span>, height<span class="op">=</span><span class="fl">7</span>);</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>R<span class="st">"""</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">library(lme4)</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">library(lattice)</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="st">df &lt;- coef(lme4::lmList(reaction ~ days | subj, </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">))</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">fm2 &lt;- lme4::lmer(reaction ~ days + (days|subj), </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">)</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="st">fclow &lt;- subset(df, `(Intercept)` &lt; 251)</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="st">fchigh &lt;- subset(df, `(Intercept)` &gt; 251)</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="st">cc1 &lt;- as.data.frame(coef(fm2)</span><span class="sc">$</span>subj<span class="st">)</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="st">names(cc1) &lt;- c("A", "B")</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="st">df &lt;- cbind(df, cc1)</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="st">ff &lt;- lme4::fixef(fm2)</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="st">with(df,</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="st">     print(lattice::xyplot(`(Intercept)` ~ days, aspect = 1,</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="st">                  x1 = B, y1 = A,</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="st">                  panel = function(x, y, x1, y1, subscripts, ...) {</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="st">                      panel.grid(h = -1, v = -1)</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="st">                      x1 &lt;- x1[subscripts]</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="st">                      y1 &lt;- y1[subscripts]</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="st">                      larrows(x, y, x1, y1, type = "closed", length = 0.1,</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="st">                              angle = 15, ...)</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(x, y,</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[2],</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[2])</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(x1, y1,</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[1],</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[1])</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(ff[2], ff[1],</span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[3],</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[3])</span></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="st">                      ltext(fclow[,2], fclow[,1], row.names(fclow),</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="st">                            adj = c(0.5, 1.7))</span></span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="st">                      ltext(fchigh[,2], fchigh[,1], row.names(fchigh),</span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="st">                            adj = c(0.5, -0.6))</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="st">                  },</span></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="st">                  key = list(space = "top", columns = 3,</span></span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="st">                  text = list(c("Mixed model", "Within-group", "Population")),</span></span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="st">                  points = list(col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[1:3],</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="st">                  pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[1:3]))</span></span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="st">                  )))</span></span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">library(lattice)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">df &lt;- coef(lme4::lmList(reaction ~ days | subj, </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">))</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="st">fm2 &lt;- lme4::lmer(reaction ~ days + (days|subj), </span><span class="sc">$</span>(<span class="fu">DataFrame</span>(sleepstudy))<span class="st">)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">fclow &lt;- subset(df, `(Intercept)` &lt; 251)</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="st">fchigh &lt;- subset(df, `(Intercept)` &gt; 251)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="st">cc1 &lt;- as.data.frame(coef(fm2)</span><span class="sc">$</span>subj<span class="st">)</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="st">names(cc1) &lt;- c("A", "B")</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="st">df &lt;- cbind(df, cc1)</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="st">ff &lt;- lme4::fixef(fm2)</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="st">with(df,</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="st">     print(lattice::xyplot(`(Intercept)` ~ days, aspect = 1,</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="st">                  x1 = B, y1 = A,</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="st">                  panel = function(x, y, x1, y1, subscripts, ...) {</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="st">                      panel.grid(h = -1, v = -1)</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="st">                      x1 &lt;- x1[subscripts]</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="st">                      y1 &lt;- y1[subscripts]</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="st">                      larrows(x, y, x1, y1, type = "closed", length = 0.1,</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="st">                              angle = 15, ...)</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(x, y,</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[2],</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[2])</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(x1, y1,</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[1],</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[1])</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="st">                      lpoints(ff[2], ff[1],</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="st">                              pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[3],</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="st">                              col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[3])</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="st">                      ltext(fclow[,2], fclow[,1], row.names(fclow),</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="st">                            adj = c(0.5, 1.7))</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="st">                      ltext(fchigh[,2], fchigh[,1], row.names(fchigh),</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="st">                            adj = c(0.5, -0.6))</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="st">                  },</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="st">                  key = list(space = "top", columns = 3,</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="st">                  text = list(c("Mixed model", "Within-group", "Population")),</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="st">                  points = list(col = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>col<span class="st">[1:3],</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="st">                  pch = trellis.par.get("superpose.symbol")</span><span class="sc">$</span>pch<span class="st">[1:3]))</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="st">                  )))</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div id="fig-sleepcoefshrinkage" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-sleepcoefshrinkage-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepcoefshrinkage-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 3: Shrinkage plot of the slope and intercept for each subject in the sleepstudy data (from {lattice} in R)</figcaption><p></p>
 </figure>
 </div>
@@ -606,7 +605,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display">
 <div id="fig-sleepxyplotaug" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-sleepxyplotaug-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepxyplotaug-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 4: Average reaction time [ms.] versus days of sleep deprivation by participant with population fitted line, individual fitted lines and the mixed-model fitted lines. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
 </figure>
 </div>
@@ -623,7 +622,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="31">
 <div id="fig-sleepreshrinkage" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-sleepreshrinkage-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepreshrinkage-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 5: Shrinkage of the random effects in model m1 relative to an unpenalized model. The arrows are drawn from the conditional means of the random effects in a model without a penalty on their size (red dots) to the corresponding conditional means of the fitted model (blue dots).</figcaption><p></p>
 </figure>
 </div>
@@ -743,7 +742,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="34">
 <div id="fig-caterpillarm2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-caterpillarm2-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-caterpillarm2-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 6: 95% prediction intervals on the conditional distribution of the random effects by subject in model m2.</figcaption><p></p>
 </figure>
 </div>
@@ -761,7 +760,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="35">
 <div id="fig-shrinkagem2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-shrinkagem2-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-shrinkagem2-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 7: Shrinkage of the random effects in model m2 relative to an unpenalized model.</figcaption><p></p>
 </figure>
 </div>
@@ -805,7 +804,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="37">
 <div id="fig-bsbetadensity" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-bsbetadensity-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-bsbetadensity-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 8: Empirical density plots of bootstrap replications of fixed-effects parameter estimates</figcaption><p></p>
 </figure>
 </div>
@@ -848,7 +847,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="40">
 <div id="fig-correlationhist" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-correlationhist-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-correlationhist-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 9: Histogram of bootstrap replications of the within-subject correlation parameter</figcaption><p></p>
 </figure>
 </div>
@@ -881,7 +880,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div class="cell-output cell-output-display" data-execution_count="41">
 <div id="fig-bssigmadensity" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="session3-linear-mixed-effects_files/figure-html/fig-bssigmadensity-output-1.svg" class="img-fluid figure-img"></p>
+<p><img src="session3a-linear-mixed-effects_files/figure-html/fig-bssigmadensity-output-1.svg" class="img-fluid figure-img"></p>
 <p></p><figcaption aria-hidden="true" class="figure-caption">Figure 10: Empirical density plots of bootstrap replicates of standard deviation estimates</figcaption><p></p>
 </figure>
 </div>

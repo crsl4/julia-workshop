@@ -164,7 +164,6 @@ caterpillar!(Figure(resolution=(800,450)), ranefinfo(m1,:subj))
 #| label: fig-sleepcoefshrinkage
 RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=7);
 R"""
-library(lme4)
 library(lattice)
 df <- coef(lme4::lmList(reaction ~ days | subj, $(DataFrame(sleepstudy))))
 fm2 <- lme4::lmer(reaction ~ days + (days|subj), $(DataFrame(sleepstudy)))
