@@ -1,5 +1,5 @@
 ---
-title: "Session 2b: Determining Interval Overlap"
+title: "2b: Determining Interval Overlap"
 author: "Douglas Bates and Claudia Solis-Lemus"
 jupyter: julia-1.8
 ---
@@ -25,11 +25,8 @@ datadir = joinpath(@__DIR__, "biofast-data-v1");
   - Split the data in the Arrow data tables into a dictionary where the keys are the chromosome tag and values are the `start-stop` pairs expressed as a `Vector{UnitRange}`.  For the reference ranges, sort the vectors by increasing `first` value.
 
   - For the reference ranges create two other dictionaries with values from [RangeTrees.jl](https://github.com/dmbates/RangeTrees.jl) and from [IntervalTrees.jl](https://github.com/BioJulia/IntervalTrees.jl), respectively.
-
   - Benchmark the intersection with a target `UnitRange` from each of the representations of the reference ranges. Do this in two ways: `intersect`, which allocates the storage for the result, and `intersect!`, which modifies one of its arguments with the result.
-  
   - Compute the coverage from the vector of intersections.
-
   - Apply the methods to the complete set of targets.
 
 ## Creating dictionaries of Vector{UnitRange}
@@ -41,25 +38,24 @@ typeof(2:10), length(2:10), first(2:10), last(2:10)
 ```
 
   - However, the positions in the `start` and `stop` columns in a `.bed` file are not both included in the range they represent.  The positions correspond to base pairs in the range `start:(stop - 1)` as 0-based indices on the chromosome or `(start + 1):stop` as 1-based indices.
-  
+
   - It doesn't matter which one we use as long as we are consistent in creating ranges from the reference intervals and the target intervals.
-  
   - We choose to start counting from 1, just as the [world's foremost expert on counting](https://twitter.com/CountVonCount) does.
-  
   - We wrap this conversion in a utility function to help ensure consistency.
 
 ```{julia}
-asrange(start, stop) = (start + one(start)):stop
+asrange(start, stop) = (start+one(start)):stop
 ```
 
-
 ::: {.callout-note collapse="true"}
+
 ### "One-liner" function (actually method) definitions
 
 This method definition uses the compact "one-liner" form, like the math notation `f(x) = x + 1`.
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### `one(x)` versus literal `1`
 
 `one(x)` is used instead of the literal `1` in `asrange` to preserve the integer type (see also `?oneunit`, which is slighly more general).
@@ -88,10 +84,7 @@ function chromodict(rtbl::Vector{<:NamedTuple})
   vtype = Vector{UnitRange{itype}}
   dict = Dict{Symbol,vtype}()
   for (; chromo, start, stop) in rtbl
-    push!(
-      get!(dict, Symbol(chromo), vtype()),
-      asrange(start, stop),
-    )
+    push!(get!(dict, Symbol(chromo), vtype()), asrange(start, stop))
   end
   return dict
 end
@@ -103,6 +96,7 @@ refrngvecs = chromodict("ex-anno.arrow")
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Mutating `get!` for a `Dict`
 
 The call `get!(dict, Symbol(chromo), vtype())` in `chromodict` returns `dict[Symbol(chromo)]` or the default value, which is an empty `Vector{UnitRange{T}}`.
@@ -110,15 +104,18 @@ For the case of the default, it also installs that key/value pair in `dict`.
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### `Symbol`s versus `String`s for `Dict` keys
 
 We use `Symbol`s for the keys in these `Dict`s because they are easier to type and because symbol table lookup is very fast, although that doesn't really matter when we only have 24 distinct keys.
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### Destructuring a struct or NamedTuple
 
 The expression `for (; chromo, start, stop) in rtbl` is equivalent to three local assignments
+
 ```julia
 for r in rtbl
   chromo = r.chromo
@@ -127,16 +124,20 @@ for r in rtbl
   ...
 end
 ```
+
 In other words, it is equivalent to taking the named fields of a `NamedTuple` or a `struct` and making them available in the local namespace under the same names.
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### Interfaces to row- and column-oriented tables in `Tables.jl`
 
 [Tables.jl](https://github.com/JuliaData/Tables.jl) provides interfaces for row- and column-oriented tables, allowing for one orientation to be viewed as the other.  In this case an `Arrow.Table` is column-oriented but `rowtable` of this table returns a `Vector{NamedTuple{(:chromo, :start, :stop), Tuple{String, Int32, Int32}}}` to iterate over the rows.  When a "method instance" of `chromodict` is compiled for such a table, the schema of the rows will be known.
 
 ```{julia}
-@code_warntype chromodict(rowtable(Arrow.Table("biofast-data-v1/ex-anno.arrow")))
+@code_warntype chromodict(
+  rowtable(Arrow.Table("biofast-data-v1/ex-anno.arrow")),
+)
 ```
 
 :::
@@ -144,7 +145,6 @@ In other words, it is equivalent to taking the named fields of a `NamedTuple` or
   - In `refrngvecs`, each of the values, a `Vector{UnitRange}`, should be sorted by the `first` element of the `UnitRange`.
 
   - Creating an `IntervalTree` requires the ranges to be sorted by `first` element **and** by `last` element when the `first` elements are equal.
-
   - Define a custom `lt` comparison for this.
 
 ```{julia}
@@ -161,6 +161,7 @@ refrngvecs  # note changes in refrngvecs[:chr01]
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### `let` blocks
 
 A `let/end` block provides a local namespace.  The custom `lt` comparison method will not be visible outside the scope of the block.
@@ -180,9 +181,7 @@ target = last(tarrngvec01)
   - Create a method to intersect a target range with a `Vector{UnitRange}` returning the intersections as another `Vector{UnitRange}`.
 
   - A common Julia programming idiom for such cases is to create two methods: one for `intersect!`, which modifies an argument that will hold the result, and one for `intersect`, which allocates the result then calls the `intersect!` method.
-
   - For the `intersect!` method we first `empty!` the result vector, which zeros the vector length but does not shrink the memory chunk allocated to the vector, then `push!` intersections onto it.  If there are many calls to an `intersect!` method like this only a few will cause memory allocations.
-
   - The elements of our vectors of reference ranges, like `refrngvec01`, are sorted by their `first` element but globally the `last` elements do not have any special relationships.  The best we can do to determine all intersections is a sequential scan of the sorted vector of ranges with an early exit when `last(target) < first(vectorelement)`.
 
 ```{julia}
@@ -230,10 +229,11 @@ treesize(rangetree01), treeheight(rangetree01), treebreadth(rangetree01)
 ```
 
 ```{julia}
-print_tree(rangetree01; maxdepth=3)
+print_tree(rangetree01; maxdepth = 3)
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Augmented interval trees
 
 A smaller example may help to understand how this type of interval tree.
@@ -248,16 +248,16 @@ rn = RangeNode(smallrngvec)
 print_tree(rn)
 ```
 
-- The `UnitRange` in the root node is the 4th out of the 7 sorted ranges from which the tree was constructed.
-- Each of the nodes in the tree can have 0, 1, or 2 child nodes.  Those with 0 children are called the "leaves" of the tree.
+  - The `UnitRange` in the root node is the 4th out of the 7 sorted ranges from which the tree was constructed.
+  - Each of the nodes in the tree can have 0, 1, or 2 child nodes.  Those with 0 children are called the "leaves" of the tree.
 
 ```{julia}
 collect(Leaves(rn))
 ```
 
-- In addition to the `UnitRange` it represents, each `RangeNode` stores `maxlast`, the maximum value of `last(rng)` for any `UnitRange` in the tree rooted at this node.  For a leaf `maxlast` is simply `last` of its `UnitRange`.
-- For other nodes, `maxlast` can be larger than `last` of its `UnitRange`.
-- In particular, for the root node `maxlast` is the maximum of all the `last` values of the `UnitRange`s that generated the tree.
+  - In addition to the `UnitRange` it represents, each `RangeNode` stores `maxlast`, the maximum value of `last(rng)` for any `UnitRange` in the tree rooted at this node.  For a leaf `maxlast` is simply `last` of its `UnitRange`.
+  - For other nodes, `maxlast` can be larger than `last` of its `UnitRange`.
+  - In particular, for the root node `maxlast` is the maximum of all the `last` values of the `UnitRange`s that generated the tree.
 
 ```{julia}
 maximum(last.(smallrngvec))
@@ -280,7 +280,6 @@ getroot(first(children(first(children(rangetree01))))) # get the root from its g
   - Evaluating and storing `maxlast` in the nodes allows for overlap searchs to be truncated at nodes for which `maxlast < first(target)`.  The sorting by `first` allows for skipping the right subtree whenever `last(target) < first(thisnode)` (as in the `intersect!` method for `Vector{UnitRange}`).
 
   - `intersect` and `intersect!` methods are already defined in [RangeTrees.jl](https://github.com/dmbates/RangeTrees.jl).
-
   - Check that their results agree with the saved result.
 
 ```{julia}
@@ -366,24 +365,22 @@ isequal(intersect!(result, target, intvltree01), savedresult)
   - The `coverage` of a target by a set of reference ranges is the proportion of the base pairs in the target that intersect with one or more of the reference ranges.
 
   - We need to somehow count the number of elements in the union of the ranges returned from `intersect!`.
-  
   - This could be done using the `union!` method for a [BitSet](https://docs.julialang.org/en/v1/base/collections/#Base.BitSet) but that approach has two problems: it is comparatively slow and, in Julia versions up to 1.8.0-rc1, it can be wrong.
 
 ::: {.callout-note collapse="true"}
+
 ### Bug in `union!` for `BitSet`
 
   - While creating these notes we discovered a [bug](https://github.com/JuliaLang/julia/pull/45574) in the `union!` method for a `BitSet` and a `UnitRange`.
 
   - There was a [PR](https://github.com/JuliaLang/julia/pull/45578) to fix it the next morning.
-  
   - Versions of Julia prior to 1.8.0-rc2 can (and probably will) return incorrect values of coverage.
-  
   - Replacing `union!(bs, isect)` by `union!(bs, BitSet(isect))` avoids this "infelicity" at the expense of more memory usage and compute time.
 
 :::
-  
+
   - There is a better method that takes advantage of the intersecting ranges being sorted by `first`
-  
+
   - The idea is to "keep moving the goalposts". When evaluating the coverage count, add the length of the current reference range's intersection with only the part to the right of what has already been covered.  The thing we know about the intersecting ranges is that each successive ranges's `first` position is greater than or equal to the `first` position of all the ranges preceding it.  That is, the ranges can't "move left" as we iterate through them.
 
 ```{julia}
@@ -396,7 +393,7 @@ function coveragecount(
   coverage = 0
   for isect in isects
     coverage += length(intersect(goalposts, isect))
-    goalposts = (last(isect) + one(T)):rightpost
+    goalposts = (last(isect)+one(T)):rightpost
   end
   return coverage
 end
@@ -446,10 +443,12 @@ bigresult[:chrY]
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Pre-assigning dictionary entries to avoid thread conflict
 
   - The `result` is initialized with all the keys that will be in the result and with values that are empty `DataFrame`s.
   - Individual tasks that are `@spawn`ed allocate their `DataFrame` value and merely update the pointer in `result` to that value, eliminating the possibility of collisions with other tasks.
+
 :::
 
 ```{julia}

@@ -1,5 +1,5 @@
 ---
-title: "Session 1: Getting started with Julia"
+title: "1: Getting started with Julia"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISCB 2022 Madison"
 ---

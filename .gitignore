@@ -155,3 +155,4 @@ Backup[ ]of[ ]*.numbers/
 /.quarto/
 /_site/
 _site/*
+/env/
