@@ -94,10 +94,10 @@ julia --project
 
 Alternatively, you can open julia normally, and type `] activate .`
 
-Then, instantiate the package (install dependencies) with:
+Then, instantiate the package (install dependencies) in the package mode `]`:
 ```julia
-] instantiate
-] update
+(julia-workshop) pkg> instantiate
+(julia-workshop) pkg> update
 ```
 
 Now, you should be able to follow along the workshop commands. Trouble-shooting might be needed when we reach the interoperability with Python and R as certain libraries or packages might need to be installed too.
@@ -129,6 +129,8 @@ julia> ENV["PYTHON"] = ""
 (myproject) pkg> add Tables
 (myproject) pkg> add RangeTrees
 ```
+
+**Note:** This will create a whole new conda environment, so it will take up space in memory.
 
 Two files are noteworthy:
 
@@ -180,9 +182,13 @@ All required packages and dependencies will be installed. Scripts that run in yo
 
 # Editing julia code
 
-There are many ways to work on julia code depending on the editor.
+There are many ways to work on julia code depending on the editor. We will focus today on VSCode.
 
-For those using VSCode, you can open the project easily with:
+1. Download VSCode [here](https://code.visualstudio.com/download)
+
+2. Install the Julia extension and the Quarto extension in VSCode
+
+3. Open the project with:
 ```shell
 cd julia-workshop
 code .
@@ -194,6 +200,7 @@ Alternatively, you can open a specific `qmd` file in your editor of choice:
 cd julia-workshop
 open session2a-tables-and-arrow.qmd
 ```
+If you open a given file, make sure to activate the project `] activate .` or you will be working on the global environment.
 
 Note that jupyter notebooks `ipynb` are produced when the `qmd` files when rendered into `html`.
 
