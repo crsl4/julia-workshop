@@ -1,0 +1,353 @@
+---
+title: "3b: Generalized linear mixed models"
+author: "Douglas Bates and Claudia Solis-Lemus"
+jupyter: julia-1.8
+---
+
+Load the packages to be used
+
+```{julia}
+#| code-fold: true
+using AlgebraOfGraphics
+using CairoMakie
+using DataFrameMacros
+using DataFrames
+using MixedModels
+using MixedModelsMakie
+using ProgressMeter
+
+CairoMakie.activate!(; type="svg");
+ProgressMeter.ijulia_behavior(:clear);
+```
+
+  - A GLMM (Generalized Linear Mixed Model) is used instead of a LMM (Linear Mixed Model) when the response is binary or, perhaps, a count with a low expected count.
+
+  - The specification of the model includes the distribution family for the response and, possibly, the *link function*, g, relating the *mean response*, μ, to the value of the *linear predictor*, η.
+  - To explain the model it helps to consider the linear mixed model in some detail first.
+
+## Matrix notation for the sleepstudy model
+
+```{julia}
+sleepstudy = DataFrame(MixedModels.dataset(:sleepstudy))
+```
+
+```{julia}
+contrasts = Dict(:subj => Grouping())
+m1 = let
+  form = @formula(reaction ~ 1 + days + (1 + days | subj))
+  fit(MixedModel, form, sleepstudy; contrasts)
+end
+println(m1)
+```
+
+The response vector, y, has 180 elements.  The fixed-effects coefficient vector, β, has 2 elements and the fixed-effects model matrix, X, is of size 180 × 2.
+
+```{julia}
+m1.y
+```
+
+```{julia}
+m1.β
+```
+
+```{julia}
+m1.X
+```
+
+The second column of X is just the `days` vector and the first column is all 1's.
+
+There are 36 random effects, 2 for each of the 18 levels of `subj`.
+The "estimates" (technically, the conditional means or conditional modes) are returned as a vector of matrices, one matrix for each grouping factor.
+In this case there is only one grouping factor for the random effects so there is one one matrix which contains 18 intercept random effects and 18 slope random effects.
+
+```{julia}
+m1.b
+```
+
+```{julia}
+only(m1.b)   # only one grouping factor
+```
+
+There is a model matrix, $\mathbf{Z}$, for the random effects.
+In general it has one chunk of columns for the first grouping factor, a chunk of columns for the second grouping factor, etc.
+
+In this case there is only one grouping factor.
+
+```{julia}
+Int.(only(m1.reterms))
+```
+
+The defining property of a linear model or linear mixed model is that the fitted values are linear combinations of the fixed-effects parameters and the random effects.
+We can write the fitted values as
+
+```{julia}
+m1.X * m1.β + only(m1.reterms) * vec(only(m1.b))
+```
+
+```{julia}
+fitted(m1)   # just to check that these are indeed the same as calculated above
+```
+
+In symbols we would write the *linear predictor expression* as
+$$
+\boldsymbol{\eta} = \mathbf{X}\boldsymbol{\beta} +\mathbf{Z b}
+$$
+where $\boldsymbol{\eta}$ has 180 elements, $\boldsymbol{\beta}$ has 2 elements, $\bf b$ has 36 elements, $\bf X$ is of size 180 × 2 and $\bf Z$ is of size 180 × 36.
+
+For a linear model or linear mixed model the linear predictor **is** the mean response, $\boldsymbol\mu$.
+That is, we can write the probability model in terms of a 180-dimensional random variable, $\mathcal Y$, for the response and a 36-dimensional random variable, $\mathcal B$, for the random effects as
+$$
+\begin{aligned}
+(\mathcal{Y} | \mathcal{B}=\bf{b}) &\sim\mathcal{N}(\bf{ X\boldsymbol\beta + Z b},\sigma^2\bf{I})\\\\
+\mathcal{B}&\sim\mathcal{N}(\bf{0},\boldsymbol{\Sigma}_{\boldsymbol\theta}) .
+\end{aligned}
+$$
+where $\boldsymbol{\Sigma}_\boldsymbol{\theta}$ is a 36 × 36 symmetric covariance matrix that has a special form - it consists of 18 diagonal blocks, each of size 2 × 2 and all the same.
+
+This symmetric matrix can be constructed from the parameters $\boldsymbol\theta$, which generate the lower triangular matrix $\boldsymbol\lambda$, and the estimate $\widehat{\sigma^2}$.
+
+```{julia}
+m1.θ
+```
+
+```{julia}
+λ = only(m1.λ)  # with multiple grouping factors there will be multiple λ's
+```
+
+```{julia}
+Σ = varest(m1) * (λ * λ')
+```
+
+Compare the diagonal elements to the *Variance* column of
+
+```{julia}
+VarCorr(m1)
+```
+
+## Linear predictors in LMMs and GLMMs
+
+Writing the model for $\mathcal Y$ as
+$$
+(\mathcal{Y} | \mathcal{B}=\bf{b})\sim\mathcal{N}(\bf{ X\boldsymbol\beta + Z b},\sigma^2\bf{I})
+$$
+may seem like over-mathematization (or "overkill", if you prefer) relative to expressions like
+$$
+y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\epsilon_i
+$$
+but this more abstract form is necessary for generalizations.
+
+The way that I read the first form is
+
+:::{.callout}
+The conditional distribution of the response vector, $\mathcal Y$, given that the random effects vector, $\mathcal B =\bf b$, is a multivariate normal (or *Gaussian*) distribution whose mean, $\boldsymbol\mu$, is the linear predictor, $\boldsymbol\eta=\bf{X\boldsymbol\beta+Zb}$, and whose covariance matrix is $\sigma^2\bf I$.  That is, conditional on $\bf b$, the elements of $\mathcal Y$ are independent normal random variables with constant variance, $\sigma^2$, and means of the form $\boldsymbol\mu = \boldsymbol\eta = \bf{X\boldsymbol\beta+Zb}$.
+:::
+
+So the only things that differ in the distributions of the $y_i$'s are the means and they are determined by this linear predictor, $\boldsymbol\eta = \bf{X\boldsymbol\beta+Zb}$.
+
+## Generalized Linear Mixed Models
+
+Consider first a GLMM for a vector, $\bf y$, of binary (i.e. yes/no) responses.
+The probability model for the conditional distribution $\mathcal Y|\mathcal B=\bf b$ consists of independent [Bernoulli distributions](https://en.wikipedia.org/wiki/Bernoulli_distribution) where the mean, $\mu_i$, for the i'th response is again determined by the i'th element of a *linear predictor*, $\boldsymbol\eta = \mathbf{X}\boldsymbol\beta+\mathbf{Z b}$.
+
+However, in this case we will run into trouble if we try to make $\boldsymbol\mu=\boldsymbol\eta$ because $\mu_i$ is the probability of "success" for the i'th response and must be between 0 and 1.
+We can't guarantee that the i'th component of $\boldsymbol\eta$ will be between 0 and 1.
+To get around this problem we apply a transformation to take $\eta_i$ to $\mu_i$.
+For historical reasons this transformation is called the *inverse link*, written $g^{-1}$, and the opposite transformation - from the probability scale to an unbounded scale - is called the *link*, g.
+
+Each probability distribution in the [exponential family](https://en.wikipedia.org/wiki/Exponential_family) (which is most of the important ones), has a *canonical link* which comes from the form of the distribution itself.  The details aren't as important as recognizing that the distribution itself determines a preferred link function.
+
+For the Bernoulli distribution, the canonical link is the *logit* or *log-odds* function,
+$$
+\eta = g(\mu) = \log\left(\frac{\mu}{1-\mu}\right),
+$$
+(it's called *log-odds* because it is the logarithm of the odds ratio, $p/(1-p)$)
+and the canonical inverse link is the *logistic*
+$$
+\mu=g^{-1}(\eta)=\frac{1}{1+\exp(-\eta)}.
+$$
+This is why fitting a binary response is sometimes called *logistic regression*.
+
+For later use we define a Julia `logistic` function.
+See [this presentation](https://github.com/dmbates/JSM2021/blob/main/notebooks/2compilation.jl) for more information than you could possible want to know on how Julia converts code like this to run on the processor.
+
+```{julia}
+increment(x) = x + one(x)
+logistic(η) = inv(increment(exp(-η)))
+```
+
+To reiterate, the probability model for a Generalized Linear Mixed Model (GLMM) is
+$$
+\begin{aligned}
+(\mathcal{Y} | \mathcal{B}=\bf{b}) &\sim\mathcal{D}(\bf{g^{-1}(X\boldsymbol\beta + Z b)},\phi)\\\\
+\mathcal{B}&\sim\mathcal{N}(\bf{0},\Sigma_{\boldsymbol\theta}) .
+\end{aligned}
+$$
+where $\mathcal{D}$ is the distribution family (such as Bernoulli or Poisson), $g^{-1}$ is the inverse link and $\phi$ is a scale parameter for $\mathcal{D}$ if it has one.
+The important cases of the Bernoulli and Poisson distributions don't have a scale parameter - once you know the mean you know everything you need to know about the distribution. (For those following the presentation, [this poem](https://www.poetryfoundation.org/poems/44477/ode-on-a-grecian-urn) by John Keats is the one with the couplet "Beauty is truth, truth beauty - that is all ye know on earth and all ye need to know.")
+
+### An example of a Bernoulli GLMM
+
+- The `contra` dataset in the `MixedModels` package is from a survey on the use of artificial contraception by women in Bangladesh.
+
+```{julia}
+contra = DataFrame(MixedModels.dataset(:contra))
+```
+
+```{julia}
+combine(groupby(contra, :dist), nrow)
+```
+
+- The information recorded included woman's age, the number of live children she has, whether she lives in an urban or rural setting, and the political district in which she lives.
+
+- The age was centered. Unfortunately, the version of the data to which I had access did not record what the centering value was.
+
+- A data plot, @fig-contradata, shows that the probability of contraception use is **not** linear in `age` - it is low for younger women, higher for women in the middle of the range (assumed to be women in late 20's to early 30's) and low again for older women (late 30's to early 40's in this survey).
+
+- If we fit a model with only the `age` term in the fixed effects, that term will not be significant.
+This doesn't mean that there is no "age effect", it only means that there is no significant linear effect for `age`.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: Smoothed relative frequency of contraception use versus centered age for women in the 1989 Bangladesh Fertility Survey
+#| label: fig-contradata
+draw(
+  data(
+    @transform(
+      contra,
+      :numuse = Int(:use == "Y"),
+      :urb = ifelse(:urban == "Y", "Urban", "Rural")
+    )
+  ) *
+  mapping(
+    :age => "Centered age (yr)",
+    :numuse => "Frequency of contraception use";
+    col=:urb,
+    color=:livch,
+  ) *
+  smooth();
+  figure=(; resolution=(800, 450)),
+)
+```
+
+```{julia}
+contrasts = Dict(
+  :dist => Grouping(),
+  :urban => HelmertCoding(),
+  :children => HelmertCoding(),
+)
+nAGQ = 9
+dist = Bernoulli()
+gm1 = let
+  form = @formula(
+    use ~ 1 + age + abs2(age) + urban + livch + (1 | dist)
+  )
+  fit(MixedModel, form, contra, dist; nAGQ, contrasts)
+end
+```
+
+- Notice that the linear term for `age` is not significant but the quadratic term for `age` is highly significant.
+- We usually retain the lower order term, even if it is not significant, if the higher order term is significant.
+
+- Notice also that the parameter estimates for the treatment contrasts for `livch` are similar. Thus the distinction of 1, 2, or 3+ childen is not as important as the contrast between having any children and not having any. Those women who already have children are more likely to use artificial contraception.
+
+- Furthermore, the women without children have a different probability vs age profile than the women with children. To allow for this we define a binary `children` factor and incorporate an `age&children` interaction.
+
+```{julia}
+VarCorr(gm1)
+```
+
+- Notice that there is no "residual" variance being estimated. This is because the Bernoulli distribution doesn't have a scale parameter.
+
+### Convert `livch` to a binary factor
+
+```{julia}
+@transform!(contra, :children = :livch ≠ "0")
+```
+
+```{julia}
+gm2 = let
+  form = @formula(
+    use ~
+      1 +
+      age * children +
+      abs2(age) +
+      children +
+      urban +
+      (1 | dist)
+  )
+  fit(MixedModel, form, contra, dist; nAGQ, contrasts)
+end
+```
+
+- Various model-fit statistics
+
+```{julia}
+#| code-fold: true
+let
+  mods = [gm2, gm1]
+  DataFrame(;
+    model=[:gm2, :gm1],
+    npar=dof.(mods),
+    deviance=deviance.(mods),
+    AIC=aic.(mods),
+    BIC=bic.(mods),
+    AICc=aicc.(mods),
+  )
+end
+```
+
+- Because these models are not nested, we cannot do a likelihood ratio test. Nevertheless we see that the deviance is much lower in the model with `age & children` even though the 3 levels of `livch` have been collapsed into a single level of `children`. 
+
+- There is a substantial decrease in the deviance even though there are fewer parameters in model `gm2` than in `gm1`. This decrease is because the flexibility of the model - its ability to model the behavior of the response - is being put to better use in `gm2` than in `gm1`.
+
+### Using `urban&dist` as a grouping factor
+
+- It turns out that there can be more difference between urban and rural settings within the same political district than there is between districts. To model this difference we build a model with `urban&dist` as a grouping factor.
+
+```{julia}
+gm3 = let
+  form = @formula(
+    use ~
+      1 +
+      age * children +
+      abs2(age) +
+      children +
+      urban +
+      (1 | urban & dist)
+  )
+  fit(MixedModel, form, contra, dist; nAGQ, contrasts)
+end
+```
+
+```{julia}
+#| code-fold: true
+let
+  mods = [gm3, gm2, gm1]
+  DataFrame(;
+    model=[:gm3, :gm2, :gm1],
+    npar=dof.(mods),
+    deviance=deviance.(mods),
+    AIC=aic.(mods),
+    BIC=bic.(mods),
+    AICc=aicc.(mods),
+  )
+end
+```
+
+- Notice that the parameter count in `gm3` is the same as that of `gm2` - the thing that has changed is the number of levels of the grouping factor- resulting in a much lower deviance for `gm3`. A simple count of the number of parameters to be estimated does not always reflect the complexity of the model.
+
+```{julia}
+gm2
+```
+
+```{julia}
+gm3
+```
+
+- The coefficient for `age` may be regarded as insignificant but we retain it for two reasons: we have a term of `age²` (written `abs2(age)`) in the model and we have a significant interaction `age & children` in the model.
+
+## Summarizing the results
+
+  - From the data plot we can see a quadratic trend in the probability by age.
+  - The patterns for women with children are similar and we do not need to distinguish between 1, 2, and 3+ children.
+  - We do distinguish between those women who do not have children and those with children.  This shows up in a signficant `age & children` interaction term.
