@@ -1,33 +1,12 @@
 ---
-title: "3: Linear Mixed-effects Models"
+title: "3a: Linear Mixed-effects Models"
 author: "Douglas Bates and Claudia Solis-Lemus"
 jupyter: julia-1.8
 ---
 
 ::: {.hidden}
 $$
-\newcommand\bbA{{\mathbf{A}}}
-\newcommand\bbI{{\mathbf{I}}}
-\newcommand\bbL{{\mathbf{L}}}
-\newcommand\bbX{{\mathbf{X}}}
-\newcommand\bbb{{\mathbf{b}}}
-\newcommand\bbr{{\mathbf{r}}}
-\newcommand\bbx{{\mathbf{x}}}
-\newcommand\bby{{\mathbf{y}}}
-\newcommand\bbbeta{{\boldsymbol{\beta}}}
-\newcommand\bbeta{{\boldsymbol{\eta}}}
-\newcommand\bbLambda{{\boldsymbol{\Lambda}}}
-\newcommand\bblambda{{\boldsymbol{\lambda}}}
-\newcommand\bbOmega{{\boldsymbol{\Omega}}}
-\newcommand\bbmu{{\boldsymbol{\mu}}}
 \newcommand\bbSigma{{\boldsymbol{\Sigma}}}
-\newcommand\bbtheta{{\boldsymbol{\theta}}}
-\newcommand\mcN{{\mathcal{N}}}
-\newcommand\mcB{{\mathcal{B}}}
-\newcommand\mcU{{\mathcal{U}}}
-\newcommand\mcX{{\mathcal{X}}}
-\newcommand\mcY{{\mathcal{Y}}}
-\newcommand\mcZ{{\mathcal{Z}}}
 $$
 :::
 
@@ -36,11 +15,13 @@ Attach the packages to be used
 ```{julia}
 #| code-fold: true
 using CairoMakie        # graphics backend
+using DataFrameMacros
 using DataFrames
 using LinearAlgebra
 using MixedModels
 using MixedModelsMakie  # special graphics for mixed models
 using ProgressMeter     # report iteration speed when fitting models
+using Random
 using RCall
 
 CairoMakie.activate!(; type="svg")     # Scalable Vector Graphics backend
@@ -59,7 +40,7 @@ ProgressMeter.ijulia_behavior(:clear); # Adjust progress meter for Jupyter outpu
 
 ## The sleepstudy data
 
-The [`sleepstudy`] dataset
+The `sleepstudy` dataset
 
 ```{julia}
 sleepstudy = MixedModels.dataset(:sleepstudy)
@@ -110,7 +91,7 @@ print(
 
 - Others, e.g. 337, start with slow reaction times which then increase substantially after sleep deprivation.
 
-### Formulating a model
+# Formulating a model
 
 - A suitable model for these data would include an intercept and slope for the "typical" subject and randomly distributed deviations from these values for each of the observed subjects.
 
@@ -126,7 +107,7 @@ print(
 
 - As in R the model is described in a formula language, with the response to the left of the `~` character and with fixed-effects and random-effects terms to the right.
 
-- A random-effects term is of the form `(linearterms|grouping)` where `linearterms` are terms for a linear model (which can be as simple as `1`) and `grouping` is the name of a factor (or, less commonly an expression), of the experimental or observational units.
+- A random-effects term is of the form `(linearterms|grouping)` where `linearterms` are terms for a linear model (which can be as simple as `1`) and `grouping` is the name of a factor (or, less commonly, an expression), of the experimental or observational units.
 
 ```{julia}
 m1 = let
@@ -158,7 +139,7 @@ print(m1)
 
 - The standard deviation of the random effects for the slope is 5.72 ms. per day.  Thus we would expect individual slopes to be in the range of about 0 ms./day to 20 ms./day.
 
-- The correlation of the random effects for intercept and for slope is low, -0.08.  We may wish to consider a model with uncorrelated random effects.
+- The estimated correlation of the random effects for intercept and for slope is low, 0.08.  We may wish to consider a model with uncorrelated random effects.
 
 ## "Conditional means" of the random effects
 
@@ -168,277 +149,20 @@ print(m1)
 
 ```{julia}
 #| code-fold: true
-#| fig-cap: "95% prediction intervals on the conditional distribution of the random effects by subject, given the observed data. The subjects are ordered by increasing intercept in the conditional distributions.
+#| fig-cap: "95% prediction intervals on the conditional distribution of the random effects by subject, given the observed data. The subjects are ordered by increasing intercept in the conditional distributions."
 #| label: fig-sleepcaterpillar
 caterpillar!(Figure(resolution=(800,450)), ranefinfo(m1,:subj))
 ```
 
+# Mixed-models and shrinkage of estimates
 
-Thus the (maximum likelihood) estimate of the covariance matrix $\bbSigma$ is
-
-```{julia}
-Σ = σ² * λ * λ'
-```
-
-The correlation shown in the "Variance components" table can be evaluated as
-
-```{julia}
-Σ[2,1] / sqrt(Σ[1,1] * Σ[2,2])
-```
-
-## The Big Picture
-
-Although it is tempting to construct the model on a per-subject basis it is ultimately easier to consider the entire set of responses and the collection of all of the random effects together.
-There are two reasons for this.
-First, the parameters must be estimated from the complete data set.
-Second, in situations where there is more than one grouping factor for the random effects it may not be possible to partition the responses according to the grouping factor.
-In the sleepstudy example the 180 observations can be partitioned into eighteen groups of ten observations on each of the eighteen subjects.
-However, in an example we will consider below each observation is on one of 56 subjects and one of 32 items and those classifications are _crossed_.
-That is, each subject is tested on each item and each item is tested on each subject.
-(Well, that was the plan at least.
-As often happens a few observations were erroneously recorded so the factors are not completely crossed in the data after cleaning.)
-
-In any case, we write $\bbb$ for the complete random-effects vector (in this case a 36-dimensional vector formed from the $2\times 18$ matrix in _column-major_ order).
-
-```{julia}
-b = vec(first(ranef(m1)))
-```
-
-In the model the unconditional distribution of the random variable $\mathcal{B}$ is
-$$
-\mathcal{B}\sim\mathcal{N}\left(\mathbf{0},\sigma^2\bbLambda\bbLambda^\prime\right)
-$$
-and the conditional distribution of the response vector, $\mathcal{Y}$, is
-$$
-(\mathcal{Y}|\mathcal{B}=\bbb)\sim\mathcal{N}\left(\mathbf{X\bbbeta}+\mathbf{Zb}, \sigma^2\mathbf{I}_n\right)
-$$
-
-The model matrix $\mathbf{X}$ for the fixed-effects has the usual form
-
-```{julia}
-Int.(m1.X)  # display as Int to reduce clutter
-```
-
-but the model matrix $\mathbf{Z}$ for the random effects is very sparse.  That is, most of the entries in $\mathbf{Z}$ are zero.
-
-```{julia}
-Int.(first(m1.reterms))
-```
-
-In practice $\mathbf{Z}$ is stored and manipulated as a special type of sparse matrix.
-
-The matrix $\Lambda$ is block-diagonal consisting of 18 diagonal blocks of size $2\times 2$, each of which is a copy of $\lambda$.  It could be written as a [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_product)
-
-```{julia}
-Λ = kron(I(18), first(m1.λ))
-```
-
-but there is no need to actually construct $\bbLambda$.  It is completely determined by $\bblambda$.
-
-## Spherical random effects
-
-One of the many useful properties of the normal distribution is that a scalar normal distribution, $\mathcal{X}\sim\mathcal{N}(\mu,\sigma^2)$, can be expressed in terms of the _standard normal_ distribution, $\mathcal{Z}\sim\mathcal{N}(0,1)$ as
-$$
-\mathcal{X} = \mu + \sigma \mathcal{Z}
-$$
-A similar result holds for the multivariate normal distribution.  The random effects vector, $\mathcal{B}$, with distribution $\mathcal{N}(\mathbf{0},\bbSigma)$ can be generated from a "spherical" random effects vector, $\mathcal{U}$, as
-$$
-\mathcal{B} = \Lambda \mathcal{U}\quad\mathrm{where}\quad\mathcal{U}\sim\mathcal{N}(\mathbf{0},\sigma^2\mathbf{I}_q)
-$$
-and $q$ is the dimension of the random-effects vector (36 in our example).
-
-(Recall that a multivariate normal distribution with covariance matrix $\sigma^2\mathbf{I}$ is called a "spherical normal" because the contours of constant probability density are spheres.  The random effects vector $\mathcal{U}$ has such a spherical distribution.)
-
-Now the conditional distribution of the response, given the random effects, can be written in terms of $\mathcal{U}$ as
-$$
-(\mathcal{Y}|\mathcal{U}=\mathbf{u})\sim\mathcal{N}\left(\mathbf{X\bbbeta}+\mathbf{Z\Lambda u}, \sigma^2\mathbf{I}_n\right)
-$$
-
-The joint probability density for $\mathcal{Y}$ and $\mathcal{U}$ is the product of the conditional density of $\mathcal{Y}|\mathcal{U}=\mathbf{u}$ and the unconditional density of $\mathcal{U}$.
-$$
-\begin{aligned}
-f_{\mathcal{Y},\mathcal{U}}(\mathbf{y},\mathbf{u})&= \frac{1}{(2\pi\sigma^2)^{n/2}}\exp\left(-\frac{\|\mathbf{y}-\mathbf{X\bbbeta}-\mathbf{Z\Lambda u}\|^2}{2\sigma^2}\right)\,\frac{1}{(2\pi\sigma^2)^{q/2}}\exp\left(-\frac{\|\mathbf{u}\|^2}{2\sigma^2}\right)\\
-&=\frac{1}{(2\pi\sigma^2)^{(n+q)/2}}\exp\left(-\frac{\|\mathbf{y}-\mathbf{X\bbbeta}-\mathbf{Z\Lambda u}\|^2+\|\mathbf{u}\|^2}{2\sigma^2}\right)
-\end{aligned}
-$$
-
-Evaluating the likelihood requires the marginal distribution of $\mathcal{Y}$.  This can be obtained by integrating the joint distribution, $f_{\mathcal{Y},\mathcal{U}}(\mathbf{y},\mathbf{u})$, evaluated at the observed $\mathbf{y}$, with respect to $\mathbf{u}$. There is an analytic solution to this integral.  To derive this solution, we first write the penalized sum of squared residuals in a somewhat unusual but very useful form.  Let $\bbtheta$ be the vector of parameters that determine $\bblambda$.
-
-```{julia}
-show(m1.θ)
-```
-
-In this case, $\bbtheta$ consists if the elements of the lower triangle of $\bblambda$.  What we will show is that, given a value of $\bbtheta$ the maximum of the log-likelihood for that value of $\bbtheta$ and any value of $\bbbeta$ and $\sigma$ can be determined from a matrix decomposition, specifically a Cholesky decomposition shown below.  This is called _profiling_ the log likelihood.
-
-For the purposes of the optimization the objective is on the [_deviance_](https://en.wikipedia.org/wiki/Deviance_(statistics)) scale, which is negative twice the log-likelihood.  A summary of the optimization can be obtained as
-
-```{julia}
-m1.optsum
-```
-
-It required fewer than 60 evaluations of the objective function to obtain the maximum likelihood estimates of $\bbtheta$ and, with them, the estimates of all the other parameters.
-
-To evaluate the log-likelihood we write the penalized sum of squared residuals in the joint density, $f_{\mathcal{Y},\mathcal{U}}(\mathbf{y,u})$, as
-$$
-\begin{aligned}
-r^2_\bbtheta(\mathbf{u},\bbbeta) &=  \|\mathbf{y}-\mathbf{X\bbbeta}-\mathbf{Z\Lambda_\theta u}\|^2+\|\mathbf{u}\|^2\\
-&=\left\|\begin{bmatrix}
-\mathbf{Z\Lambda}&\mathbf{X}&\mathbf{y}\\
-\mathbf{I}_q&\mathbf{0}&\mathbf{0}
-\end{bmatrix}\begin{bmatrix}-\mathbf{u}\\ -\bbbeta \\ 1\end{bmatrix}\right\|^2 \\
-&= \begin{bmatrix}-\mathbf{u}&-\bbbeta&1\end{bmatrix}
-\begin{bmatrix}
-\bbLambda^\prime\mathbf{Z}^\prime\mathbf{Z\Lambda}+\mathbf{I} & \bbLambda^\prime\mathbf{Z}^\prime\mathbf{X} & \bbLambda^\prime\mathbf{Z}^\prime\mathbf{y} \\
-\mathbf{X}^\prime\mathbf{Z\Lambda} & \mathbf{X}^\prime\mathbf{X} & \mathbf{X}^\prime\mathbf{y} \\
-\mathbf{y}^\prime\mathbf{Z\Lambda} & \mathbf{y}^\prime\mathbf{X} & \mathbf{y}^\prime\mathbf{y}
-\end{bmatrix}
-\begin{bmatrix}-\mathbf{u}\\ -\bbbeta \\ 1\end{bmatrix}\\
-&=
-\begin{bmatrix}-\mathbf{u}&-\bbbeta&1\end{bmatrix}
-\begin{bmatrix}
-\mathbf{R}_{ZZ}^\prime & \mathbf{0} & \mathbf{0} \\
-\mathbf{R}_{ZX}^\prime & \mathbf{R}_{XX}^\prime & \mathbf{0} \\
-\bbr_{Zy}^\prime & \bbr_{Xy}^\prime & r_{yy}
-\end{bmatrix}
-\begin{bmatrix}
-\mathbf{R}_{ZZ} & \mathbf{R}_{ZX} & \bbr_{Zy} \\
-\mathbf{0} & \mathbf{R}_{XX} & \bbr_{Xy} \\
-\mathbf{0} & \mathbf{0} & r_{yy}
-\end{bmatrix}
-\begin{bmatrix}-\mathbf{u}\\ -\bbbeta \\ 1\end{bmatrix}\\
-&= \left\|
-\begin{bmatrix}
-\mathbf{R}_{ZZ} & \mathbf{R}_{ZX} & \bbr_{Zy} \\
-\mathbf{0} & \mathbf{R}_{XX} & \bbr_{Xy} \\
-\mathbf{0} & \mathbf{0} & r_{yy}
-\end{bmatrix}
-\begin{bmatrix}-\mathbf{u}\\ -\bbbeta \\ 1\end{bmatrix}\right\|^2\\
-&=\|\bbr_{Zy}-\mathbf{R}_{ZX}\bbbeta-\mathbf{R}_{ZZ}\mathbf{u}\|^2+ \|\bbr_{Xy}-\mathbf{R}_{XX}\bbbeta\|^2 + r_{yy}^2\\
-&=r_{yy}^2+\|\mathbf{R}_{XX}\bbbeta-\bbr_{Xy}\|^2+\|\mathbf{R}_{ZZ}\mathbf{u}+\mathbf{R}_{ZX}\bbbeta-\bbr_{Zy}\|^2
-\end{aligned}
-$$
-where
-$$
-\mathbf{R}(\bbtheta)=
-\begin{bmatrix}
-\mathbf{R}_{ZZ} & \mathbf{R}_{ZX} & \bbr_{Zy} \\
-\mathbf{0} & \mathbf{R}_{XX} & \bbr_{Xy} \\
-\mathbf{0} & \mathbf{0} & r_{yy}
-\end{bmatrix}
-$$
-is the upper triangular, right Cholesky factor of the symmetric, positive definite matrix
-$$
-\begin{bmatrix}
-\bbLambda^\prime\mathbf{Z}^\prime\mathbf{Z\Lambda}+\mathbf{I} & \bbLambda^\prime\mathbf{Z}^\prime\mathbf{X} & \bbLambda^\prime\mathbf{Z}^\prime\mathbf{y} \\
-\mathbf{X}^\prime\mathbf{Z\Lambda} & \mathbf{X}^\prime\mathbf{X} & \mathbf{X}^\prime\mathbf{y} \\
-\mathbf{y}^\prime\mathbf{Z\Lambda} & \mathbf{y}^\prime\mathbf{X} & \mathbf{y}^\prime\mathbf{y}
-\end{bmatrix}
-$$
-The sub-matrices on the diagonal, $\mathbf{R}_{ZZ}$ and $\mathbf{R}_{XX}$, are upper triangular and $\mathbf{R}_{ZZ}$ is sparse.  In our example, $\mathbf{R}_{ZZ}$ is $36\times 36$ but the only non-zeros are the upper triangles of $18$ blocks of size $2\times 2$ along the diagonal.  Also, the diagonal elements are, by construction, positive.  Because $\mathbf{R}_{ZZ}$ is triangular its determinant, $|\mathbf{R}_{ZZ}|$, is the product of its diagonal elements which also must be positive.
-
-Furthermore, we can see that, for a fixed value of $\bbtheta$ the minimum $r^2_\bbtheta(\mathbf{u},\bbbeta)$ is $r_{yy}^2$ and the conditional estimate of $\bbbeta$ satisfies
-$$
-\mathbf{R}_{XX}\widehat{\bbbeta}(\bbtheta)=\bbr_{Xy} .
-$$
-The conditional mode, $\tilde{\mathbf{u}}$, of $\mathcal{U}$ given $\mathcal{Y}=\mathbf{y}$ is the solution to
-$$
-\mathbf{R}_{ZZ}\tilde{\mathbf{u}}=\bbr_{Zy}-\mathbf{R}_{ZX}\bbbeta
-$$
-Technically, $\bbbeta$ and $\bbtheta$ are assumed known because this is a statement about distributions.  In practice, the estimates, $\widehat{\bbtheta}$ and $\widehat{\beta}$, are plugged in.
-
-A Cholesky decomposition can be written in terms of the lower triangular factor on the left, $\bbL$, or in terms of $\mathbf{R}$ on the right.  There is a slight technical advantage in evaluating $\bbL$ in the `MixedModels` package so it is $\bbL$ that is evaluated and stored.  However, the theory is a bit easier to see in terms of $\mathbf{R}$, which we can obtain as
-
-```{julia}
-UpperTriangular(Matrix(sparseL(m1; full=true)'))
-```
-
-To evaluate the likelihood,
-$$
-L(\bbtheta,\bbbeta,\sigma|\mathbf{y}) = \int_\mathbf{u} f_{\mathcal{Y},\mathcal{U}}(\mathbf{y},\mathbf{u})\, d\mathbf{u}
-$$
-we isolate the part of the joint density that depends on $\mathbf{u}$ and perform a change of variable to
-$$
-\mathbf{v}=\mathbf{R}_{ZZ}\mathbf{u}+\mathbf{R}_{ZX}\bbbeta-\bbr_{Zy} .
-$$
-From the properties of the multivariate Gaussian distribution
-$$
-\begin{aligned}
-\int_{\mathbf{u}}\frac{1}{(2\pi\sigma^2)^{q/2}}\exp\left(-
-\frac{\|\mathbf{R}_{ZZ}\mathbf{u}+\mathbf{R}_{ZX}\bbbeta-\bbr_{Zy}\|^2}{2\sigma^2}\right)\,d\mathbf{u}
-&=\int_{\mathbf{v}}\frac{1}{(2\pi\sigma^2)^{q/2}}\exp\left(-\frac{\|\mathbf{v}\|^2}{2\sigma^2}\right)|\mathbf{R}_{ZZ}|^{-1}\,d\mathbf{v}\\
-&=|\mathbf{R}_{ZZ}|^{-1}
-\end{aligned}
-$$
-from which we obtain the likelihood as
-$$
-L(\bbtheta,\bbbeta,\sigma)=\frac{|\mathbf{R}_{ZZ}|^{-1}}{(2\pi\sigma^2)^{n/2}}\exp\left(-
-\frac{r_{yy}^2 + \|\mathbf{R}_{XX}(\bbbeta-\widehat{\bbbeta})\|^2}{2\sigma^2}\right)
-$$
-If we plug in $\bbbeta=\widehat{\bbbeta}$ and take the logarithm we can solve for the estimate of $\sigma^2$, given $\bbtheta$
-$$
-\widehat{\sigma^2}=\frac{r_{yy}^2}{n}
-$$
-which gives the _profiled log-likelihood_, $\ell(\bbtheta|\mathbf{y})=\log L(\bbtheta,\widehat{\bbbeta},\widehat{\sigma})$ as
-$$
--2\ell(\bbtheta|\mathbf{y})=2\log(|\mathbf{R}_{ZZ}|) +
-    n\left(1+\log\left(\frac{2\pi r_{yy}^2(\bbtheta)}{n}\right)\right)
-$$
-
-This may seem complicated but, relative to other formulations of the model, it is remarkably simple.
-
-One of the interesting aspects of this formulation is that it is not necessary to solve for the conditional estimate of $\bbbeta$ or the conditional modes of the random effects when evaluating the log-likelihood.  The two values needed for the log-likelihood, $2\log(|\mathbf{R}_{ZZ}|)$ and $r_{yy}^2$ are obtained directly from the Cholesky factor.  The logarithm of the determinant,
-$$
-2\log(|\mathbf{R}_{ZZ}|) = \log(|\bbLambda^\prime\mathbf{Z}^\prime\mathbf{Z}\bbLambda+\mathbf{I}_q|)
-$$
-is available as
-
-```{julia}
-logdet(m1)
-```
-
-and $r_{yy}^2$ is available as
-
-```{julia}
-pwrss(m1)
-```
-
-which is the square of the element in the lower right corner of either $\bbL$ or $\mathbf{R}$
-
-```{julia}
-abs2(last(m1.L[3]))
-```
-
-Alternatively, `varest` returns $\widehat{\sigma^2}$
-
-```{julia}
-varest(m1)
-```
-
-This gives the objective function as
-
-```{julia}
-logdet(m1) + dof_residual(m1)*(1 + log(2π * varest(m1)))
-```
-
-One last technical point, the update of the Cholesky factor, $\bbL$, for a new value of $\bbtheta$, which generates $\bblambda$ and, hence, $\bbLambda$ can start with the model matrices $\mathbf{Z}$ and $\mathbf{X}$ and the response, $\mathbf{y}$ or it can start with the products, $\mathbf{Z}^\prime\mathbf{Z}$, etc.
-The package uses the second approach which is more efficient when the number of observations is large relative to the number of random effects.  The non-redundant products are stored in the `A` field.
-
-```julia
-Symmetric(m1.A, :L)
-```
-
-Because the experiment is _balanced_, in the sense that each subject's reaction time is measured the same number of times and after the same number of days of sleep deprivation, the diagonal blocks in $\mathbf{Z}^\prime\mathbf{Z}$ are repetitions of one another.  The number in the lower right-hand corner of `A` is $\mathbf{y}^\prime\mathbf{y}$ or
-
-```{julia}
-sum(abs2, sleepstudy.reaction)
-```
-
-## Mixed-models and shrinkage of estimates
-
-[John Tukey](https://en.wikipedia.org/wiki/John_Tukey) characterized the _regularization_ or _shrinkage_ aspects of mixed-effects models as _borrowing strength_ from the estimates for other subjects in the experiment.  The penalty term in the penalized least squares calculation has the effect of shrinking an individual's coefficients in the predictor back toward the global estimates.
+- [John Tukey](https://en.wikipedia.org/wiki/John_Tukey) characterized the _regularization_ or _shrinkage_ aspects of mixed-effects models as _borrowing strength_ from the estimates for other subjects in the experiment.  The estimation of the covariance matrix has the effect of shrinking an individual's coefficients in the predictor back toward the global estimates, @fig-sleepcoefshrinkage.
 
 ```{julia}
 #| code-fold: true
+#| fig-cap: Shrinkage plot of the slope and intercept for each subject in the sleepstudy data (from {lattice} in R)
+#| label: fig-sleepcoefshrinkage
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=7);
 R"""
 library(lme4)
 library(lattice)
@@ -481,16 +205,13 @@ with(df,
 """;
 ```
 
-```{julia}
-#| code-fold: true
-#| fig-cap: Shrinkage plot for model m1.
-shrinkageplot(m1)
-```
-
-Comparing this plot to the original data plot with the lines from the various fits superimposed
+- Compare this plot to the original data plot with the lines from the various fits superimposed, @fig-sleepxyplotaug, which shows that the fits for those subjects whose data shows a strong linear trend (e.g. 308, 309, 310, 337) are not changed that much.  But those whose data does not define a line well (e.g. 330, 331) are shrunk toward the global fit.
 
 ```{julia}
 #| code-fold: true
+#| fig-cap: "Average reaction time [ms.] versus days of sleep deprivation by participant with population fitted line, individual fitted lines and the mixed-model fitted lines.  The panels are ordered according to increasing initial reaction time starting at the lower left."
+#| label: fig-sleepxyplotaug
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=5);
 R"""
 print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
              layout = c(9,2), type = c("g", "p", "r"),
@@ -516,4 +237,144 @@ print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
 """;
 ```
 
-shows that the fits for those subjects whose data shows a strong linear trend (e.g. 308, 309, 310, 337) are not changed that much.  But those whose data does not define a line well (e.g. 330, 331) are shrunk toward the global fit.
+- It is difficult to generalize @fig-sleepcoefshrinkage to cases with random effects for several grouping factors, but we can examine the shrinkage of the random effects from an unconstrained (in practice, very weakly constrained) model to the model that was fit, @fig-sleepreshrinkage.
+
+
+```{julia}
+#| code-fold: true
+#| label: fig-sleepreshrinkage
+#| fig-cap: Shrinkage of the random effects in model m1 relative to an unpenalized model. The arrows are drawn from the conditional means of the random effects in a model without a penalty on their size (red dots) to the corresponding conditional means of the fitted model (blue dots).
+shrinkageplot!(Figure(resolution=(600,600)), m1)
+```
+
+- Suppose we decided to fit a quadratic model to the response versus the days of sleep deprivation.
+
+```{julia}
+m2 = let
+  form = @formula reaction ~ 1 + days + days^2 + (1+days+days^2|subj)
+  fit(MixedModel, form, sleepstudy; contrasts=Dict(:subj => Grouping()))
+end
+```
+
+- The random effects for the linear and quadratic terms are highly correlated.
+
+```{julia}
+VarCorr(m2)
+```
+
+- The p-value for the `days^2` coefficient is not significant.  Furthermore a caterpillar plot, @fig-caterpillarm2, shows the prediction intervals for the quadratic random effects have considerable overlap.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: "95% prediction intervals on the conditional distribution of the random effects by subject in model m2."
+#| label: fig-caterpillarm2
+caterpillar!(Figure(resolution=(800,450)), ranefinfo(m2,:subj))
+```
+
+- The only substantial quadratic random effect is for S332 and that is mainly driven by a single outlier in this subject's data.
+
+- A shrinkage plot, @fig-shrinkagem2, shows considerable shrinkage with the resulting high correlation of the random effects for the linear and quadratic coefficients.
+
+```{julia}
+#| code-fold: true
+#| label: fig-shrinkagem2
+#| fig-cap: Shrinkage of the random effects in model m2 relative to an unpenalized model.
+shrinkageplot!(Figure(resolution=(800,800)), m2)
+```
+
+# Assessing precision of the parameter estimates
+
+- For simple models we can characterize the fit of the model parameters with estimates and standard errors.  Are such summaries justified here?
+
+- One way to assess this is to generate a _parametric bootstrap sample_.  Consider the estimated parameter values to be the "true" parameter values for the model and similate a large number of response vectors fitting the model to each.  This gives a sample from the distribution of the parameter estimators.
+
+```{julia}
+rng = Random.seed!(42)    # initialize a random number generator
+m1bstp = parametricbootstrap(rng, 5000, m1; hide_progress=true)
+allpars = DataFrame(m1bstp.allpars)
+```
+
+- An empirical density plot of the estimates for the fixed-effects coefficients, @fig-bsbetadensity, shows the normal distribution, "bell-curve", shape as we might expect.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: 'Empirical density plots of bootstrap replications of fixed-effects parameter estimates'
+#| label: fig-bsbetadensity
+begin
+  f1 = Figure(; resolution=(1000, 400))
+  CairoMakie.density!(
+    Axis(f1[1, 1]; xlabel="Intercept [ms]"),
+    @subset(allpars, :type == "β" && :names == "(Intercept)").value,
+  )
+  CairoMakie.density!(
+    Axis(f1[1, 2]; xlabel="Coefficient of days [ms/day]"),
+    @subset(allpars, :type == "β" && :names == "days").value,
+  )
+  f1
+end
+```
+
+- A _shortest coverage interval_ from the bootstrap sample is like a confidence interval.  We determine the shortest interval that will cover some proportion, say 95%, of the sampled estimates of a parameter.  Choosing the shortest interval is equivalent to choosing the interval with the highest empirical density (like a Bayesian highest posterior density, HPD, interval).
+
+```{julia}
+DataFrame(shortestcovint(m1bstp))
+```
+
+- These intervals look reasonable except for the interval on the correlation, ρ, which extends to +1. It turns out that the estimates of ρ have a great deal of variability.
+
+- Even more alarming, some of these ρ values are undefined (denoted `NaN`) because the way that ρ is calculated can create a division by zero.
+
+```{julia}
+describe(@select(@subset(allpars, :type == "ρ"), :value))
+```
+
+- Because there are several values on the boundary (`ρ = 1.0`) and a *pulse* like this is not handled well by a density plot, we plot this sample as a histogram, @fig-correlationhist.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: 'Histogram of bootstrap replications of the within-subject correlation parameter'
+#| label: fig-correlationhist
+hist(
+  @subset(allpars, :type == "ρ", isfinite(:value)).value;
+  bins=40,
+  axis=(; xlabel="Estimated correlation of the random effects"),
+  figure=(; resolution=(500, 500)),
+)
+```
+
+- Finally, density plots for the variance components (but on the scale of the standard deviation), @fig-bssigmadensity, show reasonable symmetry.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: 'Empirical density plots of bootstrap replicates of standard deviation estimates'
+#| label: fig-bssigmadensity
+begin
+  σs = @subset(allpars, :type == "σ")
+  f2 = Figure(; resolution=(1000, 300))
+  CairoMakie.density!(
+    Axis(f2[1, 1]; xlabel="Residual σ"),
+    @subset(σs, :group == "residual").value,
+  )
+  CairoMakie.density!(
+    Axis(f2[1, 2]; xlabel="subj-Intercept σ"),
+    @subset(σs, :group == "subj" && :names == "(Intercept)").value,
+  )
+  CairoMakie.density!(
+    Axis(f2[1, 3]; xlabel="subj-slope σ"),
+    @subset(σs, :group == "subj" && :names == "days").value,
+  )
+  f2
+end
+```
+
+# What aspects of Julia and its packages are of value here?
+
+- The evaluation of the log-likelihood for a model like this involves a lot of linear algebra.  Doing it quickly requires even more linear algebra.  Julia is the best language for numerical linear algebra that I have ever used.
+
+- The derivation of the method to evaluate the profile log-likelihood for the model is given in [this Appendix](https://juliamixedmodels.github.io/EmbraceUncertainty/linalg.html) to _Embrace Uncertainty_.
+
+- The resulting method for fitting the model is quite fast, even for moderately large models.
+
+- Being able to fit, simulate, and re-fit a model many times is what allows the parametric bootstrap to be used routinely.
+
+- Developing and testing the methods was much, much easier than in R/C++ resulting in improvements that probably would not have been discovered otherwise.
