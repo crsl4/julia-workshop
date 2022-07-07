@@ -1,5 +1,5 @@
 ---
-title: "Session 5: Other tools for Data Science"
+title: "5: Other tools for Data Science"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
 ---

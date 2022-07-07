@@ -1,5 +1,5 @@
 ---
-title: "Session 6: Conclusions"
+title: "6: Conclusions"
 author: "Claudia Solis-Lemus and Douglas Bates"
 subtitle: "ISMB 2022 Madison"
 ---

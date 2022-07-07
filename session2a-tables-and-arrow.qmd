@@ -1,5 +1,5 @@
 ---
-title: "Session 2a: Data Tables and Arrow files"
+title: "2a: Data Tables and Arrow files"
 author: "Douglas Bates and Claudia Solis-Lemus"
 jupyter: julia-1.8
 ---
@@ -26,6 +26,7 @@ using Tar               # tar archive utilities
   - Note that the [quarto notebooks](https://quarto.org) for these notes are easily converted, e.g. `quarto convert notebookname.qmd`, to Jupyter notebooks.
 
 ::: {.callout-note collapse="false"}
+
 ### Notes on Julia syntax
 
 Boxes like this contain comments on Julia syntax and semantics in code examples.
@@ -71,12 +72,14 @@ run(`ls -lh $tarball`);
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### String interpolation
 
 An expression like `"$datadir.tar.gz"` interpolates the value of `datadir` into the string, producing the name shown in the output.
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### Redundant commas in argument lists
 
 Redundant commas are allowed at the end of the list of arguments before the `)` in a function call.
@@ -102,12 +105,14 @@ filter(endswith(".bed"), readdir(datadir))
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Dot vectorization
 
 The call `joinpath.(datadir, ["ex-anno.bed", "ex-rna.bed"])` is an example of [dot vectorization](https://docs.julialang.org/en/v1/manual/functions/#man-vectorized).
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### Stabby lambda syntax for anonymous functions
 
 The expression `h -> in(h.path, toextract)` defines an anonymous function, in the "stabby lambda" syntax, to be used as a predicate in `Tar.extract`.
@@ -119,6 +124,7 @@ methods(Tar.extract)
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### do/end blocks
 
 The 'do/end' block is yet another way of writing an anonymous function passed as the first argument in the call to `gzopen`, even though it occurs after that call in the code.
@@ -131,12 +137,14 @@ The effect is to uncompress the file into a stream, process the stream in this a
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### Extract to temporary directory
 
 Because `Tar.extract` is conservative about overwriting files and requires that the directory into which the files are extracted be empty, we extract to a freshly-created temporary directory then move the files to the desired location.
 :::
 
 ::: {.callout-note collapse="true"}
+
 ### Fully qualified names for many packages of utilities
 
   - It is common for packages providing utilities to avoid name conflicts by not exporting any names from their namespace (or Module).
@@ -175,16 +183,17 @@ annodf = CSV.read(
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Positional versus named arguments
 
   - Positional arguments must come before named arguments.
 
   - Optionally, the comma after the last positional argument can be replace by a semicolon, as shown above.
-:::
-
+    :::
   - It turns out that both of the `.bed` files contain many duplicate rows - probably not intentionally. We eliminate the duplicates with `unique!`.
 
 ::: {.callout-note collapse="true"}
+
 ### Names of mutating functions
 
 A function's name ending in `!` is a hint that it is a *mutating* function, which can modify one or more of its arguments.
@@ -195,10 +204,11 @@ A function's name ending in `!` is a hint that it is a *mutating* function, whic
   - This is done with a `replace!` method, which takes the object to modify and one or more `pair`s of values of the form `from => to`.  These pairs can be generated using string interpolation as
 
 ```{julia}
-replacements = ["chr$i" => "chr0$i" for i in 1:9]
+replacements = ["chr$i" => "chr0$i" for i = 1:9]
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Comprehensions
 
 The expression on the right of the `=` is called a "comprehension".  I think of it as an inside-out loop.
@@ -209,6 +219,7 @@ show(unique(replace!(annodf.chromo, replacements...)))
 ```
 
 ::: {.callout-note collapse="true"}
+
 ### Ellipsis in argument list
 
 The ellipsis (`...`) after `replacements` in this call "splats" the single name into, in this case, 9 different arguments of pairs.  That is, this call is the equivalent of a call to `replace!` with 10 arguments: `annodf.chromo`, `"chr1" => "chr01"`, `"chr2" => "chr02"`, and so on.
@@ -216,14 +227,24 @@ The ellipsis (`...`) after `replacements` in this call "splats" the single name 
 
 ```{julia}
 unique!(annodf)
-annodf.chromo = categorical(annodf.chromo)
+annodf.chromo = categorical(
+  annodf.chromo;
+  ordered = true,
+  levels = sort(levels(annodf.chromo)),
+)
 annodf
 ```
 
+```{julia}
+show(levels(annodf.chromo))
+```
+
 ::: {.callout-note collapse="true"}
+
 ### Categorical arrays
 
 Representing the `chromo` column as a `CategoricalArray` converts the individual values to indices into a vector of `String`s, like a `factor` in `R`.
+The set of possible levels of `chromo` is given the natural ordering.
 :::
 
 # Arrow file format
@@ -260,6 +281,7 @@ function bed2arrow(
   compress = :lz4,
   metadata = metadata,
   replacements = replacements,
+  ordered = true,
   overwrite::Bool = false,
 )
   bednm = joinpath(datadir, "$fnroot.bed")
@@ -267,7 +289,8 @@ function bed2arrow(
   if overwrite || !isfile(arrownm)
     df = unique!(CSV.read(bednm, DataFrame; header, delim, types))
     replace!(df.chromo, replacements...)
-    df.chromo = categorical(df.chromo)
+    df.chromo =
+      categorical(df.chromo; ordered, levels = sort(unique(df.chromo)))
     Arrow.write(arrownm, df; compress, metadata)
   end
   return arrownm
@@ -280,6 +303,7 @@ run(`ls -lh $datadir`);
 ```
 
 :::{.callout-note collapse="true"}
+
 ### Semicolon separating positional and named arguments
 
 In the calls to `CSV.read` and `Arrow.write`, the semicolon after the positional arguments followed by argument names only indicates that the value passed for the named argument is the object of the same name in the current namespace.  That is, `Arrow.write(arrownm, df; compress, metadata)` is equivalent to `Arrow.write(arrownm, df; compress=compress, metadata=metadata)`.
@@ -314,7 +338,7 @@ innerjoin(
 ```
 
   - In the next section we will use data from `chr01` for comparative timings.  It has the greatest number of intervals in both the reference and target groups.
-  
+
 ## Reading Arrow files in R
 
   - In R (and in Python) the Arrow file format is confounded with an earlier file format called Feather and referred to as `Feather V2`.
@@ -393,7 +417,9 @@ stop: [[216501458,101245071,49491841,80169336,76271290,...,7014515,75631483,5966
 
 ```julia
 julia> using PyCall
+
 julia> fea = pyimport("pyarrow.feather");
+
 julia> fea.read_table(rnaarrownm)
 PyObject pyarrow.Table
 chromo: dictionary<values=string, indices=int8, ordered=0> not null
