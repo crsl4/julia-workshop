@@ -1,0 +1,379 @@
+---
+title: "3a: Linear Mixed-effects Models"
+author: "Douglas Bates and Claudia Solis-Lemus"
+jupyter: julia-1.8
+---
+
+::: {.hidden}
+$$
+\newcommand\bbSigma{{\boldsymbol{\Sigma}}}
+$$
+:::
+
+Attach the packages to be used
+
+```{julia}
+#| code-fold: true
+using CairoMakie        # graphics backend
+using DataFrameMacros
+using DataFrames
+using LinearAlgebra
+using MixedModels
+using MixedModelsMakie  # special graphics for mixed models
+using ProgressMeter     # report iteration speed when fitting models
+using Random
+using RCall
+
+CairoMakie.activate!(; type="svg")     # Scalable Vector Graphics backend
+ProgressMeter.ijulia_behavior(:clear); # Adjust progress meter for Jupyter output
+```
+
+
+# Linear Mixed Models in Julia
+
+- A _mixed-effects model_ or, more simply, a _mixed model_ incorporates both _fixed-effects_ parameters and _random effects_.
+- The random effects are associated with the levels of one or more _grouping factors_, which typically are _experimental units_ or _observational units_, such as `subject` or `item`.
+- From an experimental design point of view these are _blocking variables_: known sources of variability for which we wish to account but whose levels are not themselves of interest.
+- This is in contrast to _experimental_ or _observational_ factors with a known, fixed set of levels that we are seeking to compare.
+- [MixedModels.jl](https://github.com/JuliaStats/MixedModels.jl) provides structures and methods for fitting and analyzing mixed-effects models.
+- Fitting Linear Mixed Models (LMMs) or Generalized Linear Mixed Models (GLMMs) is described in these [notes](https://repsychling.github.io/SMLP2022) and in this [in-progress book](https://juliamixedmodels.github.io/EmbraceUncertainty).
+
+## The sleepstudy data
+
+The `sleepstudy` dataset
+
+```{julia}
+sleepstudy = MixedModels.dataset(:sleepstudy)
+```
+
+is from a study on the effect of sleep deprivation on reaction time.
+A sample from the population of interest (long-distance truck drivers) had their average response time measured when they were on their regular sleep schedule and after one up to nine days of sleep deprivation (allowed only 3 hours per day in which to sleep).
+
+::: {.callout-warning collapse="true"}
+### This data description is inaccurate
+
+The description of these data is inaccurate.
+See [this description](https://repsychling.github.io/SMLP2022/sleepstudy_speed.html) for more detail.
+
+Unfortunately by the time we learned this the researchers were no longer able to locate the original data.
+We keep using this example because it is such a nice example, even if the description is not quite accurate.
+:::
+
+- Plot the data in a multi-panel plot, @fig-sleepxy, using the R package `{lattice}` via [RCall.jl](https://github.com/JuliaInterop/RCall.jl).
+
+```{julia}
+#| code-fold: true
+#| fig-cap: "Average reaction time [ms.] versus days of sleep deprivation by participant.  The panels are ordered according to increasing initial reaction time starting at the lower left."
+#| label: fig-sleepxy
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=5);
+R"""
+print(
+  lattice::xyplot(
+    reaction ~ days | subj,
+    $(DataFrame(sleepstudy)),
+    type = c("g","p","r"), layout = c(9,2),
+    index = function(x,y) coef(lm(y ~ x))[1],
+    xlab = "Days of sleep deprivation",
+    ylab = "Average reaction time (ms)",
+    aspect = "xy"
+  )
+)
+""";
+```
+
+### Comments on the plot
+
+- Each panel shows the data from one subject as well as a simple linear regression line fit to that subject's data only.
+
+- The panels are ordered by increasing intercept of the within-subject line row-wise, starting at the bottom left.
+
+- Some subjects, e.g. 310 and 309, have fast reaction times and are almost unaffected by the sleep deprivation.  
+
+- Others, e.g. 337, start with slow reaction times which then increase substantially after sleep deprivation.
+
+# Formulating a model
+
+- A suitable model for these data would include an intercept and slope for the "typical" subject and randomly distributed deviations from these values for each of the observed subjects.
+
+- The intercept and slope of the "typical" response over the population are parameters to be estimated (i.e. fixed effect parameters).
+
+- The intercept and slope deviations from the population values for each subject are random variables (i.e. random effects).
+
+- The assumed distribution of the random effects vector is multivariate Gaussian with mean zero (because they represent deviations from the population parameters) and an unknown covariance matrix, $\bbSigma$, to be estimated from the data.
+
+- Because $\bbSigma$ is a covariance matrix it must be symmetric and be positive-definite, a condition that is similar to the requirement that a scalar variance must be positive.
+
+## Fitting the linear mixed-effects model
+
+- As in R the model is described in a formula language, with the response to the left of the `~` character and with fixed-effects and random-effects terms to the right.
+
+- A random-effects term is of the form `(linearterms|grouping)` where `linearterms` are terms for a linear model (which can be as simple as `1`) and `grouping` is the name of a factor (or, less commonly, an expression), of the experimental or observational units.
+
+```{julia}
+m1 = let
+  form = @formula reaction ~ 1 + days + (1+days|subj)
+  fit(MixedModel, form, sleepstudy)
+end
+```
+
+::: {.callout-note collapse="true"}
+### Setting "contrasts"
+
+As in R, the name `contrasts` is used in statistical modeling packages for Julia is the general sense of "What should be done with this categorical covariate?"
+It helps to indicate that the `:subj` covariate will be used as a grouping factor for the random effects by adding a named argument `contrasts = Dict(:subj => Grouping())` in the call to `fit`.
+
+It is not particularly important when there are 18 levels for the grouping factor, as is the case here, but when there are thousands or tens of thousands of levels it is very important to specify this contrast.
+:::
+
+- In a Jupyter notebook the default is to display the parameter estimates in a condensed block as above.
+
+- More information on the model fit can be obtained by `print`ing the fitted model.
+
+```{julia}
+print(m1)
+```
+
+- The fixed-effects parameters give a typical response in the population of an intercept of 251.405 ms. and a slope of 10.467 ms. per day of sleep deprivation.
+
+- The standard deviation of the random effects for the intercept is 23.78 ms.  Thus we would expect individual intercepts to be in the range of about 200 ms. to 300 ms.
+
+- The standard deviation of the random effects for the slope is 5.72 ms. per day.  Thus we would expect individual slopes to be in the range of about 0 ms./day to 20 ms./day.
+
+- The estimated correlation of the random effects for intercept and for slope is low, 0.08.  We may wish to consider a model with uncorrelated random effects.
+
+## "Conditional means" of the random effects
+
+- Technically the random effects for each individual are not parameters per se.  They are unobserved random variables.  (The Bayesian formulation is a bit different but we won't discuss that here.)
+
+- We can characterize the conditional distribution of the random effects given the observed data with prediction intervals, as in @fig-sleepcaterpillar.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: "95% prediction intervals on the conditional distribution of the random effects by subject, given the observed data. The subjects are ordered by increasing intercept in the conditional distributions."
+#| label: fig-sleepcaterpillar
+caterpillar!(Figure(resolution=(800,450)), ranefinfo(m1,:subj))
+```
+
+# Mixed-models and shrinkage of estimates
+
+- [John Tukey](https://en.wikipedia.org/wiki/John_Tukey) characterized the _regularization_ or _shrinkage_ aspects of mixed-effects models as _borrowing strength_ from the estimates for other subjects in the experiment.  The estimation of the covariance matrix has the effect of shrinking an individual's coefficients in the predictor back toward the global estimates, @fig-sleepcoefshrinkage.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: Shrinkage plot of the slope and intercept for each subject in the sleepstudy data (from {lattice} in R)
+#| label: fig-sleepcoefshrinkage
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=7);
+R"""
+library(lattice)
+df <- coef(lme4::lmList(reaction ~ days | subj, $(DataFrame(sleepstudy))))
+fm2 <- lme4::lmer(reaction ~ days + (days|subj), $(DataFrame(sleepstudy)))
+fclow <- subset(df, `(Intercept)` < 251)
+fchigh <- subset(df, `(Intercept)` > 251)
+cc1 <- as.data.frame(coef(fm2)$subj)
+names(cc1) <- c("A", "B")
+df <- cbind(df, cc1)
+ff <- lme4::fixef(fm2)
+with(df,
+     print(lattice::xyplot(`(Intercept)` ~ days, aspect = 1,
+                  x1 = B, y1 = A,
+                  panel = function(x, y, x1, y1, subscripts, ...) {
+                      panel.grid(h = -1, v = -1)
+                      x1 <- x1[subscripts]
+                      y1 <- y1[subscripts]
+                      larrows(x, y, x1, y1, type = "closed", length = 0.1,
+                              angle = 15, ...)
+                      lpoints(x, y,
+                              pch = trellis.par.get("superpose.symbol")$pch[2],
+                              col = trellis.par.get("superpose.symbol")$col[2])
+                      lpoints(x1, y1,
+                              pch = trellis.par.get("superpose.symbol")$pch[1],
+                              col = trellis.par.get("superpose.symbol")$col[1])
+                      lpoints(ff[2], ff[1],
+                              pch = trellis.par.get("superpose.symbol")$pch[3],
+                              col = trellis.par.get("superpose.symbol")$col[3])
+                      ltext(fclow[,2], fclow[,1], row.names(fclow),
+                            adj = c(0.5, 1.7))
+                      ltext(fchigh[,2], fchigh[,1], row.names(fchigh),
+                            adj = c(0.5, -0.6))
+                  },
+                  key = list(space = "top", columns = 3,
+                  text = list(c("Mixed model", "Within-group", "Population")),
+                  points = list(col = trellis.par.get("superpose.symbol")$col[1:3],
+                  pch = trellis.par.get("superpose.symbol")$pch[1:3]))
+                  )))
+""";
+```
+
+- Compare this plot to the original data plot with the lines from the various fits superimposed, @fig-sleepxyplotaug, which shows that the fits for those subjects whose data shows a strong linear trend (e.g. 308, 309, 310, 337) are not changed that much.  But those whose data does not define a line well (e.g. 330, 331) are shrunk toward the global fit.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: "Average reaction time [ms.] versus days of sleep deprivation by participant with population fitted line, individual fitted lines and the mixed-model fitted lines.  The panels are ordered according to increasing initial reaction time starting at the lower left."
+#| label: fig-sleepxyplotaug
+RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=5);
+R"""
+print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
+             layout = c(9,2), type = c("g", "p", "r"),
+             coef.list = df[,3:4],
+             panel = function(..., coef.list) {
+                 panel.xyplot(...)
+                 panel.abline(as.numeric(coef.list[packet.number(),]),
+                              col.line = trellis.par.get("superpose.line")$col[2],
+                              lty = trellis.par.get("superpose.line")$lty[2]
+                              )
+                 panel.abline(fixef(fm2),
+                              col.line = trellis.par.get("superpose.line")$col[4],
+                              lty = trellis.par.get("superpose.line")$lty[4]
+                              )
+             },
+             index.cond = function(x,y) coef(lm(y ~ x))[1],
+             xlab = "Days of sleep deprivation",
+             ylab = "Average reaction time (ms)",
+             key = list(space = "top", columns = 3,
+             text = list(c("Within-subject", "Mixed model", "Population")),
+             lines = list(col = trellis.par.get("superpose.line")$col[c(2:1,4)],
+             lty = trellis.par.get("superpose.line")$lty[c(2:1,4)]))))
+""";
+```
+
+- It is difficult to generalize @fig-sleepcoefshrinkage to cases with random effects for several grouping factors, but we can examine the shrinkage of the random effects from an unconstrained (in practice, very weakly constrained) model to the model that was fit, @fig-sleepreshrinkage.
+
+
+```{julia}
+#| code-fold: true
+#| label: fig-sleepreshrinkage
+#| fig-cap: Shrinkage of the random effects in model m1 relative to an unpenalized model. The arrows are drawn from the conditional means of the random effects in a model without a penalty on their size (red dots) to the corresponding conditional means of the fitted model (blue dots).
+shrinkageplot!(Figure(resolution=(600,600)), m1)
+```
+
+- Suppose we decided to fit a quadratic model to the response versus the days of sleep deprivation.
+
+```{julia}
+m2 = let
+  form = @formula reaction ~ 1 + days + days^2 + (1+days+days^2|subj)
+  fit(MixedModel, form, sleepstudy; contrasts=Dict(:subj => Grouping()))
+end
+```
+
+- The random effects for the linear and quadratic terms are highly correlated.
+
+```{julia}
+VarCorr(m2)
+```
+
+- The p-value for the `days^2` coefficient is not significant.  Furthermore a caterpillar plot, @fig-caterpillarm2, shows the prediction intervals for the quadratic random effects have considerable overlap.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: "95% prediction intervals on the conditional distribution of the random effects by subject in model m2."
+#| label: fig-caterpillarm2
+caterpillar!(Figure(resolution=(800,450)), ranefinfo(m2,:subj))
+```
+
+- The only substantial quadratic random effect is for S332 and that is mainly driven by a single outlier in this subject's data.
+
+- A shrinkage plot, @fig-shrinkagem2, shows considerable shrinkage with the resulting high correlation of the random effects for the linear and quadratic coefficients.
+
+```{julia}
+#| code-fold: true
+#| label: fig-shrinkagem2
+#| fig-cap: Shrinkage of the random effects in model m2 relative to an unpenalized model.
+shrinkageplot!(Figure(resolution=(800,800)), m2)
+```
+
+# Assessing precision of the parameter estimates
+
+- For simple models we can characterize the fit of the model parameters with estimates and standard errors.  Are such summaries justified here?
+
+- One way to assess this is to generate a _parametric bootstrap sample_.  Consider the estimated parameter values to be the "true" parameter values for the model and similate a large number of response vectors fitting the model to each.  This gives a sample from the distribution of the parameter estimators.
+
+```{julia}
+rng = Random.seed!(42)    # initialize a random number generator
+m1bstp = parametricbootstrap(rng, 5000, m1; hide_progress=true)
+allpars = DataFrame(m1bstp.allpars)
+```
+
+- An empirical density plot of the estimates for the fixed-effects coefficients, @fig-bsbetadensity, shows the normal distribution, "bell-curve", shape as we might expect.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: 'Empirical density plots of bootstrap replications of fixed-effects parameter estimates'
+#| label: fig-bsbetadensity
+begin
+  f1 = Figure(; resolution=(1000, 400))
+  CairoMakie.density!(
+    Axis(f1[1, 1]; xlabel="Intercept [ms]"),
+    @subset(allpars, :type == "β" && :names == "(Intercept)").value,
+  )
+  CairoMakie.density!(
+    Axis(f1[1, 2]; xlabel="Coefficient of days [ms/day]"),
+    @subset(allpars, :type == "β" && :names == "days").value,
+  )
+  f1
+end
+```
+
+- A _shortest coverage interval_ from the bootstrap sample is like a confidence interval.  We determine the shortest interval that will cover some proportion, say 95%, of the sampled estimates of a parameter.  Choosing the shortest interval is equivalent to choosing the interval with the highest empirical density (like a Bayesian highest posterior density, HPD, interval).
+
+```{julia}
+DataFrame(shortestcovint(m1bstp))
+```
+
+- These intervals look reasonable except for the interval on the correlation, ρ, which extends to +1. It turns out that the estimates of ρ have a great deal of variability.
+
+- Even more alarming, some of these ρ values are undefined (denoted `NaN`) because the way that ρ is calculated can create a division by zero.
+
+```{julia}
+describe(@select(@subset(allpars, :type == "ρ"), :value))
+```
+
+- Because there are several values on the boundary (`ρ = 1.0`) and a *pulse* like this is not handled well by a density plot, we plot this sample as a histogram, @fig-correlationhist.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: 'Histogram of bootstrap replications of the within-subject correlation parameter'
+#| label: fig-correlationhist
+hist(
+  @subset(allpars, :type == "ρ", isfinite(:value)).value;
+  bins=40,
+  axis=(; xlabel="Estimated correlation of the random effects"),
+  figure=(; resolution=(500, 500)),
+)
+```
+
+- Finally, density plots for the variance components (but on the scale of the standard deviation), @fig-bssigmadensity, show reasonable symmetry.
+
+```{julia}
+#| code-fold: true
+#| fig-cap: 'Empirical density plots of bootstrap replicates of standard deviation estimates'
+#| label: fig-bssigmadensity
+begin
+  σs = @subset(allpars, :type == "σ")
+  f2 = Figure(; resolution=(1000, 300))
+  CairoMakie.density!(
+    Axis(f2[1, 1]; xlabel="Residual σ"),
+    @subset(σs, :group == "residual").value,
+  )
+  CairoMakie.density!(
+    Axis(f2[1, 2]; xlabel="subj-Intercept σ"),
+    @subset(σs, :group == "subj" && :names == "(Intercept)").value,
+  )
+  CairoMakie.density!(
+    Axis(f2[1, 3]; xlabel="subj-slope σ"),
+    @subset(σs, :group == "subj" && :names == "days").value,
+  )
+  f2
+end
+```
+
+# What aspects of Julia and its packages are of value here?
+
+- The evaluation of the log-likelihood for a model like this involves a lot of linear algebra.  Doing it quickly requires even more linear algebra.  Julia is the best language for numerical linear algebra that I have ever used.
+
+- The derivation of the method to evaluate the profile log-likelihood for the model is given in [this Appendix](https://juliamixedmodels.github.io/EmbraceUncertainty/linalg.html) to _Embrace Uncertainty_.
+
+- The resulting method for fitting the model is quite fast, even for moderately large models.
+
+- Being able to fit, simulate, and re-fit a model many times is what allows the parametric bootstrap to be used routinely.
+
+- Developing and testing the methods was much, much easier than in R/C++ resulting in improvements that probably would not have been discovered otherwise.
