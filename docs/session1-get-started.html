@@ -200,7 +200,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./session3-linear-mixed-effects.html" class="sidebar-item-text sidebar-link">3: Linear Mixed-effects Models</a>
+  <a href="./session3a-linear-mixed-effects.html" class="sidebar-item-text sidebar-link">3a: Linear Mixed-effects Models</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./session3b-glmm.html" class="sidebar-item-text sidebar-link">3b: Generalized linear mixed models</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -372,9 +377,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Open julia and activate the package with:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>julia <span class="op">--</span>project</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Alternatively, you can open julia normally, and type <code>] activate .</code></p>
-<p>Then, instantiate the package (install dependencies) with:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>] instantiate</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>] update</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then, instantiate the package (install dependencies) in the package mode <code>]</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(julia<span class="op">-</span>workshop) pkg<span class="op">&gt;</span> instantiate</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(julia<span class="op">-</span>workshop) pkg<span class="op">&gt;</span> update</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Now, you should be able to follow along the workshop commands. Trouble-shooting might be needed when we reach the interoperability with Python and R as certain libraries or packages might need to be installed too.</p>
 </section>
 <section id="creating-a-new-project-environment" class="level3">
@@ -395,6 +400,7 @@ cd myProject</code></pre>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add DataFrames</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add Tables</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>(myproject) pkg<span class="op">&gt;</span> add RangeTrees</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Note:</strong> This will create a whole new conda environment, so it will take up space in memory.</p>
 <p>Two files are noteworthy:</p>
 <ul>
 <li><code>Project.toml</code>: Defines project</li>
@@ -437,14 +443,19 @@ cd myProject</code></pre>
 </section>
 <section id="editing-julia-code" class="level1">
 <h1>Editing julia code</h1>
-<p>There are many ways to work on julia code depending on the editor.</p>
-<p>For those using VSCode, you can open the project easily with:</p>
+<p>There are many ways to work on julia code depending on the editor. We will focus today on VSCode.</p>
+<ol type="1">
+<li><p>Download VSCode <a href="https://code.visualstudio.com/download">here</a></p></li>
+<li><p>Install the Julia extension and the Quarto extension in VSCode</p></li>
+<li><p>Open the project with:</p></li>
+</ol>
 <pre class="shell"><code>cd julia-workshop
 code .</code></pre>
 <p>You need to have the <code>code</code> command in your <code>PATH</code> which can be done within VSCode searching in the Command Palette “shell command”.</p>
 <p>Alternatively, you can open a specific <code>qmd</code> file in your editor of choice:</p>
 <pre class="shell"><code>cd julia-workshop
 open session2a-tables-and-arrow.qmd</code></pre>
+<p>If you open a given file, make sure to activate the project <code>] activate .</code> or you will be working on the global environment.</p>
 <p>Note that jupyter notebooks <code>ipynb</code> are produced when the <code>qmd</code> files when rendered into <code>html</code>.</p>
 <p>In addition to <code>qmd</code> files, you can work with standard <code>.jl</code> julia files.</p>
 

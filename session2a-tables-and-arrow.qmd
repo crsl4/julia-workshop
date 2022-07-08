@@ -189,7 +189,9 @@ annodf = CSV.read(
   - Positional arguments must come before named arguments.
 
   - Optionally, the comma after the last positional argument can be replace by a semicolon, as shown above.
-    :::
+
+:::
+
   - It turns out that both of the `.bed` files contain many duplicate rows - probably not intentionally. We eliminate the duplicates with `unique!`.
 
 ::: {.callout-note collapse="true"}
