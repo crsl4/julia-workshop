@@ -271,7 +271,6 @@ gm2 = let
       1 +
       age * children +
       abs2(age) +
-      children +
       urban +
       (1 | dist)
   )
@@ -311,7 +310,6 @@ gm3 = let
       1 +
       age * children +
       abs2(age) +
-      children +
       urban +
       (1 | urban & dist)
   )
