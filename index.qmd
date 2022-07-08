@@ -32,7 +32,8 @@ The tutorial is intended for any data scientist with experience in R and/or pyth
 | 11:30 - 12:30 | [Session 2a: Data Tables and Arrow files](session2a-tables-and-arrow.qmd) | Douglas Bates                |
 | 12:30 - 1:00  | [Session 2b: Interval Overlap](session2b-interval-overlap.qmd)            | Douglas Bates                |
 | 1:00 - 2:00   | Lunch break                                                               |                              |
-| 2:00 - 3:00   | Session 3: Model fitting                                                  |                              |
+| 2:00 - 2:30   | [Session 3a: Linear Mixed-effects Models](session3a-linear-mixed-effects.qmd) | Douglas Bates |
+| 2:20 - 3:00   | [Session 3b: Generalized Linear Mixed Models](session3b-glmm.qmd) | Douglas Bates |
 | 3:00 - 4:00   | [Session 4: Hands-on exercise](session4-exercise.qmd)                     | Sam Ozminkowski and Bella Wu |
 | 4:00 - 4:15   | Coffee break                                                              |                              |
 | 4:15 - 5:00   | Presentation of selected participants' scripts and Q&A                    |                              |
