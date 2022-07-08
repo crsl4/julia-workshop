@@ -11,7 +11,7 @@ subtitle: "ISMB 2022 Madison"
 # Checklist
 
 - Do you have Julia installed? If not, go to the [getting started notes](session1-get-started.qmd)
-- Do you have your project folder and installed dependencies? If not, go to the [getting started nodes](session1-get-started.qmd)
+- Do you have your project folder and installed dependencies? If not, go to the [getting started notes](session1-get-started.qmd)
 - Do you have your data in your project folder?
 - Have you selected an editor to use (VSCode, Emacs, Jupyter notebooks,...)? Check out the available options in the [Julia website](https://julialang.org/)
 

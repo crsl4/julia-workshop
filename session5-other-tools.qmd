@@ -217,9 +217,7 @@ py"sinpi"(1)
 
 - [BioJulia](https://github.com/BioJulia) is a combination of Julia packages for biology applications.
 - [Julia for Biologists](https://arxiv.org/abs/2109.09973) is an arxiv paper the features that make Julia a perfect language for bioinformatics and computational biology.
-- [List of useful packages by SMLP2022](https://github.com/RePsychLing/SMLP2022/blob/main/notebooks/useful_packages.qmd)
-
-![](pics/julia4bio.png)
+- [List of useful packages from another workshop, SMLP2022](https://repsychling.github.io/SMLP2022/useful_packages.html)
 
 ## Plotting
 

@@ -186,7 +186,7 @@
     "href": "session4-exercise.html",
     "title": "4: Hands-on exercise",
     "section": "",
-    "text": "Instructions: Participants will translate their R/python script to Julia with assistance from the workshop presenters and TAs. After the 60 minutes, one or two volunteers will share their script to the group.\n\nChecklist\n\nDo you have Julia installed? If not, go to the getting started notes\nDo you have your project folder and installed dependencies? If not, go to the getting started nodes\nDo you have your data in your project folder?\nHave you selected an editor to use (VSCode, Emacs, Jupyter notebooks,…)? Check out the available options in the Julia website\n\nYou are ready to start writing Julia code! You can start with a simple .jl file, or you could try with a jupyter notebook or a .qmd file."
+    "text": "Instructions: Participants will translate their R/python script to Julia with assistance from the workshop presenters and TAs. After the 60 minutes, one or two volunteers will share their script to the group.\n\nChecklist\n\nDo you have Julia installed? If not, go to the getting started notes\nDo you have your project folder and installed dependencies? If not, go to the getting started notes\nDo you have your data in your project folder?\nHave you selected an editor to use (VSCode, Emacs, Jupyter notebooks,…)? Check out the available options in the Julia website\n\nYou are ready to start writing Julia code! You can start with a simple .jl file, or you could try with a jupyter notebook or a .qmd file."
   },
   {
     "objectID": "session5-other-tools.html",
@@ -207,7 +207,7 @@
     "href": "session5-other-tools.html#package-system",
     "title": "5: Other tools for Data Science",
     "section": "Package system",
-    "text": "Package system\n\nStarting on Julia 1.6, precompilation is much faster\nMany changes under the hood that allow things to work faster and more smoothly\nA local environment can be established and preserved with Project.toml and Manifest.toml files.\nUse of Artifacts.toml allows for binary dependencies\n\n\nLandscape of Julia packages for biology\n\nBioJulia is a combination of Julia packages for biology applications.\nJulia for Biologists is an arxiv paper the features that make Julia a perfect language for bioinformatics and computational biology.\nList of useful packages by SMLP2022"
+    "text": "Package system\n\nStarting on Julia 1.6, precompilation is much faster\nMany changes under the hood that allow things to work faster and more smoothly\nA local environment can be established and preserved with Project.toml and Manifest.toml files.\nUse of Artifacts.toml allows for binary dependencies\n\n\nLandscape of Julia packages for biology\n\nBioJulia is a combination of Julia packages for biology applications.\nJulia for Biologists is an arxiv paper the features that make Julia a perfect language for bioinformatics and computational biology.\nList of useful packages from another workshop, SMLP2022"
   },
   {
     "objectID": "session5-other-tools.html#plotting",
