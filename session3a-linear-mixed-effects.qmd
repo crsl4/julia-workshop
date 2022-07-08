@@ -212,7 +212,7 @@ with(df,
 #| label: fig-sleepxyplotaug
 RCall.ijulia_setdevice(MIME("image/svg+xml"), width=7, height=5);
 R"""
-print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
+print(xyplot(Reaction ~ Days | Subject, lme4::sleepstudy, aspect = "xy",
              layout = c(9,2), type = c("g", "p", "r"),
              coef.list = df[,3:4],
              panel = function(..., coef.list) {
@@ -221,7 +221,7 @@ print(xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
                               col.line = trellis.par.get("superpose.line")$col[2],
                               lty = trellis.par.get("superpose.line")$lty[2]
                               )
-                 panel.abline(fixef(fm2),
+                 panel.abline(ff,
                               col.line = trellis.par.get("superpose.line")$col[4],
                               lty = trellis.par.get("superpose.line")$lty[4]
                               )

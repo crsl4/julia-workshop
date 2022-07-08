@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-07-07">
+<meta name="dcterms.date" content="2022-07-08">
 
 <title>Julia Workshop - 3b: Generalized linear mixed models</title>
 <style>
@@ -270,7 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-07</p>
+      <p class="date">2022-07-08</p>
     </div>
   </div>
     
@@ -302,7 +302,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="matrix-notation-for-the-sleepstudy-model">Matrix notation for the sleepstudy model</h2>
 <div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sleepstudy <span class="op">=</span> <span class="fu">DataFrame</span>(MixedModels.<span class="fu">dataset</span>(<span class="op">:</span>sleepstudy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="95">
+<div class="cell-output cell-output-display" data-execution_count="3">
 
 <div class="data-frame"><p>180 rows × 3 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>subj</th><th>days</th><th>reaction</th></tr><tr><th></th><th title="String">String</th><th title="Int8">Int8</th><th title="Float64">Float64</th></tr></thead><tbody><tr><th>1</th><td>S308</td><td>0</td><td>249.56</td></tr><tr><th>2</th><td>S308</td><td>1</td><td>258.705</td></tr><tr><th>3</th><td>S308</td><td>2</td><td>250.801</td></tr><tr><th>4</th><td>S308</td><td>3</td><td>321.44</td></tr><tr><th>5</th><td>S308</td><td>4</td><td>356.852</td></tr><tr><th>6</th><td>S308</td><td>5</td><td>414.69</td></tr><tr><th>7</th><td>S308</td><td>6</td><td>382.204</td></tr><tr><th>8</th><td>S308</td><td>7</td><td>290.149</td></tr><tr><th>9</th><td>S308</td><td>8</td><td>430.585</td></tr><tr><th>10</th><td>S308</td><td>9</td><td>466.353</td></tr><tr><th>11</th><td>S309</td><td>0</td><td>222.734</td></tr><tr><th>12</th><td>S309</td><td>1</td><td>205.266</td></tr><tr><th>13</th><td>S309</td><td>2</td><td>202.978</td></tr><tr><th>14</th><td>S309</td><td>3</td><td>204.707</td></tr><tr><th>15</th><td>S309</td><td>4</td><td>207.716</td></tr><tr><th>16</th><td>S309</td><td>5</td><td>215.962</td></tr><tr><th>17</th><td>S309</td><td>6</td><td>213.63</td></tr><tr><th>18</th><td>S309</td><td>7</td><td>217.727</td></tr><tr><th>19</th><td>S309</td><td>8</td><td>224.296</td></tr><tr><th>20</th><td>S309</td><td>9</td><td>237.314</td></tr><tr><th>21</th><td>S310</td><td>0</td><td>199.054</td></tr><tr><th>22</th><td>S310</td><td>1</td><td>194.332</td></tr><tr><th>23</th><td>S310</td><td>2</td><td>234.32</td></tr><tr><th>24</th><td>S310</td><td>3</td><td>232.842</td></tr><tr><th>25</th><td>S310</td><td>4</td><td>229.307</td></tr><tr><th>26</th><td>S310</td><td>5</td><td>220.458</td></tr><tr><th>27</th><td>S310</td><td>6</td><td>235.421</td></tr><tr><th>28</th><td>S310</td><td>7</td><td>255.751</td></tr><tr><th>29</th><td>S310</td><td>8</td><td>261.012</td></tr><tr><th>30</th><td>S310</td><td>9</td><td>247.515</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
@@ -314,32 +314,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, sleepstudy; contrasts)</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Minimizing 58    Time: 0:00:00 ( 5.81 ms/it)</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by maximum likelihood
- reaction ~ 1 + days + (1 + days | subj)
-   logLik   -2 logLik     AIC       AICc        BIC    
+ reaction ~ 1 + days + (1 + days | subj)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   logLik   -2 logLik     AIC       AICc        BIC    
   -875.9697  1751.9393  1763.9393  1764.4249  1783.0971
 
-Variance components:
+Variance components:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
             Column    Variance Std.Dev.   Corr.
 subj     (Intercept)  565.51067 23.78047
          days          32.68212  5.71683 +0.08
 Residual              654.94145 25.59182
  Number of obs: 180; levels of grouping factors: 18
 
-  Fixed-effects parameters:
-──────────────────────────────────────────────────
+  Fixed-effects parameters:</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>──────────────────────────────────────────────────
                 Coef.  Std. Error      z  Pr(&gt;|z|)
-──────────────────────────────────────────────────
-(Intercept)  251.405      6.63226  37.91    &lt;1e-99
+──────────────────────────────────────────────────</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)  251.405      6.63226  37.91    &lt;1e-99
 days          10.4673     1.50224   6.97    &lt;1e-11
 ──────────────────────────────────────────────────</code></pre>
 </div>
 </div>
 <p>The response vector, y, has 180 elements. The fixed-effects coefficient vector, β, has 2 elements and the fixed-effects model matrix, X, is of size 180 × 2.</p>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>m1.y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="97">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>m1.y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>180-element view(::Matrix{Float64}, :, 3) with eltype Float64:
  249.56
  258.7047
@@ -370,16 +382,16 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </div>
 </div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m1.β</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="98">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>m1.β</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>2-element Vector{Float64}:
  251.40510484848375
   10.467285959595792</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>m1.X</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="99">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m1.X</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>180×2 Matrix{Float64}:
  1.0  0.0
  1.0  1.0
@@ -412,15 +424,15 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <p>The second column of X is just the <code>days</code> vector and the first column is all 1’s.</p>
 <p>There are 36 random effects, 2 for each of the 18 levels of <code>subj</code>. The “estimates” (technically, the conditional means or conditional modes) are returned as a vector of matrices, one matrix for each grouping factor. In this case there is only one grouping factor for the random effects so there is one one matrix which contains 18 intercept random effects and 18 slope random effects.</p>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>m1.b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="100">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>m1.b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>1-element Vector{Matrix{Float64}}:
  [2.8158191325913045 -40.04844170604461 … 0.7232620377478233 12.118907799956531; 9.07551171690184 -8.644079452057246 … -0.9710526342424729 1.31069806890679]</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">only</span>(m1.b)   <span class="co"># only one grouping factor</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="101">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">only</span>(m1.b)   <span class="co"># only one grouping factor</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>2×18 Matrix{Float64}:
  2.81582  -40.0484   -38.4331  22.8321   …  -24.7101   0.723262  12.1189
  9.07551   -8.64408   -5.5134  -4.65872       4.6597  -0.971053   1.3107</code></pre>
@@ -429,8 +441,8 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <p>There is a model matrix, <span class="math inline">\(\mathbf{Z}\)</span>, for the random effects. In general it has one chunk of columns for the first grouping factor, a chunk of columns for the second grouping factor, etc.</p>
 <p>In this case there is only one grouping factor.</p>
 <div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Int</span>.(<span class="fu">only</span>(m1.reterms))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="102">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Int</span>.(<span class="fu">only</span>(m1.reterms))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>180×36 Matrix{Int64}:
  1  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
  1  1  0  0  0  0  0  0  0  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
@@ -462,8 +474,8 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </div>
 <p>The defining property of a linear model or linear mixed model is that the fitted values are linear combinations of the fixed-effects parameters and the random effects. We can write the fitted values as</p>
 <div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>m1.X <span class="op">*</span> m1.β <span class="op">+</span> <span class="fu">only</span>(m1.reterms) <span class="op">*</span> <span class="fu">vec</span>(<span class="fu">only</span>(m1.b))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="103">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>m1.X <span class="op">*</span> m1.β <span class="op">+</span> <span class="fu">only</span>(m1.reterms) <span class="op">*</span> <span class="fu">vec</span>(<span class="fu">only</span>(m1.b))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>180-element Vector{Float64}:
  254.22092398107506
  273.7637216575727
@@ -494,8 +506,8 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </div>
 </div>
 <div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fitted</span>(m1)   <span class="co"># just to check that these are indeed the same as calculated above</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="104">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fitted</span>(m1)   <span class="co"># just to check that these are indeed the same as calculated above</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>180-element Vector{Float64}:
  254.22092398107506
  273.76372165757266
@@ -540,8 +552,8 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <p>where <span class="math inline">\(\boldsymbol{\Sigma}_\boldsymbol{\theta}\)</span> is a 36 × 36 symmetric covariance matrix that has a special form - it consists of 18 diagonal blocks, each of size 2 × 2 and all the same.</p>
 <p>This symmetric matrix can be constructed from the parameters <span class="math inline">\(\boldsymbol\theta\)</span>, which generate the lower triangular matrix <span class="math inline">\(\boldsymbol\lambda\)</span>, and the estimate <span class="math inline">\(\widehat{\sigma^2}\)</span>.</p>
 <div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>m1.θ</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="105">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>m1.θ</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>3-element Vector{Float64}:
  0.9292213186823386
  0.018168380890783722
@@ -549,23 +561,23 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </div>
 </div>
 <div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>λ <span class="op">=</span> <span class="fu">only</span>(m1.λ)  <span class="co"># with multiple grouping factors there will be multiple λ's</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="106">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>λ <span class="op">=</span> <span class="fu">only</span>(m1.λ)  <span class="co"># with multiple grouping factors there will be multiple λ's</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>2×2 LinearAlgebra.LowerTriangular{Float64, Matrix{Float64}}:
  0.929221    ⋅ 
  0.0181684  0.222645</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Σ <span class="op">=</span> <span class="fu">varest</span>(m1) <span class="op">*</span> (λ <span class="op">*</span> λ<span class="ch">')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="107">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>Σ <span class="op">=</span> <span class="fu">varest</span>(m1) <span class="op">*</span> (λ <span class="op">*</span> λ<span class="ch">')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>2×2 Matrix{Float64}:
  565.511  11.057
   11.057  32.6821</code></pre>
 </div>
 </div>
 <p>Compare the diagonal elements to the <em>Variance</em> column of</p>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="table">
 <thead>
 <tr class="header">
@@ -641,9 +653,9 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <p>This is why fitting a binary response is sometimes called <em>logistic regression</em>.</p>
 <p>For later use we define a Julia <code>logistic</code> function. See <a href="https://github.com/dmbates/JSM2021/blob/main/notebooks/2compilation.jl">this presentation</a> for more information than you could possible want to know on how Julia converts code like this to run on the processor.</p>
 <div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">increment</span>(x) <span class="op">=</span> x <span class="op">+</span> <span class="fu">one</span>(x)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">logistic</span>(η) <span class="op">=</span> <span class="fu">inv</span>(<span class="fu">increment</span>(<span class="fu">exp</span>(<span class="op">-</span>η)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">increment</span>(x) <span class="op">=</span> x <span class="op">+</span> <span class="fu">one</span>(x)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">logistic</span>(η) <span class="op">=</span> <span class="fu">inv</span>(<span class="fu">increment</span>(<span class="fu">exp</span>(<span class="op">-</span>η)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>logistic (generic function with 1 method)</code></pre>
 </div>
 </div>
@@ -661,15 +673,15 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <li>The <code>contra</code> dataset in the <code>MixedModels</code> package is from a survey on the use of artificial contraception by women in Bangladesh.</li>
 </ul>
 <div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>contra <span class="op">=</span> <span class="fu">DataFrame</span>(MixedModels.<span class="fu">dataset</span>(<span class="op">:</span>contra))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="110">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>contra <span class="op">=</span> <span class="fu">DataFrame</span>(MixedModels.<span class="fu">dataset</span>(<span class="op">:</span>contra))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
 
 <div class="data-frame"><p>1,934 rows × 5 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>dist</th><th>urban</th><th>livch</th><th>age</th><th>use</th></tr><tr><th></th><th title="String">String</th><th title="String">String</th><th title="String">String</th><th title="Float64">Float64</th><th title="String">String</th></tr></thead><tbody><tr><th>1</th><td>D01</td><td>Y</td><td>3+</td><td>18.44</td><td>N</td></tr><tr><th>2</th><td>D01</td><td>Y</td><td>0</td><td>-5.56</td><td>N</td></tr><tr><th>3</th><td>D01</td><td>Y</td><td>2</td><td>1.44</td><td>N</td></tr><tr><th>4</th><td>D01</td><td>Y</td><td>3+</td><td>8.44</td><td>N</td></tr><tr><th>5</th><td>D01</td><td>Y</td><td>0</td><td>-13.56</td><td>N</td></tr><tr><th>6</th><td>D01</td><td>Y</td><td>0</td><td>-11.56</td><td>N</td></tr><tr><th>7</th><td>D01</td><td>Y</td><td>3+</td><td>18.44</td><td>N</td></tr><tr><th>8</th><td>D01</td><td>Y</td><td>3+</td><td>-3.56</td><td>N</td></tr><tr><th>9</th><td>D01</td><td>Y</td><td>1</td><td>-5.56</td><td>N</td></tr><tr><th>10</th><td>D01</td><td>Y</td><td>3+</td><td>1.44</td><td>N</td></tr><tr><th>11</th><td>D01</td><td>Y</td><td>0</td><td>-11.56</td><td>Y</td></tr><tr><th>12</th><td>D01</td><td>Y</td><td>0</td><td>-2.56</td><td>N</td></tr><tr><th>13</th><td>D01</td><td>Y</td><td>1</td><td>-4.56</td><td>N</td></tr><tr><th>14</th><td>D01</td><td>Y</td><td>3+</td><td>5.44</td><td>N</td></tr><tr><th>15</th><td>D01</td><td>Y</td><td>3+</td><td>-0.56</td><td>N</td></tr><tr><th>16</th><td>D01</td><td>Y</td><td>3+</td><td>4.44</td><td>Y</td></tr><tr><th>17</th><td>D01</td><td>Y</td><td>0</td><td>-5.56</td><td>N</td></tr><tr><th>18</th><td>D01</td><td>Y</td><td>3+</td><td>-0.56</td><td>Y</td></tr><tr><th>19</th><td>D01</td><td>Y</td><td>1</td><td>-6.56</td><td>Y</td></tr><tr><th>20</th><td>D01</td><td>Y</td><td>2</td><td>-3.56</td><td>N</td></tr><tr><th>21</th><td>D01</td><td>Y</td><td>0</td><td>-4.56</td><td>N</td></tr><tr><th>22</th><td>D01</td><td>Y</td><td>0</td><td>-9.56</td><td>N</td></tr><tr><th>23</th><td>D01</td><td>Y</td><td>3+</td><td>2.44</td><td>N</td></tr><tr><th>24</th><td>D01</td><td>Y</td><td>2</td><td>2.44</td><td>Y</td></tr><tr><th>25</th><td>D01</td><td>Y</td><td>1</td><td>-4.56</td><td>Y</td></tr><tr><th>26</th><td>D01</td><td>Y</td><td>3+</td><td>14.44</td><td>N</td></tr><tr><th>27</th><td>D01</td><td>Y</td><td>0</td><td>-6.56</td><td>Y</td></tr><tr><th>28</th><td>D01</td><td>Y</td><td>1</td><td>-3.56</td><td>Y</td></tr><tr><th>29</th><td>D01</td><td>Y</td><td>1</td><td>-5.56</td><td>Y</td></tr><tr><th>30</th><td>D01</td><td>Y</td><td>1</td><td>-1.56</td><td>Y</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
 <div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">combine</span>(<span class="fu">groupby</span>(contra, <span class="op">:</span>dist), nrow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="111">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">combine</span>(<span class="fu">groupby</span>(contra, <span class="op">:</span>dist), nrow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
 
 <div class="data-frame"><p>60 rows × 2 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>dist</th><th>nrow</th></tr><tr><th></th><th title="String">String</th><th title="Int64">Int64</th></tr></thead><tbody><tr><th>1</th><td>D01</td><td>117</td></tr><tr><th>2</th><td>D02</td><td>20</td></tr><tr><th>3</th><td>D03</td><td>2</td></tr><tr><th>4</th><td>D04</td><td>30</td></tr><tr><th>5</th><td>D05</td><td>39</td></tr><tr><th>6</th><td>D06</td><td>65</td></tr><tr><th>7</th><td>D07</td><td>18</td></tr><tr><th>8</th><td>D08</td><td>37</td></tr><tr><th>9</th><td>D09</td><td>23</td></tr><tr><th>10</th><td>D10</td><td>13</td></tr><tr><th>11</th><td>D11</td><td>21</td></tr><tr><th>12</th><td>D12</td><td>29</td></tr><tr><th>13</th><td>D13</td><td>24</td></tr><tr><th>14</th><td>D14</td><td>118</td></tr><tr><th>15</th><td>D15</td><td>22</td></tr><tr><th>16</th><td>D16</td><td>20</td></tr><tr><th>17</th><td>D17</td><td>24</td></tr><tr><th>18</th><td>D18</td><td>47</td></tr><tr><th>19</th><td>D19</td><td>26</td></tr><tr><th>20</th><td>D20</td><td>15</td></tr><tr><th>21</th><td>D21</td><td>18</td></tr><tr><th>22</th><td>D22</td><td>20</td></tr><tr><th>23</th><td>D23</td><td>15</td></tr><tr><th>24</th><td>D24</td><td>14</td></tr><tr><th>25</th><td>D25</td><td>67</td></tr><tr><th>26</th><td>D26</td><td>13</td></tr><tr><th>27</th><td>D27</td><td>44</td></tr><tr><th>28</th><td>D28</td><td>49</td></tr><tr><th>29</th><td>D29</td><td>32</td></tr><tr><th>30</th><td>D30</td><td>61</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
@@ -683,25 +695,25 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <div class="cell" data-execution_count="19">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">draw</span>(</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data</span>(</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@transform</span>(</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>      contra,</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span>numuse <span class="op">=</span> <span class="fu">Int</span>(<span class="op">:</span>use <span class="op">==</span> <span class="st">"Y"</span>),</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span>urb <span class="op">=</span> <span class="fu">ifelse</span>(<span class="op">:</span>urban <span class="op">==</span> <span class="st">"Y"</span>, <span class="st">"Urban"</span>, <span class="st">"Rural"</span>)</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="op">*</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapping</span>(</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span>age <span class="op">=&gt;</span> <span class="st">"Centered age (yr)"</span>,</span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span>numuse <span class="op">=&gt;</span> <span class="st">"Frequency of contraception use"</span>;</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    col<span class="op">=:</span>urb,</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=:</span>livch,</span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="op">*</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">smooth</span>();</span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  figure<span class="op">=</span>(; resolution<span class="op">=</span>(<span class="fl">800</span>, <span class="fl">450</span>)),</span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">draw</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data</span>(</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@transform</span>(</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>      contra,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span>numuse <span class="op">=</span> <span class="fu">Int</span>(<span class="op">:</span>use <span class="op">==</span> <span class="st">"Y"</span>),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">:</span>urb <span class="op">=</span> <span class="fu">ifelse</span>(<span class="op">:</span>urban <span class="op">==</span> <span class="st">"Y"</span>, <span class="st">"Urban"</span>, <span class="st">"Rural"</span>)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="op">*</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapping</span>(</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span>age <span class="op">=&gt;</span> <span class="st">"Centered age (yr)"</span>,</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span>numuse <span class="op">=&gt;</span> <span class="st">"Frequency of contraception use"</span>;</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    col<span class="op">=:</span>urb,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=:</span>livch,</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="op">*</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">smooth</span>();</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>  figure<span class="op">=</span>(; resolution<span class="op">=</span>(<span class="fl">800</span>, <span class="fl">450</span>)),</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="112">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div id="fig-contradata" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3b-glmm_files/figure-html/fig-contradata-output-1.svg" class="img-fluid figure-img"></p>
@@ -711,23 +723,23 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 </div>
 </div>
 <div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>contrasts <span class="op">=</span> <span class="fu">Dict</span>(</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span>dist <span class="op">=&gt;</span> <span class="fu">Grouping</span>(),</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span>urban <span class="op">=&gt;</span> <span class="fu">HelmertCoding</span>(),</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span>children <span class="op">=&gt;</span> <span class="fu">HelmertCoding</span>(),</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>nAGQ <span class="op">=</span> <span class="fl">9</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> <span class="fu">Bernoulli</span>()</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>gm1 <span class="op">=</span> <span class="kw">let</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> age <span class="op">+</span> <span class="fu">abs2</span>(age) <span class="op">+</span> urban <span class="op">+</span> livch <span class="op">+</span> (<span class="fl">1</span> <span class="op">|</span> dist)</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>contrasts <span class="op">=</span> <span class="fu">Dict</span>(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span>dist <span class="op">=&gt;</span> <span class="fu">Grouping</span>(),</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span>urban <span class="op">=&gt;</span> <span class="fu">HelmertCoding</span>(),</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">:</span>children <span class="op">=&gt;</span> <span class="fu">HelmertCoding</span>(),</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>nAGQ <span class="op">=</span> <span class="fl">9</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> <span class="fu">Bernoulli</span>()</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>gm1 <span class="op">=</span> <span class="kw">let</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> age <span class="op">+</span> <span class="fu">abs2</span>(age) <span class="op">+</span> urban <span class="op">+</span> livch <span class="op">+</span> (<span class="fl">1</span> <span class="op">|</span> dist)</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 217   Time: 0:00:00 ( 0.90 ms/it)</code></pre>
+<pre><code>Minimizing 217   Time: 0:00:00 ( 1.75 ms/it)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="113">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <table class="table table-sm table-striped">
 <thead>
 <tr class="header">
@@ -806,7 +818,7 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <li><p>Notice also that the parameter estimates for the treatment contrasts for <code>livch</code> are similar. Thus the distinction of 1, 2, or 3+ childen is not as important as the contrast between having any children and not having any. Those women who already have children are more likely to use artificial contraception.</p></li>
 <li><p>Furthermore, the women without children have a different probability vs age profile than the women with children. To allow for this we define a binary <code>children</code> factor and incorporate an <code>age&amp;children</code> interaction.</p></li>
 </ul>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(gm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(gm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="table">
 <thead>
 <tr class="header">
@@ -832,29 +844,29 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <section id="convert-livch-to-a-binary-factor" class="level3">
 <h3 class="anchored" data-anchor-id="convert-livch-to-a-binary-factor">Convert <code>livch</code> to a binary factor</h3>
 <div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@transform</span>!(contra, <span class="op">:</span>children <span class="op">=</span> <span class="op">:</span>livch <span class="op">≠</span> <span class="st">"0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="115">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@transform</span>!(contra, <span class="op">:</span>children <span class="op">=</span> <span class="op">:</span>livch <span class="op">≠</span> <span class="st">"0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
 
 <div class="data-frame"><p>1,934 rows × 6 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>dist</th><th>urban</th><th>livch</th><th>age</th><th>use</th><th>children</th></tr><tr><th></th><th title="String">String</th><th title="String">String</th><th title="String">String</th><th title="Float64">Float64</th><th title="String">String</th><th title="Bool">Bool</th></tr></thead><tbody><tr><th>1</th><td>D01</td><td>Y</td><td>3+</td><td>18.44</td><td>N</td><td>1</td></tr><tr><th>2</th><td>D01</td><td>Y</td><td>0</td><td>-5.56</td><td>N</td><td>0</td></tr><tr><th>3</th><td>D01</td><td>Y</td><td>2</td><td>1.44</td><td>N</td><td>1</td></tr><tr><th>4</th><td>D01</td><td>Y</td><td>3+</td><td>8.44</td><td>N</td><td>1</td></tr><tr><th>5</th><td>D01</td><td>Y</td><td>0</td><td>-13.56</td><td>N</td><td>0</td></tr><tr><th>6</th><td>D01</td><td>Y</td><td>0</td><td>-11.56</td><td>N</td><td>0</td></tr><tr><th>7</th><td>D01</td><td>Y</td><td>3+</td><td>18.44</td><td>N</td><td>1</td></tr><tr><th>8</th><td>D01</td><td>Y</td><td>3+</td><td>-3.56</td><td>N</td><td>1</td></tr><tr><th>9</th><td>D01</td><td>Y</td><td>1</td><td>-5.56</td><td>N</td><td>1</td></tr><tr><th>10</th><td>D01</td><td>Y</td><td>3+</td><td>1.44</td><td>N</td><td>1</td></tr><tr><th>11</th><td>D01</td><td>Y</td><td>0</td><td>-11.56</td><td>Y</td><td>0</td></tr><tr><th>12</th><td>D01</td><td>Y</td><td>0</td><td>-2.56</td><td>N</td><td>0</td></tr><tr><th>13</th><td>D01</td><td>Y</td><td>1</td><td>-4.56</td><td>N</td><td>1</td></tr><tr><th>14</th><td>D01</td><td>Y</td><td>3+</td><td>5.44</td><td>N</td><td>1</td></tr><tr><th>15</th><td>D01</td><td>Y</td><td>3+</td><td>-0.56</td><td>N</td><td>1</td></tr><tr><th>16</th><td>D01</td><td>Y</td><td>3+</td><td>4.44</td><td>Y</td><td>1</td></tr><tr><th>17</th><td>D01</td><td>Y</td><td>0</td><td>-5.56</td><td>N</td><td>0</td></tr><tr><th>18</th><td>D01</td><td>Y</td><td>3+</td><td>-0.56</td><td>Y</td><td>1</td></tr><tr><th>19</th><td>D01</td><td>Y</td><td>1</td><td>-6.56</td><td>Y</td><td>1</td></tr><tr><th>20</th><td>D01</td><td>Y</td><td>2</td><td>-3.56</td><td>N</td><td>1</td></tr><tr><th>21</th><td>D01</td><td>Y</td><td>0</td><td>-4.56</td><td>N</td><td>0</td></tr><tr><th>22</th><td>D01</td><td>Y</td><td>0</td><td>-9.56</td><td>N</td><td>0</td></tr><tr><th>23</th><td>D01</td><td>Y</td><td>3+</td><td>2.44</td><td>N</td><td>1</td></tr><tr><th>24</th><td>D01</td><td>Y</td><td>2</td><td>2.44</td><td>Y</td><td>1</td></tr><tr><th>25</th><td>D01</td><td>Y</td><td>1</td><td>-4.56</td><td>Y</td><td>1</td></tr><tr><th>26</th><td>D01</td><td>Y</td><td>3+</td><td>14.44</td><td>N</td><td>1</td></tr><tr><th>27</th><td>D01</td><td>Y</td><td>0</td><td>-6.56</td><td>Y</td><td>0</td></tr><tr><th>28</th><td>D01</td><td>Y</td><td>1</td><td>-3.56</td><td>Y</td><td>1</td></tr><tr><th>29</th><td>D01</td><td>Y</td><td>1</td><td>-5.56</td><td>Y</td><td>1</td></tr><tr><th>30</th><td>D01</td><td>Y</td><td>1</td><td>-1.56</td><td>Y</td><td>1</td></tr><tr><th>⋮</th><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr></tbody></table></div>
 </div>
 </div>
 <div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>gm2 <span class="op">=</span> <span class="kw">let</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1</span> <span class="op">+</span></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>      age <span class="op">*</span> children <span class="op">+</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs2</span>(age) <span class="op">+</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>      children <span class="op">+</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>      urban <span class="op">+</span></span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>      (<span class="fl">1</span> <span class="op">|</span> dist)</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>gm2 <span class="op">=</span> <span class="kw">let</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1</span> <span class="op">+</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>      age <span class="op">*</span> children <span class="op">+</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs2</span>(age) <span class="op">+</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>      children <span class="op">+</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>      urban <span class="op">+</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>      (<span class="fl">1</span> <span class="op">|</span> dist)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 133   Time: 0:00:00 ( 0.91 ms/it)</code></pre>
+<pre><code>Minimizing 133   Time: 0:00:00 ( 0.94 ms/it)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="116">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <table class="table table-sm table-striped">
 <thead>
 <tr class="header">
@@ -925,19 +937,19 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <div class="cell" data-execution_count="24">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  mods <span class="op">=</span> [gm2, gm1]</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(;</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>[<span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    npar<span class="op">=</span><span class="fu">dof</span>.(mods),</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    deviance<span class="op">=</span><span class="fu">deviance</span>.(mods),</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    AIC<span class="op">=</span><span class="fu">aic</span>.(mods),</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    BIC<span class="op">=</span><span class="fu">bic</span>.(mods),</span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    AICc<span class="op">=</span><span class="fu">aicc</span>.(mods),</span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  mods <span class="op">=</span> [gm2, gm1]</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(;</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>[<span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    npar<span class="op">=</span><span class="fu">dof</span>.(mods),</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    deviance<span class="op">=</span><span class="fu">deviance</span>.(mods),</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    AIC<span class="op">=</span><span class="fu">aic</span>.(mods),</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    BIC<span class="op">=</span><span class="fu">bic</span>.(mods),</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    AICc<span class="op">=</span><span class="fu">aicc</span>.(mods),</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="117">
+<div class="cell-output cell-output-display" data-execution_count="25">
 
 <div class="data-frame"><p>2 rows × 6 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>model</th><th>npar</th><th>deviance</th><th>AIC</th><th>BIC</th><th>AICc</th></tr><tr><th></th><th title="Symbol">Symbol</th><th title="Int64">Int64</th><th title="Float64">Float64</th><th title="Float64">Float64</th><th title="Float64">Float64</th><th title="Float64">Float64</th></tr></thead><tbody><tr><th>1</th><td>gm2</td><td>7</td><td>2364.92</td><td>2379.18</td><td>2418.15</td><td>2379.24</td></tr><tr><th>2</th><td>gm1</td><td>8</td><td>2372.46</td><td>2388.73</td><td>2433.27</td><td>2388.81</td></tr></tbody></table></div>
 </div>
@@ -953,22 +965,22 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <li>It turns out that there can be more difference between urban and rural settings within the same political district than there is between districts. To model this difference we build a model with <code>urban&amp;dist</code> as a grouping factor.</li>
 </ul>
 <div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>gm3 <span class="op">=</span> <span class="kw">let</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1</span> <span class="op">+</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>      age <span class="op">*</span> children <span class="op">+</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs2</span>(age) <span class="op">+</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>      children <span class="op">+</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>      urban <span class="op">+</span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>      (<span class="fl">1</span> <span class="op">|</span> urban <span class="op">&amp;</span> dist)</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>gm3 <span class="op">=</span> <span class="kw">let</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1</span> <span class="op">+</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>      age <span class="op">*</span> children <span class="op">+</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs2</span>(age) <span class="op">+</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>      children <span class="op">+</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>      urban <span class="op">+</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>      (<span class="fl">1</span> <span class="op">|</span> urban <span class="op">&amp;</span> dist)</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 158   Time: 0:00:00 ( 0.92 ms/it)</code></pre>
+<pre><code>Minimizing 158   Time: 0:00:00 ( 0.95 ms/it)</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="118">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <table class="table table-sm table-striped">
 <colgroup>
 <col style="width: 32%">
@@ -1044,19 +1056,19 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <div class="cell" data-execution_count="26">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  mods <span class="op">=</span> [gm3, gm2, gm1]</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(;</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>[<span class="op">:</span>gm3, <span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    npar<span class="op">=</span><span class="fu">dof</span>.(mods),</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    deviance<span class="op">=</span><span class="fu">deviance</span>.(mods),</span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    AIC<span class="op">=</span><span class="fu">aic</span>.(mods),</span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>    BIC<span class="op">=</span><span class="fu">bic</span>.(mods),</span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>    AICc<span class="op">=</span><span class="fu">aicc</span>.(mods),</span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  mods <span class="op">=</span> [gm3, gm2, gm1]</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(;</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>[<span class="op">:</span>gm3, <span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    npar<span class="op">=</span><span class="fu">dof</span>.(mods),</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    deviance<span class="op">=</span><span class="fu">deviance</span>.(mods),</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    AIC<span class="op">=</span><span class="fu">aic</span>.(mods),</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    BIC<span class="op">=</span><span class="fu">bic</span>.(mods),</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    AICc<span class="op">=</span><span class="fu">aicc</span>.(mods),</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="119">
+<div class="cell-output cell-output-display" data-execution_count="27">
 
 <div class="data-frame"><p>3 rows × 6 columns</p><table class="data-frame table table-sm table-striped"><thead><tr><th></th><th>model</th><th>npar</th><th>deviance</th><th>AIC</th><th>BIC</th><th>AICc</th></tr><tr><th></th><th title="Symbol">Symbol</th><th title="Int64">Int64</th><th title="Float64">Float64</th><th title="Float64">Float64</th><th title="Float64">Float64</th><th title="Float64">Float64</th></tr></thead><tbody><tr><th>1</th><td>gm3</td><td>7</td><td>2353.82</td><td>2368.48</td><td>2407.46</td><td>2368.54</td></tr><tr><th>2</th><td>gm2</td><td>7</td><td>2364.92</td><td>2379.18</td><td>2418.15</td><td>2379.24</td></tr><tr><th>3</th><td>gm1</td><td>8</td><td>2372.46</td><td>2388.73</td><td>2433.27</td><td>2388.81</td></tr></tbody></table></div>
 </div>
@@ -1064,7 +1076,7 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <ul>
 <li>Notice that the parameter count in <code>gm3</code> is the same as that of <code>gm2</code> - the thing that has changed is the number of levels of the grouping factor- resulting in a much lower deviance for <code>gm3</code>. A simple count of the number of parameters to be estimated does not always reflect the complexity of the model.</li>
 </ul>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>gm2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>gm2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="table">
 <thead>
 <tr class="header">
@@ -1127,7 +1139,7 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 </tr>
 </tbody>
 </table>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>gm3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>gm3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <table class="table">
 <colgroup>
 <col style="width: 32%">

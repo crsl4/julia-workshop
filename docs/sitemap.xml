@@ -2,46 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://crsl4.github.io/julia-workshop/index.html</loc>
-    <lastmod>2022-07-08T01:32:08.861Z</lastmod>
+    <lastmod>2022-07-08T16:45:18.639Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/about.html</loc>
-    <lastmod>2022-07-07T10:49:31.733Z</lastmod>
+    <lastmod>2022-07-08T16:45:18.843Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session1-get-started.html</loc>
-    <lastmod>2022-07-08T00:41:00.830Z</lastmod>
+    <lastmod>2022-07-08T16:45:19.287Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session2a-tables-and-arrow.html</loc>
-    <lastmod>2022-07-08T00:50:51.894Z</lastmod>
+    <lastmod>2022-07-08T16:45:19.967Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session2b-interval-overlap.html</loc>
-    <lastmod>2022-07-08T00:46:27.255Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crsl4.github.io/julia-workshop/session3-linear-mixed-effects.html</loc>
-    <lastmod>2022-07-07T15:41:55.716Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crsl4.github.io/julia-workshop/session4-exercise.html</loc>
-    <lastmod>2022-07-08T00:49:03.368Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crsl4.github.io/julia-workshop/session5-other-tools.html</loc>
-    <lastmod>2022-07-08T00:49:06.563Z</lastmod>
-  </url>
-  <url>
-    <loc>https://crsl4.github.io/julia-workshop/session6-conclusions.html</loc>
-    <lastmod>2022-07-08T00:49:23.669Z</lastmod>
+    <lastmod>2022-07-08T16:45:20.651Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session3a-linear-mixed-effects.html</loc>
-    <lastmod>2022-07-08T00:47:44.615Z</lastmod>
+    <lastmod>2022-07-08T16:47:32.021Z</lastmod>
   </url>
   <url>
     <loc>https://crsl4.github.io/julia-workshop/session3b-glmm.html</loc>
-    <lastmod>2022-07-08T00:48:17.754Z</lastmod>
+    <lastmod>2022-07-08T16:54:31.220Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crsl4.github.io/julia-workshop/session4-exercise.html</loc>
+    <lastmod>2022-07-08T16:47:32.809Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crsl4.github.io/julia-workshop/session5-other-tools.html</loc>
+    <lastmod>2022-07-08T16:47:33.225Z</lastmod>
+  </url>
+  <url>
+    <loc>https://crsl4.github.io/julia-workshop/session6-conclusions.html</loc>
+    <lastmod>2022-07-08T16:47:33.449Z</lastmod>
   </url>
 </urlset>
