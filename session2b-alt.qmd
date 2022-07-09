@@ -1,0 +1,148 @@
+---
+title: "2b: Determining Interval Overlap with TypedTables"
+author: "Douglas Bates and Claudia Solis-Lemus"
+jupyter: julia-1.8
+---
+
+This is a re-formulation of the functions in "2b: Determining Interval Overlap" using [TypedTables.jl](https://github.com/JuliaData/TypedTables.jl) in place of [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl) and [Tables.jl](https://github.com/JuliaData/Tables.jl)
+
+## Load packages to be used
+
+```{julia}
+#| code-fold: show
+using Arrow          # Arrow storage and file format
+using BenchmarkTools # tools for benchmarking code
+using RangeTrees     # a bespoke implementation of interval trees
+using TypedTables         # row- or column-oriented tabular data
+
+using Base: intersect! # not exported from Base
+
+datadir = joinpath(@__DIR__, "biofast-data-v1");
+```
+
+```{julia}
+asrange(start, stop) = (start+one(start)):stop
+```
+
+```{julia}
+function chromodict(tbl::Table)
+  r1 = first(tbl)
+  itype = promote_type(typeof(r1.start), typeof(r1.stop))
+  vtype = Vector{UnitRange{itype}}
+  dict = Dict{Symbol,vtype}()
+  for (; chromo, start, stop) in tbl
+    push!(get!(dict, Symbol(chromo), vtype()), asrange(start, stop))
+  end
+  return dict
+end
+function chromodict(fnm::AbstractString)
+  return chromodict(Table(Arrow.Table(joinpath(datadir, fnm))))
+end
+tarrngvecs = chromodict("ex-rna.arrow")
+refrngvecs = chromodict("ex-anno.arrow")
+```
+
+```{julia}
+@code_warntype chromodict(Table(Arrow.Table("biofast-data-v1/ex-anno.arrow")))
+```
+
+```{julia}
+let
+  function lt(x::UnitRange{T}, y::UnitRange{T}) where {T}
+    fx, fy = first(x), first(y)
+    return fx == fy ? last(x) < last(y) : fx < fy
+  end
+  for v in values(refrngvecs)
+    sort!(v; lt)
+  end
+end
+refrngvecs  # note changes in refrngvecs[:chr01]
+```
+
+```{julia}
+refrngvec01 = refrngvecs[:chr01]
+tarrngvec01 = tarrngvecs[:chr01]
+target = last(tarrngvec01)
+```
+
+## RangeTrees
+
+```{julia}
+refrngtrees = Dict(k => RangeNode(v) for (k, v) in refrngvecs)
+rangetree01 = refrngtrees[:chr01]
+treesize(rangetree01), treeheight(rangetree01), treebreadth(rangetree01)
+```
+
+```{julia}
+result = similar(tarrngvec01, 0)
+savedresult = intersect!(result, target, rangetree01)
+@benchmark intersect!(res, tar, ref) setup =
+  (res = result; tar = target; ref = rangetree01)
+```
+
+```{julia}
+function coveragecount(
+  target::AbstractUnitRange,
+  isects::Vector{UnitRange{T}},
+) where {T}
+  leftpost, rightpost = T(first(target)), T(last(target))
+  coverage = 0
+  for isect in isects
+    coverage += length(intersect(isect, leftpost:rightpost))
+    leftpost = max(leftpost, last(isect) + one(T))
+  end
+  return coverage
+end
+coveragecount(target, savedresult)
+```
+
+# Iterating over a collection of targets
+
+```{julia}
+function overlaps(targets::Vector{UnitRange{T}}, refs::RangeNode{T}) where {T}
+  nover = similar(targets, Int)
+  covcount = similar(targets, T)
+  result = empty!(similar(targets, ceil(Int, sqrt(treesize(refs)))))
+  @inbounds for (i, tar) in enumerate(targets)
+    nover[i] = length(intersect!(result, tar, refs))
+    covcount[i] = coveragecount(tar, result)
+  end
+  Table(targets = targets, nover = nover, covcount = covcount)
+end
+overlaps(tarrngvec01, rangetree01)
+```
+
+```{julia}
+@benchmark overlaps(targets, refs) setup =
+  (targets = tarrngvec01; refs = rangetree01)
+```
+
+# The whole shootin' match
+
+  - The computations on different chromosome are independent of each other and can be assigned to different threads when Julia is started with multiple threads.
+
+```{julia}
+function overlaps(
+  tardict::Dict{Symbol,Vector{UnitRange{T}}},
+  refdict::Dict{Symbol,RangeNode{T,R}},
+) where {T,R}
+  result = Dict{Symbol,Table}()
+  @sync for k in intersect(keys(tardict), keys(refdict))
+    Threads.@spawn result[k] = overlaps(tardict[k], refdict[k])
+  end
+  return result
+end
+bigresult = overlaps(tarrngvecs, refrngtrees);
+bigresult[:chrX]
+```
+
+```{julia}
+@benchmark overlaps(targets, refs) setup =
+  (targets = tarrngvecs; refs = refrngtrees)
+```
+
+# Version information
+
+```{julia}
+versioninfo()
+```

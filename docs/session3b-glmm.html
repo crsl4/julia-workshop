@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-07-08">
+<meta name="dcterms.date" content="2022-07-09">
 
 <title>Julia Workshop - 3b: Generalized linear mixed models</title>
 <style>
@@ -270,7 +270,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-08</p>
+      <p class="date">2022-07-09</p>
     </div>
   </div>
     
@@ -290,7 +290,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">MixedModelsMakie</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">ProgressMeter</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>CairoMakie.<span class="fu">activate!</span>(; <span class="kw">type</span><span class="op">=</span><span class="st">"svg"</span>);</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>CairoMakie.<span class="fu">activate!</span>(; <span class="kw">type</span> <span class="op">=</span> <span class="st">"svg"</span>);</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ProgressMeter.<span class="fu">ijulia_behavior</span>(<span class="op">:</span>clear);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
@@ -315,7 +315,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(m1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 58    Time: 0:00:00 ( 5.88 ms/it)</code></pre>
+<pre><code>Minimizing 58    Time: 0:00:00 ( 5.85 ms/it)</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by maximum likelihood
@@ -706,11 +706,11 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapping</span>(</span>
 <span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span>age <span class="op">=&gt;</span> <span class="st">"Centered age (yr)"</span>,</span>
 <span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">:</span>numuse <span class="op">=&gt;</span> <span class="st">"Frequency of contraception use"</span>;</span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    col<span class="op">=:</span>urb,</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=:</span>livch,</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    col <span class="op">=</span> <span class="op">:</span>urb,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    color <span class="op">=</span> <span class="op">:</span>livch,</span>
 <span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="op">*</span></span>
 <span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">smooth</span>();</span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>  figure<span class="op">=</span>(; resolution<span class="op">=</span>(<span class="fl">800</span>, <span class="fl">450</span>)),</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>  figure <span class="op">=</span> (; resolution <span class="op">=</span> (<span class="fl">800</span>, <span class="fl">450</span>)),</span>
 <span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display" data-execution_count="20">
@@ -731,13 +731,11 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>nAGQ <span class="op">=</span> <span class="fl">9</span></span>
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>dist <span class="op">=</span> <span class="fu">Bernoulli</span>()</span>
 <span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>gm1 <span class="op">=</span> <span class="kw">let</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> age <span class="op">+</span> <span class="fu">abs2</span>(age) <span class="op">+</span> urban <span class="op">+</span> livch <span class="op">+</span> (<span class="fl">1</span> <span class="op">|</span> dist)</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(use <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> age <span class="op">+</span> <span class="fu">abs2</span>(age) <span class="op">+</span> urban <span class="op">+</span> livch <span class="op">+</span> (<span class="fl">1</span> <span class="op">|</span> dist))</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 217   Time: 0:00:00 ( 1.74 ms/it)</code></pre>
+<pre><code>Minimizing 217   Time: 0:00:00 ( 2.24 ms/it)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <table class="table table-sm table-striped">
@@ -852,18 +850,11 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 </div>
 <div class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>gm2 <span class="op">=</span> <span class="kw">let</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span></span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1</span> <span class="op">+</span></span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>      age <span class="op">*</span> children <span class="op">+</span></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs2</span>(age) <span class="op">+</span></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>      urban <span class="op">+</span></span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>      (<span class="fl">1</span> <span class="op">|</span> dist)</span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(use <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> age <span class="op">*</span> children <span class="op">+</span> <span class="fu">abs2</span>(age) <span class="op">+</span> urban <span class="op">+</span> (<span class="fl">1</span> <span class="op">|</span> dist))</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 133   Time: 0:00:00 ( 0.95 ms/it)</code></pre>
+<pre><code>Minimizing 133   Time: 0:00:00 ( 1.27 ms/it)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <table class="table table-sm table-striped">
@@ -939,12 +930,12 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  mods <span class="op">=</span> [gm2, gm1]</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(;</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>[<span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    npar<span class="op">=</span><span class="fu">dof</span>.(mods),</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    deviance<span class="op">=</span><span class="fu">deviance</span>.(mods),</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    AIC<span class="op">=</span><span class="fu">aic</span>.(mods),</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    BIC<span class="op">=</span><span class="fu">bic</span>.(mods),</span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    AICc<span class="op">=</span><span class="fu">aicc</span>.(mods),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> [<span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    npar <span class="op">=</span> <span class="fu">dof</span>.(mods),</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    deviance <span class="op">=</span> <span class="fu">deviance</span>.(mods),</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    AIC <span class="op">=</span> <span class="fu">aic</span>.(mods),</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>    BIC <span class="op">=</span> <span class="fu">bic</span>.(mods),</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>    AICc <span class="op">=</span> <span class="fu">aicc</span>.(mods),</span>
 <span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -966,17 +957,12 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <div class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>gm3 <span class="op">=</span> <span class="kw">let</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span>(</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span></span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1</span> <span class="op">+</span></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>      age <span class="op">*</span> children <span class="op">+</span></span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">abs2</span>(age) <span class="op">+</span></span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>      urban <span class="op">+</span></span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>      (<span class="fl">1</span> <span class="op">|</span> urban <span class="op">&amp;</span> dist)</span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    use <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> age <span class="op">*</span> children <span class="op">+</span> <span class="fu">abs2</span>(age) <span class="op">+</span> urban <span class="op">+</span> (<span class="fl">1</span> <span class="op">|</span> urban <span class="op">&amp;</span> dist)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, contra, dist; nAGQ, contrasts)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 158   Time: 0:00:00 ( 0.93 ms/it)</code></pre>
+<pre><code>Minimizing 158   Time: 0:00:00 ( 1.29 ms/it)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="26">
 <table class="table table-sm table-striped">
@@ -1057,12 +1043,12 @@ y_i = \beta_1 x_{i,1} + \beta_2 x_{i,2}+ b_1 z_{i,1} +\dots+b_{36} z_{i,36}+\eps
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  mods <span class="op">=</span> [gm3, gm2, gm1]</span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">DataFrame</span>(;</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>[<span class="op">:</span>gm3, <span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    npar<span class="op">=</span><span class="fu">dof</span>.(mods),</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    deviance<span class="op">=</span><span class="fu">deviance</span>.(mods),</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    AIC<span class="op">=</span><span class="fu">aic</span>.(mods),</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    BIC<span class="op">=</span><span class="fu">bic</span>.(mods),</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    AICc<span class="op">=</span><span class="fu">aicc</span>.(mods),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> [<span class="op">:</span>gm3, <span class="op">:</span>gm2, <span class="op">:</span>gm1],</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    npar <span class="op">=</span> <span class="fu">dof</span>.(mods),</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    deviance <span class="op">=</span> <span class="fu">deviance</span>.(mods),</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    AIC <span class="op">=</span> <span class="fu">aic</span>.(mods),</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    BIC <span class="op">=</span> <span class="fu">bic</span>.(mods),</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    AICc <span class="op">=</span> <span class="fu">aicc</span>.(mods),</span>
 <span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>

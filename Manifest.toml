@@ -2,7 +2,7 @@
 
 julia_version = "1.8.0-rc2"
 manifest_format = "2.0"
-project_hash = "91ad77616b57aa9acae210714f85d61a8fe08c4d"
+project_hash = "5984a211197c663a68b678f03b6f80d1245862a8"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -298,9 +298,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[deps.Distributions]]
 deps = ["ChainRulesCore", "DensityInterface", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SparseArrays", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns", "Test"]
-git-tree-sha1 = "d530092b57aef8b96b27694e51c575b09c7f0b2e"
+git-tree-sha1 = "429077fd74119f5ac495857fd51f4120baf36355"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.64"
+version = "0.25.65"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -1196,6 +1196,12 @@ git-tree-sha1 = "d75bda01f8c31ebb72df80a46c88b25d1c79c56d"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
 version = "2.1.7"
 
+[[deps.SplitApplyCombine]]
+deps = ["Dictionaries", "Indexing"]
+git-tree-sha1 = "48f393b0231516850e39f6c756970e7ca8b77045"
+uuid = "03a91e81-4c3e-53e1-a0a4-9c0c8f19dd66"
+version = "1.2.2"
+
 [[deps.StackViews]]
 deps = ["OffsetArrays"]
 git-tree-sha1 = "46e589465204cd0c08b4bd97385e4fa79a0c770c"
@@ -1306,6 +1312,12 @@ deps = ["Random", "Test"]
 git-tree-sha1 = "216b95ea110b5972db65aa90f88d8d89dcb8851c"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 version = "0.9.6"
+
+[[deps.TypedTables]]
+deps = ["Adapt", "Dictionaries", "Indexing", "SplitApplyCombine", "Tables", "Unicode"]
+git-tree-sha1 = "f91a10d0132310a31bc4f8d0d29ce052536bd7d7"
+uuid = "9d95f2ec-7b3d-5a63-8d20-e2491e220bb9"
+version = "1.4.0"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
