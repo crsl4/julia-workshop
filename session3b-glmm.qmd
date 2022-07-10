@@ -16,7 +16,7 @@ using MixedModels
 using MixedModelsMakie
 using ProgressMeter
 
-CairoMakie.activate!(; type="svg");
+CairoMakie.activate!(; type = "svg");
 ProgressMeter.ijulia_behavior(:clear);
 ```
 
@@ -187,7 +187,7 @@ The important cases of the Bernoulli and Poisson distributions don't have a scal
 
 ### An example of a Bernoulli GLMM
 
-- The `contra` dataset in the `MixedModels` package is from a survey on the use of artificial contraception by women in Bangladesh.
+  - The `contra` dataset in the `MixedModels` package is from a survey on the use of artificial contraception by women in Bangladesh.
 
 ```{julia}
 contra = DataFrame(MixedModels.dataset(:contra))
@@ -197,14 +197,12 @@ contra = DataFrame(MixedModels.dataset(:contra))
 combine(groupby(contra, :dist), nrow)
 ```
 
-- The information recorded included woman's age, the number of live children she has, whether she lives in an urban or rural setting, and the political district in which she lives.
+  - The information recorded included woman's age, the number of live children she has, whether she lives in an urban or rural setting, and the political district in which she lives.
 
-- The age was centered. Unfortunately, the version of the data to which I had access did not record what the centering value was.
-
-- A data plot, @fig-contradata, shows that the probability of contraception use is **not** linear in `age` - it is low for younger women, higher for women in the middle of the range (assumed to be women in late 20's to early 30's) and low again for older women (late 30's to early 40's in this survey).
-
-- If we fit a model with only the `age` term in the fixed effects, that term will not be significant.
-This doesn't mean that there is no "age effect", it only means that there is no significant linear effect for `age`.
+  - The age was centered. Unfortunately, the version of the data to which I had access did not record what the centering value was.
+  - A data plot, @fig-contradata, shows that the probability of contraception use is **not** linear in `age` - it is low for younger women, higher for women in the middle of the range (assumed to be women in late 20's to early 30's) and low again for older women (late 30's to early 40's in this survey).
+  - If we fit a model with only the `age` term in the fixed effects, that term will not be significant.
+    This doesn't mean that there is no "age effect", it only means that there is no significant linear effect for `age`.
 
 ```{julia}
 #| code-fold: true
@@ -221,11 +219,11 @@ draw(
   mapping(
     :age => "Centered age (yr)",
     :numuse => "Frequency of contraception use";
-    col=:urb,
-    color=:livch,
+    col = :urb,
+    color = :livch,
   ) *
   smooth();
-  figure=(; resolution=(800, 450)),
+  figure = (; resolution = (800, 450)),
 )
 ```
 
@@ -238,25 +236,22 @@ contrasts = Dict(
 nAGQ = 9
 dist = Bernoulli()
 gm1 = let
-  form = @formula(
-    use ~ 1 + age + abs2(age) + urban + livch + (1 | dist)
-  )
+  form = @formula(use ~ 1 + age + abs2(age) + urban + livch + (1 | dist))
   fit(MixedModel, form, contra, dist; nAGQ, contrasts)
 end
 ```
 
-- Notice that the linear term for `age` is not significant but the quadratic term for `age` is highly significant.
-- We usually retain the lower order term, even if it is not significant, if the higher order term is significant.
+  - Notice that the linear term for `age` is not significant but the quadratic term for `age` is highly significant.
 
-- Notice also that the parameter estimates for the treatment contrasts for `livch` are similar. Thus the distinction of 1, 2, or 3+ childen is not as important as the contrast between having any children and not having any. Those women who already have children are more likely to use artificial contraception.
-
-- Furthermore, the women without children have a different probability vs age profile than the women with children. To allow for this we define a binary `children` factor and incorporate an `age&children` interaction.
+  - We usually retain the lower order term, even if it is not significant, if the higher order term is significant.
+  - Notice also that the parameter estimates for the treatment contrasts for `livch` are similar. Thus the distinction of 1, 2, or 3+ childen is not as important as the contrast between having any children and not having any. Those women who already have children are more likely to use artificial contraception.
+  - Furthermore, the women without children have a different probability vs age profile than the women with children. To allow for this we define a binary `children` factor and incorporate an `age&children` interaction.
 
 ```{julia}
 VarCorr(gm1)
 ```
 
-- Notice that there is no "residual" variance being estimated. This is because the Bernoulli distribution doesn't have a scale parameter.
+  - Notice that there is no "residual" variance being estimated. This is because the Bernoulli distribution doesn't have a scale parameter.
 
 ### Convert `livch` to a binary factor
 
@@ -266,52 +261,40 @@ VarCorr(gm1)
 
 ```{julia}
 gm2 = let
-  form = @formula(
-    use ~
-      1 +
-      age * children +
-      abs2(age) +
-      urban +
-      (1 | dist)
-  )
+  form = @formula(use ~ 1 + age * children + abs2(age) + urban + (1 | dist))
   fit(MixedModel, form, contra, dist; nAGQ, contrasts)
 end
 ```
 
-- Various model-fit statistics
+  - Various model-fit statistics
 
 ```{julia}
 #| code-fold: true
 let
   mods = [gm2, gm1]
   DataFrame(;
-    model=[:gm2, :gm1],
-    npar=dof.(mods),
-    deviance=deviance.(mods),
-    AIC=aic.(mods),
-    BIC=bic.(mods),
-    AICc=aicc.(mods),
+    model = [:gm2, :gm1],
+    npar = dof.(mods),
+    deviance = deviance.(mods),
+    AIC = aic.(mods),
+    BIC = bic.(mods),
+    AICc = aicc.(mods),
   )
 end
 ```
 
-- Because these models are not nested, we cannot do a likelihood ratio test. Nevertheless we see that the deviance is much lower in the model with `age & children` even though the 3 levels of `livch` have been collapsed into a single level of `children`. 
+  - Because these models are not nested, we cannot do a likelihood ratio test. Nevertheless we see that the deviance is much lower in the model with `age & children` even though the 3 levels of `livch` have been collapsed into a single level of `children`.
 
-- There is a substantial decrease in the deviance even though there are fewer parameters in model `gm2` than in `gm1`. This decrease is because the flexibility of the model - its ability to model the behavior of the response - is being put to better use in `gm2` than in `gm1`.
+  - There is a substantial decrease in the deviance even though there are fewer parameters in model `gm2` than in `gm1`. This decrease is because the flexibility of the model - its ability to model the behavior of the response - is being put to better use in `gm2` than in `gm1`.
 
 ### Using `urban&dist` as a grouping factor
 
-- It turns out that there can be more difference between urban and rural settings within the same political district than there is between districts. To model this difference we build a model with `urban&dist` as a grouping factor.
+  - It turns out that there can be more difference between urban and rural settings within the same political district than there is between districts. To model this difference we build a model with `urban&dist` as a grouping factor.
 
 ```{julia}
 gm3 = let
   form = @formula(
-    use ~
-      1 +
-      age * children +
-      abs2(age) +
-      urban +
-      (1 | urban & dist)
+    use ~ 1 + age * children + abs2(age) + urban + (1 | urban & dist)
   )
   fit(MixedModel, form, contra, dist; nAGQ, contrasts)
 end
@@ -322,17 +305,17 @@ end
 let
   mods = [gm3, gm2, gm1]
   DataFrame(;
-    model=[:gm3, :gm2, :gm1],
-    npar=dof.(mods),
-    deviance=deviance.(mods),
-    AIC=aic.(mods),
-    BIC=bic.(mods),
-    AICc=aicc.(mods),
+    model = [:gm3, :gm2, :gm1],
+    npar = dof.(mods),
+    deviance = deviance.(mods),
+    AIC = aic.(mods),
+    BIC = bic.(mods),
+    AICc = aicc.(mods),
   )
 end
 ```
 
-- Notice that the parameter count in `gm3` is the same as that of `gm2` - the thing that has changed is the number of levels of the grouping factor- resulting in a much lower deviance for `gm3`. A simple count of the number of parameters to be estimated does not always reflect the complexity of the model.
+  - Notice that the parameter count in `gm3` is the same as that of `gm2` - the thing that has changed is the number of levels of the grouping factor- resulting in a much lower deviance for `gm3`. A simple count of the number of parameters to be estimated does not always reflect the complexity of the model.
 
 ```{julia}
 gm2
@@ -342,7 +325,7 @@ gm2
 gm3
 ```
 
-- The coefficient for `age` may be regarded as insignificant but we retain it for two reasons: we have a term of `age²` (written `abs2(age)`) in the model and we have a significant interaction `age & children` in the model.
+  - The coefficient for `age` may be regarded as insignificant but we retain it for two reasons: we have a term of `age²` (written `abs2(age)`) in the model and we have a significant interaction `age & children` in the model.
 
 ## Summarizing the results
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-07-08">
+<meta name="dcterms.date" content="2022-07-09">
 
 <title>Julia Workshop - 2a: Data Tables and Arrow files</title>
 <style>
@@ -280,7 +280,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-08</p>
+      <p class="date">2022-07-09</p>
     </div>
   </div>
     
@@ -458,7 +458,7 @@ Stabby lambda syntax for anonymous functions
 <div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">methods</span>(Tar.extract)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-# 4 methods for generic function <b>extract</b>:<ul><li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/.julia/juliaup/julia-1.8.0-rc1+0~x64/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> </ul>
+# 4 methods for generic function <b>extract</b>:<ul><li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(predicate::<b>Function</b>, tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl:218</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>) in Tar at <a href="file:///home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> <li> extract(tarball::<b>Union{Base.AbstractCmd, AbstractString, IO}</b>, dir::<b>Union{Nothing, AbstractString}</b>; <i>skeleton, copy_symlinks, set_permissions</i>) in Tar at <a href="file:///home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl" target="_blank">/home/bates/git/v1.8.0-rc2/usr/share/julia/stdlib/v1.8/Tar/src/Tar.jl:248</a></li> </ul>
 </div>
 </div>
 </div>
@@ -534,7 +534,7 @@ Fully qualified names for many packages of utilities
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Tar</td>
-<td style="text-align: right;">859.204 KiB</td>
+<td style="text-align: right;">858.272 KiB</td>
 <td style="text-align: left;">Module</td>
 </tr>
 </tbody>
@@ -762,7 +762,7 @@ Categorical arrays
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>total 273M
--rw-rw-r-- 1 bates bates 3.9M Jul  7 19:50 ex-anno.arrow
+-rw-rw-r-- 1 bates bates 3.9M Jul  9 08:52 ex-anno.arrow
 -rw-r--r-- 1 bates bates  28M Jun 16 16:18 ex-anno.bed
 -rw-rw-r-- 1 bates bates  39M Jul  7 06:26 ex-rna.arrow
 -rw-r--r-- 1 bates bates 203M Jun 16 16:18 ex-rna.bed</code></pre>
@@ -810,7 +810,7 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  0.125986 seconds (326 allocations: 77.842 MiB, 33.96% gc time)</code></pre>
+<pre><code>  0.044473 seconds (326 allocations: 77.842 MiB)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>Arrow.Table with 4685080 rows, 3 columns, and schema:
@@ -944,7 +944,7 @@ $ stop   &lt;int&gt; 216501458, 101245071, 49491841, 80169336, 76271290, 3127206
 <li>Julia provides an impressive array of tools for Bioinformatics and similar tasks</li>
 <li>We have shown the use of <a href="https://github.com/apache/arrow-julia">Arrow.jl</a>, <a href="https://github.com/JuliaData/CategoricalArrays.jl">CategoricalArrays.jl</a> <a href="https://github.com/JuliaData/CSV.jl">CSV.jl</a>, and <a href="https://github.com/JuliaData/DataFrames.jl">DataFrames</a> for data input, storage and manipulation.</li>
 <li>Although not shown here <a href="https://github.com/jkrumbiegel/DataFrameMacros.jl">DataFrameMacros.jl</a> (or <a href="https://github.com/JuliaData/DataFramesMeta.jl">DataFramesMeta.jl</a>) and <a href="https://github.com/jkrumbiegel/Chain.jl">Chain.jl</a> are worth considering for more sophisticated work with DataFrames.</li>
-<li>A general framework for working with tabular data is provided in <a href="https://github.com/JuliaData/Tables.jl">Tables.jl</a> (not shown here).</li>
+<li>A general framework for working with tabular data is provided in <a href="https://github.com/JuliaData/Tables.jl">Tables.jl</a> (not shown here). Alternatively <a href="https://github.com/JuliaData/TypedTables.jl">TypedTables.jl</a> provides a “lean and mean” implementation of both row- and column-oriented tabular data structures.</li>
 <li>We have shown the use of <a href="https://github.com/JuliaPy/PyCall.jl">PyCall.jl</a> and <a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a> for running and communicating with other language systems within Julia.</li>
 <li>We have shown the use of utility packages <a href="https://github.com/JuliaLang/Downloads.jl">Downloads.jl</a>, <a href="https://github.com/JuliaIO/GZip.jl.git">GZip.jl</a> and <a href="https://github.com/JuliaIO/Tar.jl">Tar.jl</a> for scripting, say within <a href="https://quarto.org">Quarto</a> documents like these.</li>
 <li>Take a moment to look at the repositories for some of these Julia packages. Most (all?) of them are 100% Julia code.</li>
@@ -954,10 +954,10 @@ $ stop   &lt;int&gt; 216501458, 101245071, 49491841, 80169336, 76271290, 3127206
 <div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">versioninfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Julia Version 1.8.0-rc1
-Commit 6368fdc656 (2022-05-27 18:33 UTC)
+<pre><code>Julia Version 1.8.0-rc2
+Commit ce5d15e6f5 (2022-07-08 13:14 UTC)
 Platform Info:
-  OS: Linux (x86_64-pc-linux-gnu)
+  OS: Linux (x86_64-linux-gnu)
   CPU: 8 × 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
   WORD_SIZE: 64
   LIBM: libopenlibm

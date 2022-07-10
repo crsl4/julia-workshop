@@ -446,7 +446,7 @@ stop: [[216501458,101245071,49491841,80169336,76271290,...,7014515,75631483,5966
     [DataFrames](https://github.com/JuliaData/DataFrames.jl)
     for data input, storage and manipulation.
   - Although not shown here [DataFrameMacros.jl](https://github.com/jkrumbiegel/DataFrameMacros.jl) (or [DataFramesMeta.jl](https://github.com/JuliaData/DataFramesMeta.jl)) and [Chain.jl](https://github.com/jkrumbiegel/Chain.jl) are worth considering for more sophisticated work with DataFrames.
-  - A general framework for working with tabular data is provided in [Tables.jl](https://github.com/JuliaData/Tables.jl) (not shown here).
+  - A general framework for working with tabular data is provided in [Tables.jl](https://github.com/JuliaData/Tables.jl) (not shown here).  Alternatively [TypedTables.jl](https://github.com/JuliaData/TypedTables.jl) provides a "lean and mean" implementation of both row- and column-oriented tabular data structures.
   - We have shown the use of
     [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) and
     [RCall.jl](https://github.com/JuliaInterop/RCall.jl) for running and communicating with other language systems within Julia.

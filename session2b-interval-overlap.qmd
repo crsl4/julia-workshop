@@ -77,10 +77,8 @@ typeof(st + one(st)) # type not promoted
 
 ```{julia}
 function chromodict(rtbl::Vector{<:NamedTuple})
-  itype = promote_type(
-    Tables.columntype(rtbl, :start),
-    Tables.columntype(rtbl, :stop),
-  )
+  r1 = first(rtbl)
+  itype = promote_type(typeof(r1.start), typeof(r1.stop))
   vtype = Vector{UnitRange{itype}}
   dict = Dict{Symbol,vtype}()
   for (; chromo, start, stop) in rtbl
@@ -191,7 +189,7 @@ function Base.intersect!(
   refs::Vector{UnitRange{T}},
 ) where {T}
   empty!(result)
-  target = eltype(refs)(target)  # coerce the type, if necessary
+  target = UnitRange{T}(target)  # coerce the type, if necessary
   lastt = last(target)
   for rng in refs
     lastt < first(rng) && break
@@ -240,7 +238,7 @@ A smaller example may help to understand how this type of interval tree.
 Consider the first 7 `UnitRange`s in `refrngvecs[:chr01]`
 
 ```{julia}
-smallrngvec = refrngvecs[:chr01][1:7]
+smallrngvec = refrngvecs[:chr01][1:15]
 ```
 
 ```{julia}
@@ -248,7 +246,7 @@ rn = RangeNode(smallrngvec)
 print_tree(rn)
 ```
 
-  - The `UnitRange` in the root node is the 4th out of the 7 sorted ranges from which the tree was constructed.
+  - The `UnitRange` in the root node is the 7th out of the 15 sorted ranges from which the tree was constructed.
   - Each of the nodes in the tree can have 0, 1, or 2 child nodes.  Those with 0 children are called the "leaves" of the tree.
 
 ```{julia}
@@ -274,6 +272,14 @@ The root of the tree can be obtained from any node using `getroot`.  The combina
 ```{julia}
 getroot(first(children(first(children(rangetree01))))) # get the root from its grandchild
 ```
+
+Several methods for generic functions are exported from [RangeTrees.jl](https://github.com/dmbates/RangeTrees.jl)
+
+```{julia}
+varinfo(RangeTrees)
+```
+
+but most of these are defined in [AbstractTrees.jl](https://github.com/JuliaCollections/AbstractTrees.jl).
 
 :::
 
@@ -388,12 +394,11 @@ function coveragecount(
   target::AbstractUnitRange,
   isects::Vector{UnitRange{T}},
 ) where {T}
-  goalposts = eltype(isects)(target) # coerce the type, if necessary
-  rightpost = last(goalposts)
+  leftpost, rightpost = T(first(target)), T(last(target))
   coverage = 0
   for isect in isects
-    coverage += length(intersect(goalposts, isect))
-    goalposts = (last(isect)+one(T)):rightpost
+    coverage += length(intersect(isect, leftpost:rightpost))
+    leftpost = max(leftpost, last(isect) + one(T))
   end
   return coverage
 end
@@ -404,13 +409,12 @@ coveragecount(target, savedresult)
 
 ```{julia}
 function overlaps(targets::Vector{UnitRange{T}}, refs::RangeNode{T}) where {T}
-  ntargets = length(targets)
-  nover = sizehint!(Int[], ntargets)
-  covcount = sizehint!(T[], ntargets)
-  result = similar(targets, ceil(Int, sqrt(treesize(refs))))
-  for tar in targets
-    push!(nover, length(intersect!(result, tar, refs)))
-    push!(covcount, coveragecount(tar, result))
+  nover = similar(targets, Int)
+  covcount = similar(targets, T)
+  result = empty!(similar(targets, ceil(Int, sqrt(treesize(refs)))))
+  @inbounds for (i, tar) in enumerate(targets)
+    nover[i] = length(intersect!(result, tar, refs))
+    covcount[i] = coveragecount(tar, result)
   end
   DataFrame(targets = targets, nover = nover, covcount = covcount)
 end
@@ -439,7 +443,7 @@ function overlaps(
   return result
 end
 bigresult = overlaps(tarrngvecs, refrngtrees);
-bigresult[:chrY]
+bigresult[:chrX]
 ```
 
 ::: {.callout-note collapse="true"}

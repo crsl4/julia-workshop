@@ -9,6 +9,7 @@ project:
       - session1-get-started.qmd
       - session2a-tables-and-arrow.qmd
       - session2b-interval-overlap.qmd
+      - session2b-alt.qmd
       - session3a-linear-mixed-effects.qmd
       - session3b-glmm.qmd
       - session4-exercise.qmd
@@ -38,6 +39,7 @@ website:
       - session1-get-started.qmd
       - session2a-tables-and-arrow.qmd
       - session2b-interval-overlap.qmd
+      - session2b-alt.qmd
       - session3a-linear-mixed-effects.qmd
       - session3b-glmm.qmd
       - session4-exercise.qmd
