@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-07-09">
+<meta name="dcterms.date" content="2022-07-10">
 
 <title>Julia Workshop - 2a: Data Tables and Arrow files</title>
 <style>
@@ -203,6 +203,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./session2b-alt.html" class="sidebar-item-text sidebar-link">2b: Determining Interval Overlap with TypedTables</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./session3a-linear-mixed-effects.html" class="sidebar-item-text sidebar-link">3a: Linear Mixed-effects Models</a>
   </div>
 </li>
@@ -280,7 +285,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-09</p>
+      <p class="date">2022-07-10</p>
     </div>
   </div>
     
@@ -367,7 +372,7 @@ Notes on Julia syntax
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $tarball`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>-rw-rw-r-- 1 bates bates 541M Jun 16 16:18 biofast-data-v1.tar.gz</code></pre>
+<pre><code>-rw-rw-r-- 1 bates bates 541M Jul 10 07:53 biofast-data-v1.tar.gz</code></pre>
 </div>
 </div>
 <div class="callout-note callout callout-style-simple callout-captioned">
@@ -534,7 +539,7 @@ Fully qualified names for many packages of utilities
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Tar</td>
-<td style="text-align: right;">858.272 KiB</td>
+<td style="text-align: right;">877.995 KiB</td>
 <td style="text-align: left;">Module</td>
 </tr>
 </tbody>
@@ -762,10 +767,10 @@ Categorical arrays
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run</span>(<span class="ss">`ls -lh $datadir`</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>total 273M
--rw-rw-r-- 1 bates bates 3.9M Jul  9 08:52 ex-anno.arrow
--rw-r--r-- 1 bates bates  28M Jun 16 16:18 ex-anno.bed
--rw-rw-r-- 1 bates bates  39M Jul  7 06:26 ex-rna.arrow
--rw-r--r-- 1 bates bates 203M Jun 16 16:18 ex-rna.bed</code></pre>
+-rw-rw-r-- 1 bates bates 3.9M Jul 10 07:54 ex-anno.arrow
+-rw-r--r-- 1 bates bates  28M Jul 10 07:54 ex-anno.bed
+-rw-rw-r-- 1 bates bates  39M Jul 10 07:54 ex-rna.arrow
+-rw-r--r-- 1 bates bates 203M Jul 10 07:54 ex-rna.bed</code></pre>
 </div>
 </div>
 <div class="callout-note callout callout-style-simple callout-captioned">
@@ -810,7 +815,7 @@ with metadata given by a Base.ImmutableDict{String, String} with 1 entry:
 <div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@time</span> rnatbl <span class="op">=</span> Arrow.<span class="fu">Table</span>(rnaarrownm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  0.044473 seconds (326 allocations: 77.842 MiB)</code></pre>
+<pre><code>  0.044358 seconds (326 allocations: 77.842 MiB)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>Arrow.Table with 4685080 rows, 3 columns, and schema:
