@@ -61,10 +61,9 @@ This notebook covers the first two objectives.
 datadir = "biofast-data-v1"
 tarball = "$datadir.tar.gz"
 if !isfile(tarball)
-  dataurl = joinpath(
-    "https://github.com/lh3/biofast/releases/download",
-    datadir,
-    tarball,
+  dataurl = join(
+    ["https://github.com/lh3/biofast/releases/download", datadir, tarball],
+    '/',
   )
   Downloads.download(dataurl, tarball)
 end

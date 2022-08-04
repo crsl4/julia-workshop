@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Douglas Bates and Claudia Solis-Lemus">
-<meta name="dcterms.date" content="2022-07-10">
+<meta name="dcterms.date" content="2022-07-30">
 
 <title>Julia Workshop - 3a: Linear Mixed-effects Models</title>
 <style>
@@ -100,7 +100,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -281,7 +281,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2022-07-10</p>
+      <p class="date">2022-07-30</p>
     </div>
   </div>
     
@@ -296,6 +296,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \]</span></p>
 </div>
 <p>Attach the packages to be used</p>
+<div class="cell" data-execution_count="1">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">CairoMakie        </span><span class="co"># graphics backend</span></span>
@@ -311,6 +312,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>CairoMakie.<span class="fu">activate!</span>(; <span class="kw">type</span> <span class="op">=</span> <span class="st">"svg"</span>)     <span class="co"># Scalable Vector Graphics backend</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>ProgressMeter.<span class="fu">ijulia_behavior</span>(<span class="op">:</span>clear); <span class="co"># Adjust progress meter for Jupyter output</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
 <section id="linear-mixed-models-in-julia" class="level1">
 <h1>Linear Mixed Models in Julia</h1>
 <ul>
@@ -376,7 +378,7 @@ This data description is inaccurate
 <div id="fig-sleepxy" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepxy-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 1: Average reaction time [ms.] versus days of sleep deprivation by participant. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 1: Average reaction time [ms.] versus days of sleep deprivation by participant. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -413,7 +415,7 @@ This data description is inaccurate
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, sleepstudy)</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Minimizing 58    Time: 0:00:00 ( 5.98 ms/it)</code></pre>
+<pre><code>Minimizing 58    Time: 0:00:00 ( 5.70 ms/it)</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <table class="table table-sm table-striped">
@@ -525,7 +527,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-sleepcaterpillar" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepcaterpillar-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 2: 95% prediction intervals on the conditional distribution of the random effects by subject, given the observed data. The subjects are ordered by increasing intercept in the conditional distributions.</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 2: 95% prediction intervals on the conditional distribution of the random effects by subject, given the observed data. The subjects are ordered by increasing intercept in the conditional distributions.</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -585,7 +587,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-sleepcoefshrinkage" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepcoefshrinkage-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 3: Shrinkage plot of the slope and intercept for each subject in the sleepstudy data (from {lattice} in R)</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 3: Shrinkage plot of the slope and intercept for each subject in the sleepstudy data (from {lattice} in R)</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -625,7 +627,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-sleepxyplotaug" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepxyplotaug-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 4: Average reaction time [ms.] versus days of sleep deprivation by participant with population fitted line, individual fitted lines and the mixed-model fitted lines. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 4: Average reaction time [ms.] versus days of sleep deprivation by participant with population fitted line, individual fitted lines and the mixed-model fitted lines. The panels are ordered according to increasing initial reaction time starting at the lower left.</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -642,7 +644,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-sleepreshrinkage" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-sleepreshrinkage-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 5: Shrinkage of the random effects in model m1 relative to an unpenalized model. The arrows are drawn from the conditional means of the random effects in a model without a penalty on their size (red dots) to the corresponding conditional means of the fitted model (blue dots).</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 5: Shrinkage of the random effects in model m1 relative to an unpenalized model. The arrows are drawn from the conditional means of the random effects in a model without a penalty on their size (red dots) to the corresponding conditional means of the fitted model (blue dots).</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -650,11 +652,13 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <ul>
 <li>Suppose we decided to fit a quadratic model to the response versus the days of sleep deprivation.</li>
 </ul>
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="op">=</span> <span class="kw">let</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  form <span class="op">=</span> <span class="pp">@formula</span> reaction <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> days <span class="op">+</span> days<span class="op">^</span><span class="fl">2</span> <span class="op">+</span> (<span class="fl">1</span> <span class="op">+</span> days <span class="op">+</span> days<span class="op">^</span><span class="fl">2</span> <span class="op">|</span> subj)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(MixedModel, form, sleepstudy; contrasts <span class="op">=</span> <span class="fu">Dict</span>(<span class="op">:</span>subj <span class="op">=&gt;</span> <span class="fu">Grouping</span>()))</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<table class="table">
+<div class="cell-output cell-output-display" data-execution_count="11">
+<table class="table table-sm table-striped">
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -700,11 +704,15 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 <ul>
 <li>The random effects for the linear and quadratic terms are highly correlated.</li>
 </ul>
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(m2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<table class="table">
+<div class="cell-output cell-output-display" data-execution_count="12">
+<table class="table table-sm table-striped">
 <thead>
 <tr class="header">
 <th style="text-align: left;"></th>
@@ -750,6 +758,8 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 <ul>
 <li>The p-value for the <code>days^2</code> coefficient is not significant. Furthermore a caterpillar plot, <a href="#fig-caterpillarm2">Figure&nbsp;6</a>, shows the prediction intervals for the quadratic random effects have considerable overlap.</li>
 </ul>
@@ -762,7 +772,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-caterpillarm2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-caterpillarm2-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 6: 95% prediction intervals on the conditional distribution of the random effects by subject in model m2.</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 6: 95% prediction intervals on the conditional distribution of the random effects by subject in model m2.</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -780,7 +790,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-shrinkagem2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-shrinkagem2-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 7: Shrinkage of the random effects in model m2 relative to an unpenalized model.</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 7: Shrinkage of the random effects in model m2 relative to an unpenalized model.</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -824,7 +834,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-bsbetadensity" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-bsbetadensity-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 8: Empirical density plots of bootstrap replications of fixed-effects parameter estimates</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 8: Empirical density plots of bootstrap replications of fixed-effects parameter estimates</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -867,7 +877,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-correlationhist" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-correlationhist-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 9: Histogram of bootstrap replications of the within-subject correlation parameter</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 9: Histogram of bootstrap replications of the within-subject correlation parameter</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -900,7 +910,7 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 <div id="fig-bssigmadensity" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="session3a-linear-mixed-effects_files/figure-html/fig-bssigmadensity-output-1.svg" class="img-fluid figure-img"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">Figure 10: Empirical density plots of bootstrap replicates of standard deviation estimates</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure 10: Empirical density plots of bootstrap replicates of standard deviation estimates</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -922,6 +932,24 @@ days          10.4673     1.50224   6.97    &lt;1e-11
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
   const icon = "";
   const anchorJS = new window.AnchorJS();
   anchorJS.options = {
