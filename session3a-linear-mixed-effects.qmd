@@ -278,7 +278,7 @@ shrinkageplot!(Figure(resolution = (800, 800)), m2)
 
   - For simple models we can characterize the fit of the model parameters with estimates and standard errors.  Are such summaries justified here?
 
-  - One way to assess this is to generate a _parametric bootstrap sample_.  Consider the estimated parameter values to be the "true" parameter values for the model and similate a large number of response vectors fitting the model to each.  This gives a sample from the distribution of the parameter estimators.
+  - One way to assess this is to generate a _parametric bootstrap sample_.  Consider the estimated parameter values to be the "true" parameter values for the model and simulate a large number of response vectors fitting the model to each.  This gives a sample from the distribution of the parameter estimators.
 
 ```{julia}
 rng = Random.seed!(42)    # initialize a random number generator
