@@ -283,7 +283,7 @@ but most of these are defined in [AbstractTrees.jl](https://github.com/JuliaColl
 
 :::
 
-  - Evaluating and storing `maxlast` in the nodes allows for overlap searchs to be truncated at nodes for which `maxlast < first(target)`.  The sorting by `first` allows for skipping the right subtree whenever `last(target) < first(thisnode)` (as in the `intersect!` method for `Vector{UnitRange}`).
+  - Evaluating and storing `maxlast` in the nodes allows for overlap searches to be truncated at nodes for which `maxlast < first(target)`.  The sorting by `first` allows for skipping the right subtree whenever `last(target) < first(thisnode)` (as in the `intersect!` method for `Vector{UnitRange}`).
 
   - `intersect` and `intersect!` methods are already defined in [RangeTrees.jl](https://github.com/dmbates/RangeTrees.jl).
   - Check that their results agree with the saved result.
